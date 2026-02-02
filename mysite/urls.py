@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
-from . import views # 確保有這行
+from aquatic import views # 確保有這行
 
 
 urlpatterns = [
