@@ -28,6 +28,12 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+# 信任你的自訂網域，這樣登入才不會被擋
+CSRF_TRUSTED_ORIGINS = [
+    'https://fisshshop.com',
+    'https://*.zeabur.app'
+]
+
 # Application definition
 
 INSTALLED_APPS = [
