@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
+from . import views # 確保有這行
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='index.html')), # 讓首頁顯示 index.html
+    path('admin/', admin.site.register),
+    path('', views.index, name='index'), # 改成這樣，它才會去執行你撈資料庫的邏輯
 ]
