@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-z(&#x!!fx8e!jg&jkrup-5!r5f7v1wmyjr&42=t1nu1deos2!o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["django.zeabur.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
