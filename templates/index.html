@@ -14,38 +14,56 @@
 
 <body>
     <div class="container mt-5">
-        <h1>歡迎來到 Fisshshop</h1>
-        <p>這是你的米蝦交易平台測試網頁</p>
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">歡迎來到 Fisshshop</h1>
+            <p class="lead text-muted">這是你的米蝦交易平台測試網頁</p>
+        </div>
 
         <hr>
 
         <div class="aquatic-list">
             <h2 class="mb-4">架上生物清單</h2>
             
-            {% for item in items %}
-            <div class="card mb-3 shadow-sm">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        {% if item.image %}
-                            <img src="{{ item.image.url }}" class="img-fluid rounded-start" alt="{{ item.name }}" style="height: 100%; min-height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                                尚未上傳照片
+            <div class="row">
+                {% for item in items %}
+                <div class="col-12">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" class="img-fluid rounded-start" alt="{{ item.name }}" style="height: 100%; min-height: 250px; object-fit: cover; width: 100%;">
+                                {% else %}
+                                    <div class="bg-light text-secondary d-flex align-items-center justify-content-center rounded-start" style="height: 250px;">
+                                        <div class="text-center">
+                                            <p class="mb-0">尚未上傳照片</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">【{{ item.get_city_display }}】{{ item.name }}</h5>
-                            <p class="card-text">價格：<span class="text-danger">${{ item.price }}</span> | 庫存：{{ item.stock }} 隻</p>
-                            <p class="card-text text-muted">{{ item.description }}</p>
+
+                            <div class="col-md-8">
+                                <div class="card-body d-flex flex-column h-100">
+                                    <h5 class="card-title fw-bold">【{{ item.get_city_display }}】{{ item.name }}</h5>
+                                    <p class="card-text">
+                                        <span class="badge bg-primary">{{ item.get_category_display }}</span>
+                                    </p>
+                                    <p class="card-text fs-4 text-danger fw-bold">NT$ {{ item.price }}</p>
+                                    <p class="card-text">當前庫存：<span class="badge bg-dark">{{ item.stock }} 隻</span></p>
+                                    <p class="card-text text-muted flex-grow-1">{{ item.description }}</p>
+                                    <p class="card-text"><small class="text-muted">上架時間：{{ item.created_at|date:"Y-m-d H:i" }}</small></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-warning text-center">
+                        目前還沒有生物上架喔！趕快去後台新增吧。
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% empty %}
-                <div class="alert alert-info">目前還沒有生物上架喔！</div>
-            {% endfor %}
         </div>
     </div>
 </body>
