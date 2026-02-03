@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -147,3 +148,4 @@ if os.getenv('ZEABUR'):
 else:
     # 如果在你電腦，存到專案資料夾下的 media
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# fuckyou
