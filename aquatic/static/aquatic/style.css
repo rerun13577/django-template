@@ -36,8 +36,8 @@ body {
 }
 .card img {
   border-radius: inherit !important; /* 強制圖片圓角 */
-  opacity: 0.9;
-  filter: brightness(0.9);
+  opacity: 1;
+  filter: brightness(0.95);
 }
 
 .card-img-top {
