@@ -13,22 +13,40 @@
 <!-- git add . ; git commit -m "update" ; git push -->
 
 <body>
-    <h1>歡迎來到 Fisshshop</h1>
-    <p>這是你的米蝦交易平台測試網頁</p>
+    <div class="container mt-5">
+        <h1>歡迎來到 Fisshshop</h1>
+        <p>這是你的米蝦交易平台測試網頁</p>
 
-    <div class="aquatic-list">
-        <h1>Fisshshop 目前架上生物</h1>
-        <ul>
+        <hr>
+
+        <div class="aquatic-list">
+            <h2 class="mb-4">架上生物清單</h2>
+            
             {% for item in items %}
-            <li style="border: 1px solid #ccc; margin: 10px; padding: 10px; list-style: none;">
-                <strong>【{{ item.get_city_display }}】{{ item.name }}</strong><br>
-                價格：${{ item.price }} | 庫存：{{ item.stock }} 隻<br>
-                <p>{{ item.description }}</p>
-            </li>
+            <div class="card mb-3 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" class="img-fluid rounded-start" alt="{{ item.name }}" style="height: 100%; min-height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                尚未上傳照片
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">【{{ item.get_city_display }}】{{ item.name }}</h5>
+                            <p class="card-text">價格：<span class="text-danger">${{ item.price }}</span> | 庫存：{{ item.stock }} 隻</p>
+                            <p class="card-text text-muted">{{ item.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% empty %}
-            <li>目前還沒有生物上架喔！</li>
+                <div class="alert alert-info">目前還沒有生物上架喔！</div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 </body>
 
