@@ -6,19 +6,36 @@
     --border-color: #333333;
 }
 
+/* 1. 全域暖色微調：直接覆蓋 Bootstrap 內建變數 */
+[data-bs-theme="dark"] {
+    --bs-body-color: #f5f2e9;      /* 文字改米白 */
+    --bs-body-bg: #101010;        /* 背景改極深灰 */
+    --bs-card-bg: #1c1c1c;        /* 卡片稍微亮一點點 */
+    --bs-secondary-color: #a6a08a; /* 副標題暖灰色 */
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
 }
 
 .card {
-    background-color: var(--card-bg) !important;
-    border: 1px solid var(--border-color) !important;
-    color: var(--text-main) !important;
+    border-radius: 25px !important; /* 數字越大越圓 */
+    overflow: hidden; /* 這是重點：確保裡面的圖片不會刺破圓角 */
+    border: 1px solid #333; 
+    overflow: hidden !important; /* 上方的圓角就會出現了 */
 }
 
 /* 讓圖片融入背景 */
 .card-img-top {
     opacity: 0.9;
     filter: brightness(0.8);
+}
+
+/* 3. 綠色價錢：自定義類別 */
+.text-price {
+    color: #00ffc8eb !important;   /* 你要的好看綠色 */
+    font-size: 1.8rem;           /* 讓價錢更醒目 */
+    font-weight: 800;
+    letter-spacing: 1px;         /* 字距拉開一點比較高級 */
 }
