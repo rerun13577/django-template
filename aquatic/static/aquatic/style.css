@@ -48,7 +48,7 @@ body {
 
 /* 3. 綠色價錢：自定義類別 */
 .text-price {
-  color: rgba(0, 255, 200, 0.9215686275) !important; /* 你要的好看綠色 */
+  color: rgba(0, 255, 200, 0.9294117647) !important; /* 你要的好看綠色 */
   font-size: 1.8rem; /* 讓價錢更醒目 */
   font-weight: 800;
   letter-spacing: 1px; /* 字距拉開一點比較高級 */
