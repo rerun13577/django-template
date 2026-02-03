@@ -51,10 +51,10 @@
                                         <span class="badge rounded-pill bg-info text-dark">{{ item.get_category_display }}</span>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <span class=" fw-bold text-price">NT$ {{ item.price }}</span>
+                                    <div class="">
+                                        <span class="text-price">NT$ {{ item.price }}</span>
                                     </div>
-<!-- fs-2 -->
+<!-- fs-2  fw-bold  mb-3 -->
                                     <p class="card-text text-light opacity-75 flex-grow-1">
                                         {{ item.description|default:"暫無詳細描述" }}
                                     </p>
