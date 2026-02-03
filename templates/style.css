@@ -1,0 +1,24 @@
+/* aquatic/static/aquatic/style.css */
+:root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #e0e0e0;
+    --border-color: #333333;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+.card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+/* 讓圖片融入背景 */
+.card-img-top {
+    opacity: 0.9;
+    filter: brightness(0.8);
+}
