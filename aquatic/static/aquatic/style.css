@@ -41,8 +41,8 @@ body {
 }
 
 .card-img-top {
-  opacity: 0.9;
-  filter: brightness(0.9);
+  opacity: 1;
+  filter: brightness(1);
   border-radius: inherit !important; /* 新增這行：強制圖片跟隨卡片的 25px */
 }
 
