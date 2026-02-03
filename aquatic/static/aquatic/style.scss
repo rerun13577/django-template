@@ -45,7 +45,7 @@ body {
 
 .card-img-top {
     opacity: 0.9;
-    filter: brightness(0.8);
+    filter: brightness(0.9);
     border-radius: inherit !important; /* 新增這行：強制圖片跟隨卡片的 25px */
 }
 /* 3. 綠色價錢：自定義類別 */
@@ -55,3 +55,5 @@ body {
     font-weight: 800;
     letter-spacing: 1px;         /* 字距拉開一點比較高級 */
 }
+
+// git add .;git commit -m "fix: add Pillow for image handling";git push
