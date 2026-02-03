@@ -28,6 +28,7 @@ class AquaticLife(models.Model):
     stock = models.IntegerField(default=0, verbose_name="庫存數量")
     description = models.TextField(blank=True, verbose_name="詳細描述")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="上架時間")
+    image = models.ImageField(upload_to='aquatic_images/', null=True, blank=True)
 
     def __str__(self):
         return f"[{self.get_city_display()}] {self.name}"
