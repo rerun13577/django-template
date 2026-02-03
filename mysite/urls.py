@@ -20,6 +20,6 @@ from aquatic import views # 確保有這行
 
 
 urlpatterns = [
-    path('admin/', admin.site.register),
+    path('admin/', admin.site.urls),
     path('', views.index, name='index'), # 改成這樣，它才會去執行你撈資料庫的邏輯
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
