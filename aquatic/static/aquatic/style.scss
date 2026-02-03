@@ -1,0 +1,57 @@
+/* aquatic/static/aquatic/style.css */
+:root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #e0e0e0;
+    --border-color: #333333;
+}
+
+/* 刪掉原本的 :root 區塊，直接用下面這區就好 */
+[data-bs-theme="dark"] {
+    --bs-body-color: #f5f2e9; 
+    --bs-body-bg: #0f1113;    /* 這行就會自動控制全站背景 */
+    --bs-card-bg: #1c1c1c; 
+    --bs-secondary-color: #a6a08a;
+}
+
+/* body 這裡改寫成這樣，讓它跟隨 Bootstrap 的開關 */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+
+
+/* 2. 卡片改裝 (利用 SCSS 巢狀語法) */
+.card {
+    border-radius: 25px !important;
+    border: 1px solid #333 !important;
+    overflow: hidden !important;
+    transition: transform 0.2s; /* 滑動動畫 */
+
+    /* 巢狀寫法：代表 .card:hover */
+    &:hover {
+        transform: translateY(-5px); /* 懸停浮起 */
+        border-color: #555;          /* 邊框變亮 */
+    }
+
+    /* 巢狀寫法：代表 .card img */
+    img {
+        border-radius: inherit !important; /* 強制圖片圓角 */
+        opacity: 0.9;
+        filter: brightness(0.8);
+    }
+}
+
+.card-img-top {
+    opacity: 0.9;
+    filter: brightness(0.8);
+    border-radius: inherit !important; /* 新增這行：強制圖片跟隨卡片的 25px */
+}
+/* 3. 綠色價錢：自定義類別 */
+.text-price {
+    color: #00ffc8eb !important;   /* 你要的好看綠色 */
+    font-size: 1.8rem;           /* 讓價錢更醒目 */
+    font-weight: 800;
+    letter-spacing: 1px;         /* 字距拉開一點比較高級 */
+}
