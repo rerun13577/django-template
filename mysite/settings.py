@@ -134,9 +134,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# import os
+import os
 
-# # 圖片的網址開頭
-# MEDIA_URL = '/media/'
-# # 圖片實際存在電腦裡的資料夾位置
-# MEDIA_ROOT = os.path.join(BASE_PATH, 'media')
+# 網址開頭維持不變
+MEDIA_URL = '/media/'
+
+# --- 自動判斷環境：決定照片存哪裡 ---
+if os.getenv('ZEABUR'):
+    # 如果在雲端，存到你剛才掛載的硬碟路徑
+    MEDIA_ROOT = '/app/media'
+else:
+    # 如果在你電腦，存到專案資料夾下的 media
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
