@@ -132,3 +132,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+import os
+
+# 圖片的網址開頭
+MEDIA_URL = '/media/'
+# 圖片實際存在電腦裡的資料夾位置
+MEDIA_ROOT = os.path.join(BASE_PATH, 'media')
