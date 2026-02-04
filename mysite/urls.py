@@ -23,4 +23,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'), # 改成這樣，它才會去執行你撈資料庫的邏輯
+
+    # 這是你的安全實驗室：
+    # 只要在瀏覽器打 127.0.0.1:8000/lab 就能看到新模板
+    path('lab/', TemplateView.as_view(template_name='test_dashboard.html')),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

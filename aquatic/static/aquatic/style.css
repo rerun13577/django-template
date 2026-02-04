@@ -5,6 +5,12 @@
   --card-bg: #1e1e1e;
   --text-main: #e0e0e0;
   --border-color: #333333;
+  /* 你的核心顏色：螢光青色 */
+  --fissh-primary: #00ffc8ed;
+  /* 稍微深一點的顏色，用於滑鼠移入時的變化 */
+  --fissh-primary-dark: #00d9aa;
+  /* 搭配的文字顏色 (通常是黑色或深灰色比較清晰) */
+  --fissh-text-on-primary: #1a1a1a;
 }
 
 /* 刪掉原本的 :root 區塊，直接用下面這區就好 */
@@ -36,8 +42,8 @@ body {
 }
 .card img {
   border-radius: inherit !important; /* 強制圖片圓角 */
-  opacity: 1;
-  filter: brightness(0.95);
+  opacity: 0.9;
+  filter: brightness(0.9);
 }
 
 .card-img-top {
@@ -48,7 +54,7 @@ body {
 
 /* 3. 綠色價錢：自定義類別 */
 .text-price {
-  color: rgba(0, 255, 200, 0.9294117647) !important; /* 你要的好看綠色 */
+  color: var(--fissh-primary) !important; /* 你要的好看綠色 */
   font-size: 1.8rem; /* 讓價錢更醒目 */
   font-weight: 800;
   letter-spacing: 1px; /* 字距拉開一點比較高級 */
