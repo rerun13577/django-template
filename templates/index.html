@@ -16,22 +16,20 @@
   </head>
 
   <body>
-    <header
-      class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm py-3"
-    >
+    <!-- sticky-top 把頁首黏在最上面 ;navbar-expand-lg 寬度大於 992px展開選單；小於這個寬度時，選單會自動縮起來變成按鈕-->
+    <header class="navbar navbar-expand-lg sticky-top">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+        <a class="navbar-brand" href="/">
           <img
             src="{% static 'assets/images/logo/white-logo.svg' %}"
             alt="Logo"
             height="40"
-            class="me-2"
           />
           FisshShop
         </a>
 
         <button
-          class="navbar-toggler border-0"
+          class="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#fisshNav"
@@ -40,26 +38,16 @@
         </button>
 
         <div class="collapse navbar-collapse" id="fisshNav">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li class="nav-item px-2">
-              <a class="nav-link active" href="/">首頁</a>
-            </li>
-            <li class="nav-item px-2">
-              <a class="nav-link" href="">賣場</a>
-            </li>
-            <li class="nav-item px-2">
-              <a class="nav-link" href="">部落格</a>
-            </li>
-            <li class="nav-item px-2">
-              <a class="nav-link" href="">控制台</a>
-            </li>
-
-            <li class="nav-item ms-lg-3">
-              <a href="" class="btn btn-outline-info rounded-pill px-4"
-                >登入</a
-              >
-            </li>
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
+            <li class="nav-item"><a class="nav-link" href="">賣場</a></li>
+            <li class="nav-item"><a class="nav-link" href="">部落格</a></li>
+            <li class="nav-item"><a class="nav-link" href="">控制台</a></li>
           </ul>
+
+          <div class="d-flex">
+            <a class="btn-login" href="">登入</a>
+          </div>
         </div>
       </div>
     </header>
@@ -141,7 +129,9 @@
           </div>
           {% empty %}
           <div class="col-12">
-            <div class="alert alert-dark text-center border-secondary">
+            <div
+              class="alert alert-dark text-center border-secondary rounded-pill"
+            >
               目前還沒有生物上架喔！趕快去後台新增吧。
             </div>
           </div>

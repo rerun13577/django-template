@@ -1,61 +1,133 @@
 @charset "UTF-8";
 /* aquatic/static/aquatic/style.css */
+/* aquatic/static/aquatic/style.scss */
 :root {
-  --bg-color: #121212;
-  --card-bg: #1e1e1e;
-  --text-main: #e0e0e0;
-  --border-color: #333333;
-  /* 你的核心顏色：螢光青色 */
-  --fissh-primary: #00ffc8ed;
-  /* 稍微深一點的顏色，用於滑鼠移入時的變化 */
-  --fissh-primary-dark: #00d9aa;
-  /* 搭配的文字顏色 (通常是黑色或深灰色比較清晰) */
+  /* --- 品牌核心色 (fisshshop DNA) --- */
+  --fissh-primary: #63E6BE;
+  --fissh-primary-dark: #3EBFA6;
   --fissh-text-on-primary: #1a1a1a;
+  /* --- 基礎排版變數 --- */
+  --fissh-radius-lg: 25px; /* 統一大圓角變數 */
+  --fissh-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 為平滑過渡效果設置變數 */
 }
 
-/* 刪掉原本的 :root 區塊，直接用下面這區就好 */
+/* Bootstrap 深色主題變數 */
 [data-bs-theme=dark] {
-  --bs-body-color: #f5f2e9;
-  --bs-body-bg: #0f1113; /* 這行就會自動控制全站背景 */
-  --bs-card-bg: #1c1c1c;
-  --bs-secondary-color: #a6a08a;
+  --bs-body-bg: #0f1113; /* 深色背景 */
+  --bs-body-color: #f5f2e9; /* 文字顏色 */
+  --bs-card-bg: #1c1c1c; /* 卡片背景色 */
+  --bs-border-color: #333333; /* 統一邊框色變數 */
+  --bs-border-color-translucent: #555555; /* Hover 時的邊框亮色 */
+  /* 直接把 Bootstrap 的主色換成你的螢光綠 */
+  --bs-primary: var(--fissh-primary);
+  --bs-primary-rgb: 0, 255, 200;
 }
 
-/* body 這裡改寫成這樣，讓它跟隨 Bootstrap 的開關 */
+/* 全域基礎設定 */
 body {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
+  transition: var(--fissh-transition);
 }
 
-/* 2. 卡片改裝 (利用 SCSS 巢狀語法) */
+/* 2. 卡片組件：全面套用變數 */
 .card {
-  border-radius: 25px !important;
-  border: 1px solid #333 !important;
+  background-color: var(--bs-card-bg) !important;
+  border-radius: var(--fissh-radius-lg) !important;
+  border: 1px solid var(--bs-border-color) !important; /* 使用統一邊框色變數 */
   overflow: hidden !important;
-  transition: transform 0.2s; /* 滑動動畫 */
-  /* 巢狀寫法：代表 .card:hover */
-  /* 巢狀寫法：代表 .card img */
+  transition: var(--fissh-transition); /* 平滑過渡效果 */
+  /* 處理卡片內的圖片 */
 }
 .card:hover {
-  transform: translateY(-5px); /* 懸停浮起 */
-  border-color: #555; /* 邊框變亮 */
+  transform: translateY(-8px); /* 稍微增加浮起高度增加高級感 */
+  border-color: var(--bs-border-color-translucent) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* 讓背景有陰影 拿起物品燈光往下打 下面陰影會變大 */
 }
-.card img {
-  border-radius: inherit !important; /* 強制圖片圓角 */
-  opacity: 0.9;
-  filter: brightness(0.9);
-}
-
-.card-img-top {
+.card img, .card .card-img-top {
+  border-radius: inherit !important; /* 確保圖片完美貼合 25px 圓角 */
   opacity: 1;
   filter: brightness(1);
-  border-radius: inherit !important; /* 新增這行：強制圖片跟隨卡片的 25px */
+  transition: var(--fissh-transition);
+}
+.card img:hover, .card .card-img-top:hover {
+  filter: brightness(1.1); /* 懸停時讓小魚稍微亮起來 */
 }
 
-/* 3. 綠色價錢：自定義類別 */
+/* 3. 價格標籤：強化品牌色連動 */
 .text-price {
-  color: var(--fissh-primary) !important; /* 你要的好看綠色 */
-  font-size: 1.8rem; /* 讓價錢更醒目 */
+  color: var(--fissh-primary) !important;
+  font-size: 1.8rem;
   font-weight: 800;
-  letter-spacing: 1px; /* 字距拉開一點比較高級 */
+  letter-spacing: 1px; /* 增加字母間距提升質感 */
+  text-shadow: 0 0 10px rgba(0, 255, 200, 0.2); /* 價格周圍有淡淡的螢光感 */
+}
+
+/* _header.scss */
+header.navbar {
+  background-color: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+  padding: 1rem 0;
+  transition: var(--fissh-transition);
+}
+header.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+header.navbar .navbar-brand {
+  flex: 1;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+header.navbar .navbar-brand img {
+  height: 40px;
+}
+header.navbar .navbar-collapse {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+header.navbar .navbar-collapse .navbar-nav {
+  flex-direction: row;
+  gap: 10px;
+  margin: 0 !important;
+}
+header.navbar .navbar-collapse .navbar-nav .nav-link {
+  color: var(--bs-body-color);
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  transition: var(--fissh-transition);
+}
+header.navbar .navbar-collapse .navbar-nav .nav-link:hover {
+  color: var(--fissh-primary);
+}
+header.navbar .d-flex {
+  flex: 1;
+  justify-content: flex-end;
+}
+header.navbar .d-flex .btn-login {
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  border: 1px solid color-mix(in srgb, var(--fissh-primary), transparent 70%);
+  background: transparent;
+  color: var(--fissh-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--fissh-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+header.navbar .d-flex .btn-login:hover {
+  background: var(--fissh-primary);
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 200, 0.4);
 }/*# sourceMappingURL=style.css.map */
