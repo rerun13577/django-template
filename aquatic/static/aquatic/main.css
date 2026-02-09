@@ -1,0 +1,613 @@
+@charset "UTF-8";
+/* main.scss */
+/* 引入 Inter (300, 400, 700, 900) 與 思源黑體 (300, 400, 700, 900) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap");
+body {
+  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* 確保寬度計算包含 padding */
+}
+
+a {
+  text-decoration: none; /* 移除底線 */
+  color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 5%; /* 給 header 一些左右內邊距 */
+  height: 5rem; /* 給它一個高度 */
+}
+
+.logo-mobile {
+  height: 2.75rem;
+}
+
+.logo-desktop {
+  height: 2.75rem;
+}
+
+.header-l img {
+  height: 2.75rem; /* 根據你的 header 高度 (4rem) 調整，這大約是 60% */
+  width: auto; /* 重要：讓寬度自動縮放，圖片才不會變形 */
+}
+
+.header-m ul {
+  display: flex;
+  gap: 2rem; /* 每個選項之間的間距 */
+  list-style: none; /* 拿掉討人厭的黑點 */
+  margin: 0;
+  padding: 0;
+}
+
+.header-l {
+  flex: 1;
+  display: flex; /* 移除圖片下方的微小間隙 */
+  align-items: center; /* 讓圖片跟文字「垂直中心線」對齊 */
+  gap: 0.5rem; /* 圖片和文字之間的間距 */
+}
+
+.header-m {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-r {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.login-btn-case {
+  display: flex;
+  justify-content: flex-end;
+  width: 250px;
+}
+
+body {
+  background-color: var(--bg-dark);
+}
+
+span {
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.navber-list {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  margin: 0.5rem;
+  white-space: nowrap;
+}
+.navber-list:hover {
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.login-btn {
+  background-color: var(--primary);
+  color: var(--text);
+  border-radius: 1.5rem;
+  padding: 0.5rem 2rem;
+  border: none;
+  cursor: pointer;
+}
+.login-btn:hover {
+  background-color: var(--secondary);
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.hb-icon span {
+  width: 30px;
+  height: 3px;
+  background-color: var(--primary); /* 配合你 Logo 的綠色 */
+  margin: 4px 0;
+  display: block;
+  transition: var(--transition); /* 之後做動畫用 */
+}
+
+/* 漢堡圖示樣式 (三條線) */
+.hb-icon {
+  display: none; /* 電腦版先隱藏 */
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  /* 讓三條線垂直置中 */
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-desktop {
+  display: block; /* 顯示電腦版 */
+}
+
+.logo-mobile {
+  display: none; /* 隱藏手機版 */
+}
+
+.header-r ul {
+  display: none; /* 隱藏電腦版 */
+}
+
+.hb-icon {
+  display: none; /* 電腦版先隱藏 */
+}
+
+/* 把真正的 checkbox 藏起來 */
+.menu-control {
+  display: none;
+}
+
+@media screen and (max-width: 902px) {
+  .login-btn {
+    display: none; /* 隱藏電腦版 */
+  }
+}
+@media screen and (max-width: 902px) {
+  /* 關 navber */
+  .header-m {
+    display: none;
+  }
+  /* 關 login-btn */
+  .logo-desktop {
+    display: none; /* 隱藏電腦版 */
+  }
+  .logo-mobile {
+    display: block; /* 顯示手機版 */
+  }
+  /* 開 icon */
+  .hb-icon {
+    display: flex; /* 手機版顯示漢堡 */
+  }
+  /* 先關navber(含登入)，等點hb-icon後打開 */
+  .header-r ul {
+    display: none; /* 手機版預設把選單藏起來 */
+    position: absolute;
+    top: 70px; /* 根據你 header 的高度調整 */
+    left: 0;
+    width: 100%;
+    background-color: var(--bg);
+    flex-direction: column;
+    padding: 20px 0;
+  }
+  /* 看看hb-icon有沒有被點？ */
+  .menu-control:checked ~ ul {
+    display: flex;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+body {
+  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
+  /* 只要寫在 body，裡面所有的 div, p, h1~h6, span 都會跟著變 */
+  letter-spacing: 0.02em;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* 確保寬度計算包含 padding */
+  font-family: var(--ff-primary);
+}
+
+a {
+  text-decoration: none; /* 移除底線 */
+  color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
+}
+
+.hero {
+  width: 100%;
+  background-image: url("../image/pexels-ben-phillips-3129726-4781925.jpg");
+  background-size: cover; /* 圖片鋪滿整個區域 */
+  background-position: center; /* 蝦子如果偏了再調這裡 */
+  min-height: 700px; /* 關鍵：手機版就算寬度縮小，高度至少要保持 350px，內容才不會爆掉 */
+  display: flex;
+  flex-direction: column; /*交換主軸方向，讓內容從上到下排列，下面子層主軸都是y*/
+  justify-content: center; /* 因為上下有兩個元素 要用content來對齊 */
+  align-items: center; /* 因為左右有1個元素 要用items來對齊 */
+  text-align: center; /* 讓文字換行 第二行也能置中 */
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  background-repeat: no-repeat;
+}
+
+.hero-title {
+  font-size: 3.75rem;
+}
+
+.hero-btn {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 1.5rem;
+  font-size: 1.25rem;
+  cursor: pointer; /* 鼠標變成小手 */
+}
+
+.slogan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-size: cover;
+  padding: 9rem 5.25rem;
+}
+
+.slogan {
+  display: flex; /* 改成 flex 才能用 gap */
+  justify-content: center; /* 讓內容水平置中 */
+  flex-wrap: wrap;
+  align-items: baseline; /* 讓中英文底部對齊，視覺更穩 */
+  gap: 2rem; /* 這裡就是你要的空間！ */
+  margin-bottom: 6rem;
+  color: var(--text);
+}
+
+/* 內層不需要再寫 text-align: center，因為父層 flex 搞定了 */
+.slogan-ch,
+.slogan-en {
+  font-size: 4.25rem;
+  font-weight: 700;
+}
+
+.slogan-qa-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.slogan-qa-card {
+  flex: 1;
+  min-width: 280px;
+  padding: 20px;
+  text-align: center;
+  flex: 0 0 15rem;
+  max-width: 25rem;
+  padding: 3rem 2rem;
+  border: 1px solid;
+}
+
+.slogan-qu {
+  margin-bottom: 0.5rem;
+}
+
+.section-s {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section {
+  width: 100%;
+  padding: 1.25rem 5.25rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  padding: 0rem 1rem 0.25rem 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.section-subtitle {
+  margin-bottom: 1.5rem;
+  padding: 0rem 1rem;
+  font-size: 1rem;
+}
+
+.hot-article-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 1px solid;
+  gap: 2rem;
+  padding: 1rem 0 1rem 1rem;
+  flex: 0 0 350px;
+  min-height: 480px;
+}
+
+.hot-article {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 350px;
+  border: 1px solid; /* 關鍵設定：最小高度 */
+  min-height: 450px;
+}
+
+/* _index.scss */
+.hot-article img {
+  width: 100%;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.hot-article-title {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  width: 100%;
+}
+
+.hot-article-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  margin-left: 1rem;
+  width: 100%;
+}
+
+.hot-creature-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 1px solid;
+  gap: 2rem;
+  padding: 1rem 0 1rem 1rem;
+  flex: 0 0 350px;
+  min-height: 480px;
+}
+
+.hot-creature {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 350px;
+  border: 1px solid; /* 關鍵設定：最小高度 */
+  min-height: 450px;
+}
+
+.hot-creature img {
+  width: 100%;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.hot-creature-title {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  width: 100%;
+}
+
+.hot-creature-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  margin-left: 1rem;
+  width: 100%;
+}
+
+body {
+  background-color: var(--bg-dark);
+}
+
+h3,
+h2,
+h1,
+span {
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.hero-btn {
+  background-color: var(--primary);
+  color: var(--text);
+  border-radius: 1.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.hero-btn:hover {
+  background-color: var(--secondary);
+  color: var(--text);
+}
+
+.slogan-container {
+  background: linear-gradient(to bottom, #00284a, #030303);
+}
+
+.slogan {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.slogan-qa-card {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  transition: var(--transition);
+}
+.slogan-qa-card:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.icon {
+  width: 5rem;
+  height: 5rem;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  stroke-width: 1.25px; /* 調整線條粗細，讓圖示更精緻 */
+  transition: var(--transition);
+}
+
+.slogan-qa-card:hover .icon {
+  color: var(--secondary); /* 懸停時圖示變色，增加互動感 */
+  transform: scale(1.2); /* 懸停時圖示放大，增加動感 */
+  transition: var(--transition); /* 確保圖示的變化也有過渡效果 */
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.hot-article {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.hot-article:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.hot-creature {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.hot-creature:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+.hot-creature:hover .hot-creature-subtitle {
+  color: var(--secondary);
+}
+
+.hot-creature-subtitle {
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary);
+  transition: var(--transition);
+}
+
+@media screen and (max-width: 785px) {
+  .hero {
+    background-image: url("../image/pexels-chevanon-325044.jpg");
+    /* 2. 關鍵修改：讓圖片「包含」在框框內，隨寬度縮放 */
+    background-size: contain;
+    /* 4. 不重複 */
+    background-repeat: no-repeat;
+  }
+}
+/* 這樣寫才是對的：明確指出是啥要改 */
+@media (max-width: 902px) {
+  .slogan {
+    margin-bottom: 4rem;
+    gap: 0.75rem;
+  }
+  .slogan-ch,
+  .slogan-en {
+    font-size: 3.5rem;
+  }
+  .slogan-container {
+    padding: 3rem 1.5rem;
+  }
+  .section-s {
+    padding: 0rem;
+    width: 100%;
+  }
+  .section {
+    padding: 0rem;
+    width: 100%;
+  }
+  .section-title {
+    font-size: 1.75rem;
+    padding-left: 1.5rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+    padding-left: 1.5rem;
+  }
+  .hot-article-s {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x;
+  }
+  .hot-article-s::-webkit-scrollbar {
+    display: none;
+  }
+  .hot-article {
+    flex: 0 0 326px;
+  }
+  .hot-creature-s {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x;
+  }
+  .hot-creature-s::-webkit-scrollbar {
+    display: none;
+  }
+  .hot-creature {
+    flex: 0 0 326px;
+  }
+}/*# sourceMappingURL=main.css.map */

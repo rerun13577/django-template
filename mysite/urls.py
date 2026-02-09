@@ -26,7 +26,7 @@ urlpatterns = [
 
     # 這是你的安全實驗室：
     # 只要在瀏覽器打 127.0.0.1:8000/lab 就能看到新模板
-    path('lab/', TemplateView.as_view(template_name='test_dashboard.html')),
+    path('lab/', TemplateView.as_view(template_name='index.html')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

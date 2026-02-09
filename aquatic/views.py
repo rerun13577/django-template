@@ -7,3 +7,10 @@ def index(request):
     
     # 把這筆資料打包傳給網頁
     return render(request, 'index.html', {'items': items})
+
+
+def home(request):
+    # 👈 兇手就是這裡！
+    # 這裡寫 'index.html'，首頁就是 index.html
+    # 如果你改成 'dashboard.html'，首頁就會瞬間變成 dashboard.html
+    return render(request, 'index.html')
