@@ -654,5 +654,6 @@ p {
   }
   .hot-creature {
     flex: 0 0 326px;
+    scroll-snap-align: center;
   }
 }/*# sourceMappingURL=main.css.map */

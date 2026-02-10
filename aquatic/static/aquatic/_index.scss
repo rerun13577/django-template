@@ -562,5 +562,6 @@ p {
 
   .hot-creature {
     flex: 0 0 326px; // 手機版寬度，不准縮小
+    scroll-snap-align: center;
   }
 }
