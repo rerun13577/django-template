@@ -2,14 +2,65 @@
 /* main.scss */
 /* 引入 Inter (300, 400, 700, 900) 與 思源黑體 (300, 400, 700, 900) */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap");
+/* 確保網頁佔滿版 */
+html,
+body {
+  width: 100%;
+  overflow-x: hidden; /* 防止出現討厭的橫向捲軸 */
+}
+
 body {
   margin: 0; /* 徹底消除那 預設 8px 的白邊 */
+  /* 只要寫在 body，裡面所有的 div, p, h1~h6, span 都會跟著變 */
+  letter-spacing: 0.02em;
+}
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box; /* 確保寬度計算包含 padding */
+  font-family: var(--ff-primary);
 }
 
 a {
@@ -17,7 +68,11 @@ a {
   color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
 }
 
-.header {
+header {
+  background-color: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   padding: 0 5%; /* 給 header 一些左右內邊距 */
@@ -185,65 +240,6 @@ p {
     display: flex;
   }
 }
-:root {
-  --bg-dark: oklch(0.1 0 128); /*背景*/
-  --bg: oklch(0.15 0 128); /*卡片*/
-  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
-  --text: oklch(0.96 0 128); /*標題*/
-  --text-muted: oklch(0.76 0 128); /*備註*/
-  --highlight: oklch(0.5 0 128); /*top邊框  */
-  --border: oklch(0.4 0 128); /*邊框     */
-  --border-muted: oklch(0.3 0 128); /*邊框     */
-  --primary: oklch(0.76 0.1 128); /*主色調*/
-  --secondary: oklch(0.76 0.1 308); /*次色調*/
-  --danger: oklch(0.7 0.05 30);
-  --warning: oklch(0.7 0.05 100);
-  --success: oklch(0.7 0.05 160);
-  --info: oklch(0.7 0.05 260);
-  --green-gradient: linear-gradient(
-    to bottom,
-    oklch(0.8199 0.1381 140.2),
-    oklch(0.911 0.0963 140)
-  );
-  --radius-l: 1.5rem;
-  --radius-m: 1rem;
-  --radius-s: 0.5rem;
-  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
-  --shadow-s:
-    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
-    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
-  --shadow-m:
-    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
-    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
-  --shadow-l:
-    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
-    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
-  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
-  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  /* 也可以順便把字重定義好，開發更爽 */
-  --fw-bold: 900;
-  --fw-regular: 400;
-  --fw-light: 300;
-}
-
-body {
-  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
-  /* 只要寫在 body，裡面所有的 div, p, h1~h6, span 都會跟著變 */
-  letter-spacing: 0.02em;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* 確保寬度計算包含 padding */
-  font-family: var(--ff-primary);
-}
-
-a {
-  text-decoration: none; /* 移除底線 */
-  color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
-}
-
 .hero {
   width: 100%;
   background-image: url("../image/pexels-ben-phillips-3129726-4781925.jpg");
@@ -372,6 +368,7 @@ a {
   flex: 0 0 350px;
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
+  scroll-snap-align: center;
 }
 
 /* _index.scss */
@@ -408,6 +405,7 @@ a {
   padding: 1rem 0 1rem 1rem;
   flex: 0 0 350px;
   min-height: 480px;
+  scroll-behavior: smooth;
 }
 
 .hot-creature {
@@ -416,6 +414,7 @@ a {
   flex: 0 0 350px;
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
+  scroll-snap-align: center;
 }
 
 .hot-creature img {
@@ -634,6 +633,7 @@ p {
   }
   .hot-article {
     flex: 0 0 326px;
+    scroll-snap-align: center;
   }
   .hot-creature-s {
     display: flex;
@@ -648,6 +648,7 @@ p {
     max-height: 480px;
     overflow-y: hidden;
     touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
   }
   .hot-creature-s::-webkit-scrollbar {
     display: none;
@@ -656,4 +657,156 @@ p {
     flex: 0 0 326px;
     scroll-snap-align: center;
   }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.blog-container {
+  /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 41.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin-left: auto;
+  margin-right: auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+}
+
+.search {
+  margin: 1.5rem auto 1.5rem auto;
+}
+
+.article-container {
+  border: 1px solid;
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin: 0 auto 0 auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+  margin-bottom: 1rem;
+  width: 608px;
+}
+
+.article {
+  margin-bottom: 1rem;
+}
+
+.article-photo {
+  /* 1. 絕對不要比你的爸爸還要寬 */
+  width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+  height: auto; /* 高度自動計算，保持比例，才不會變形 */
+  display: block; /* 消除圖片下方可能出現的小縫隙 */
+  margin: 0 auto;
+  gap: 2rem;
+  height: 300px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+  /* 3. 🔥 魔法：確保照片不被壓扁 */
+  /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+  object-fit: cover;
+}
+
+.article-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 1rem 0.5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.article-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0rem 1rem 1.25rem 1rem;
+  font-size: 1rem;
+}
+
+.art-maker {
+  display: flex;
+  margin: 0rem 1rem 1rem 1rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.maker-photo {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 3rem;
+}
+
+.maker-name {
+  font-style: 1.25rem;
+}
+
+.blog-container {
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+}
+
+.article {
+  border: 1px solid var(--border);
+  border-radius: 2.5rem;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.article:hover {
+  background-color: var(--bg-light);
+}
+
+.article-title {
+  color: var(--text);
+  font-weight: 500px;
+}
+
+.article-subtitle {
+  color: var(--text);
+  font-weight: 400px;
+}
+
+.maker-photo {
+  border-radius: var(--radius-l);
+}
+
+.maker-name {
+  color: var(--text-muted);
 }/*# sourceMappingURL=main.css.map */

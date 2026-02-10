@@ -10,55 +10,7 @@
   </head>
 
   <body>
-    <header class="header">
-      <div class="header-l">
-        <a href="/" class="logo">
-          <img
-            src="{% static 'image\新增標題 (2).png' %}"
-            class="logo-desktop"
-            alt="FisshShop Desktop"
-          />
-
-          <img
-            src="{% static 'image\未命名設計 (1).png' %}"
-            class="logo-mobile"
-            alt="FisshShop Mobile"
-          />
-        </a>
-      </div>
-
-      <div class="header-m">
-        <ul>
-          <li class="navber-list"><a href="/">首頁</a></li>
-          <li class="navber-list"><a href="/">賣場</a></li>
-          <li class="navber-list"><a href="/">部落格</a></li>
-          <li class="navber-list"><a href="/">控制台</a></li>
-        </ul>
-      </div>
-
-      <div class="header-r">
-        <div class="login-btn-case">
-          <!-- 漢堡選單 傳   送訊號（權力轉移）靠的是 id 和 for 的綁定 class跟id一樣純屬好玩-->
-          <input type="checkbox" id="menu-control" class="menu-control" />
-          <label for="menu-control" class="hb-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-          </label>
-          <!-- 漢堡選單 -->
-          <ul>
-            <li class="navber-list"><a href="/">首頁</a></li>
-            <li class="navber-list"><a href="/">賣場</a></li>
-            <li class="navber-list"><a href="/">部落格</a></li>
-            <li class="navber-list"><a href="/">控制台</a></li>
-            <li class="navber-list"><a href="/">登入</a></li>
-            <li></li>
-          </ul>
-
-          <a href="/" class="login-btn">登入</a>
-        </div>
-      </div>
-    </header>
+    {% include 'header.html' %}
 
     <div class="hero">
       <div>
@@ -157,12 +109,12 @@
     </div>
 
     <div class="section-s">
-      <div class="section">
+      <a class="section" href="{% url 'blog' %}">
         <h2 class="section-title">近期最熱門的魚友</h2>
         <p class="section-subtitle">看看那些令人驚嘆的水族造景...</p>
 
         <div class="hot-article-s">
-          <div class="hot-article">
+          <div class="hot-article" href="/">
             <img
               src="{% static 'image/pexels-ben-phillips-3129726-4781925.jpg' %}"
               alt="hot-article-1"
@@ -171,14 +123,15 @@
             <p class="hot-article-subtitle">原來你點進來了阿？ 那留個言吧</p>
           </div>
         </div>
-      </div>
+      </a>
 
       <div class="section">
         <h2 class="section-title">為魚缸增加點色彩</h2>
         <p class="section-subtitle">下面是我們的超級賣場</p>
 
         <div class="hot-creature-s">
-          <!-- <div class="hot-creature">
+          <!-- 測試區域 ----------------------------------------------------------------------------------------->
+          <a class="hot-creature" href="/">
             <img
               src="{% static 'image\pexels-sliceisop-1894349.jpg' %}"
               alt="hot-article-1"
@@ -186,10 +139,10 @@
 
             <h3 class="hot-creature-title">考德氏天竺鯛</h3>
             <p class="hot-creature-subtitle">NT$ 150</p>
-            <p class="hot-creature-city"> 新竹縣</p>
-          </div>
+            <p class="hot-creature-city">新竹縣</p>
+          </a>
 
-          <div class="hot-creature">
+          <a class="hot-creature" href="/">
             <img
               src="{% static 'image\pexels-lone-jensen-431642-2156311.jpg' %}"
               alt="hot-article-1"
@@ -197,12 +150,13 @@
 
             <h3 class="hot-creature-title">七彩神仙魚</h3>
             <p class="hot-creature-subtitle">NT$ 600</p>
-            <p class="hot-creature-city"> 新竹縣</p>
-          </div> -->
+            <p class="hot-creature-city">新竹縣</p>
+          </a>
+          <!-- 活體測試區域 ------------------------------------------------------------------------------------>
 
           {% for item in items %}
 
-          <div class="hot-creature">
+          <a class="hot-creature" href="/">
             {% if item.image %}
             <img src="{{ item.image.url }}" alt="{{ item.name }}" />
             {% else %}
@@ -226,7 +180,7 @@
             <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
 
             <span class="hot-creature-city">{{ item.get_city_display }}</span>
-          </div>
+          </a>
 
           {% endfor %}
         </div>

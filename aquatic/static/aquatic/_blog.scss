@@ -1,0 +1,179 @@
+@charset "UTF-8";
+// 讓中文註解可以正確編碼
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.blog-container {
+  /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+  max-width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  width: 41.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin-left: auto;
+  margin-right: auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+}
+
+//到時候有文章
+// 我用for迴圈拉資料
+// 框框自己會無限長
+
+.search {
+  margin: 1.5rem auto 1.5rem auto;
+}
+
+.article-container {
+  border: 1px solid;
+
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin: 0 auto 0 auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+  margin-bottom: 1rem;
+  width: 608px;
+}
+
+.article {
+    margin-bottom: 1rem;
+}
+
+.article-photo {
+  /* 1. 絕對不要比你的爸爸還要寬 */
+
+  width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+  height: auto; /* 高度自動計算，保持比例，才不會變形 */
+  display: block; /* 消除圖片下方可能出現的小縫隙 */
+
+  margin: 0 auto;
+  gap: 2rem;
+  height: 300px;
+  //   max-height: 600px;
+  object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
+  margin-bottom: 0.5rem;
+
+  /* 3. 🔥 魔法：確保照片不被壓扁 */
+  /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+  object-fit: cover;
+}
+
+.article-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 1rem 0.5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.article-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0rem 1rem 1.25rem 1rem;
+  font-size: 1rem;
+}
+
+.art-maker {
+  display: flex;
+  margin: 0rem 1rem 1rem 1rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.maker-photo {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 3rem;
+}
+
+.maker-name {
+  font-style: 1.25rem;
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// 很會裝嘛？--------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+.blog-container {
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+}
+
+.article {
+  border: 1px solid var(--border);
+  border-radius: 2.5rem;
+  overflow: hidden;
+
+  transition: var(--transition);
+
+  &:hover {
+    background-color: var(--bg-light);
+  }
+}
+
+.article-title {
+  color: var(--text);
+  font-weight: 500px;
+}
+
+.article-subtitle {
+  color: var(--text);
+  font-weight: 400px;
+}
+
+.maker-photo {
+  border-radius: var(--radius-l);
+}
+
+.maker-name {
+  color: var(--text-muted);
+}

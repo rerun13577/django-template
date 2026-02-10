@@ -1,31 +1,35 @@
 @charset "UTF-8";
 // 讓中文註解可以正確編碼
 
-:root {
-}
+// :root {
+// }
 
-body {
-  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
-}
+// body {
+//   margin: 0; /* 徹底消除那 預設 8px 的白邊 */
+// }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* 確保寬度計算包含 padding */
-}
-// 重制瀏覽器預設設定
 
-a {
-  text-decoration: none; /* 移除底線 */
-  color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
-}
 
-.header {
-  display: flex;
+// a {
+//   text-decoration: none; /* 移除底線 */
+//   color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
+// }
+
+// 這裡定義的是頂部導覽列的顏色
+header {
+    background-color: var(--bg); // 純白色的 Header
+    
+    // 如果你希望 Header 固定在上面
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+      display: flex;
   align-items: center;
   padding: 0 5%; /* 給 header 一些左右內邊距 */
   height: 5rem; /* 給它一個高度 */
 }
+
 
 // .header-l {
 //   flex: 1;

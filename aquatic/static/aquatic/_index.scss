@@ -5,70 +5,6 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-:root {
-  --bg-dark: oklch(0.1 0 128); /*背景*/
-  --bg: oklch(0.15 0 128); /*卡片*/
-  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
-  --text: oklch(0.96 0 128); /*標題*/
-  --text-muted: oklch(0.76 0 128); /*備註*/
-  --highlight: oklch(0.5 0 128); /*top邊框  */
-  --border: oklch(0.4 0 128); /*邊框     */
-  --border-muted: oklch(0.3 0 128); /*邊框     */
-  --primary: oklch(0.76 0.1 128); /*主色調*/
-  --secondary: oklch(0.76 0.1 308); /*次色調*/
-  --danger: oklch(0.7 0.05 30);
-  --warning: oklch(0.7 0.05 100);
-  --success: oklch(0.7 0.05 160);
-  --info: oklch(0.7 0.05 260);
-
-  --green-gradient: linear-gradient(
-    to bottom,
-    oklch(0.8199 0.1381 140.2),
-    oklch(0.911 0.0963 140)
-  );
-
-  --radius-l: 1.5rem;
-  --radius-m: 1rem;
-  --radius-s: 0.5rem;
-
-  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
-
-  --shadow-s:
-    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
-    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
-  --shadow-m:
-    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
-    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
-  --shadow-l:
-    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
-    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
-
-  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
-  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-
-  /* 也可以順便把字重定義好，開發更爽 */
-  --fw-bold: 900;
-  --fw-regular: 400;
-  --fw-light: 300;
-}
-
-body {
-  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
-  /* 只要寫在 body，裡面所有的 div, p, h1~h6, span 都會跟著變 */
-  letter-spacing: 0.02em; // 微調字距，讓每個字都有呼吸空間
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* 確保寬度計算包含 padding */
-  font-family: var(--ff-primary);
-} // 重制瀏覽器預設設定
-
-a {
-  text-decoration: none; /* 移除底線 */
-  color: inherit; /* 繼承父層的顏色，或是直接寫死比如 #333 */
-}
 
 .hero {
   width: 100%;
@@ -223,6 +159,7 @@ a {
   flex: 0 0 350px; // 電腦版寬度，不准縮小
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
+      scroll-snap-align: center;
 }
 
 /* _index.scss */
@@ -264,6 +201,7 @@ a {
   padding: 1rem 0 1rem 1rem; // 留空間給卡片陰影，才不會被切掉
   flex: 0 0 350px; // 電腦版寬度，不准縮小
   min-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
+  scroll-behavior: smooth; // 讓按鈕點擊時也是平滑的
 }
 
 .hot-creature {
@@ -272,6 +210,8 @@ a {
   flex: 0 0 350px; // 電腦版寬度，不准縮小
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
+  
+    scroll-snap-align: center;
 }
 
 .hot-creature {
@@ -462,6 +402,9 @@ p {
 // 下面所是傳說中的rwd--------------------------------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 @media screen and (max-width: 785px) {
   .hero {
     background-image: url("../image/pexels-chevanon-325044.jpg");
@@ -534,6 +477,7 @@ p {
   }
   .hot-article {
     flex: 0 0 326px; // 手機版寬度，不准縮小
+    scroll-snap-align: center;
   }
   .hot-creature-s {
     display: flex;
@@ -553,6 +497,7 @@ p {
 
     overflow-y: hidden;
     touch-action: pan-x pan-y;
+    scroll-behavior: smooth; // 讓按鈕點擊時也是平滑的
 
     // 隱藏捲軸 (讓畫面更乾淨)
     &::-webkit-scrollbar {

@@ -1,0 +1,63 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FisshShop | 水族交易平台</title>
+
+    <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+  </head>
+  <body>
+    {% include 'header.html' %}
+
+    <div class="blog-container">
+      <form action="#" method="get" class="search">
+        <input
+          type="search"
+          name="q"
+          placeholder="搜尋魚種、水草..."
+          aria-label="搜尋"
+          class="input-text"
+        />
+
+        <button type="submit" class="Search-btn">搜尋</button>
+        <!-- 圖片直接塞就好 -->
+      </form>
+      <!-- form會把裡面的輸入資料都打包 -->
+
+      <!-- 文章內容 -->
+      <div class="article-container">
+        <div class="article-s">
+          <div class="article">
+            <img src="https://picsum.photos/600/600" alt="文章照片"  class="article-photo"/>
+            <h3 class="article-title">我是第一篇貼文</h3>
+            <p class="article-subtitle">原來你點進來了阿？ 那留個言吧</p>
+
+
+            <div class="art-maker">
+              <img src="https://picsum.photos/50/50" alt="作者" class ='maker-photo' />
+
+              <span class="maker-name"> 豬大哥 </span>
+              <!-- span不換行 alt 破圖時候代替文字--->
+            </div>
+          </div>
+
+                    <div class="article">
+            <img src="https://picsum.photos/600/600" alt="文章照片"  class="article-photo"/>
+            <h3 class="article-title">你~~~甚至滑下來了</h3>
+            <p class="article-subtitle">我很抱歉 但是你是深海魚</p>
+
+
+            <div class="art-maker">
+              <img src="https://picsum.photos/50/50" alt="作者" class ='maker-photo' />
+
+              <span class="maker-name"> 豬大哥 </span>
+              <!-- span不換行 alt 破圖時候代替文字--->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

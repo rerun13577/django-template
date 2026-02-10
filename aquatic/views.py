@@ -14,3 +14,9 @@ def home(request):
     # 這裡寫 'index.html'，首頁就是 index.html
     # 如果你改成 'dashboard.html'，首頁就會瞬間變成 dashboard.html
     return render(request, 'index.html')
+
+def blog(request):
+    # 這裡就是負責顯示 blog.html
+    return render(request, 'blog.html')
+
+
