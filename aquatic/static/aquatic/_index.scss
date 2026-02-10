@@ -471,7 +471,7 @@ p {
     max-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
 
     overflow-y: hidden;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
 
     // 隱藏捲軸 (讓畫面更乾淨)
     &::-webkit-scrollbar {
@@ -498,7 +498,7 @@ p {
     max-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
 
     overflow-y: hidden;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
 
     // 隱藏捲軸 (讓畫面更乾淨)
     &::-webkit-scrollbar {

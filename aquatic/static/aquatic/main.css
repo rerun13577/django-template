@@ -582,7 +582,7 @@ p {
     min-height: 300px;
     max-height: 480px;
     overflow-y: hidden;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
   }
   .hot-article-s::-webkit-scrollbar {
     display: none;
@@ -602,7 +602,7 @@ p {
     min-height: 300px;
     max-height: 480px;
     overflow-y: hidden;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
   }
   .hot-creature-s::-webkit-scrollbar {
     display: none;
