@@ -21,6 +21,12 @@
   --success: oklch(0.7 0.05 160);
   --info: oklch(0.7 0.05 260);
 
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+
   --radius-l: 1.5rem;
   --radius-m: 1rem;
   --radius-s: 0.5rem;
@@ -178,6 +184,16 @@ a {
   font-size: 2.25rem;
   padding: 0rem 1rem 0.25rem 1rem; // 上下 左右
   margin-bottom: 0.25rem; // 與副標題的距離
+
+  /* 1. 先把漸層設為背景 */
+  background: var(--green-gradient); /* 注意變數名稱要對喔！ */
+
+  /* 2. 把背景「剪」成文字的形狀 */
+  background-clip: text;
+  -webkit-background-clip: text; /* 為了相容 Chrome/Safari 必加 */
+
+  /* 3. 把文字本身變透明，才看得到下面的漸層 */
+  color: transparent;
 }
 
 .section-subtitle {
@@ -270,17 +286,40 @@ a {
 .hot-creature-title {
   display: flex;
   flex-wrap: wrap;
-  font-size: 1rem;
   margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
   width: 100%;
+
+  font-size: 1.5rem;
 }
 
 .hot-creature-subtitle {
   display: flex;
   flex-wrap: wrap;
-  font-size: 0.875rem;
   margin-left: 1rem;
   width: 100%;
+
+  font-size: 1.25rem;
+}
+
+.hot-creature-city {
+  /* 原本的 display: flex 保留，這樣你可以控制裡面的對齊 */
+  display: flex;
+  /* ★ 關鍵：加上這行！ */
+  width: fit-content;
+  /* ★ 關鍵：這行確保它會自動跑到最右邊 */
+  margin-left: auto;
+
+  /* 其他保留 */
+  align-items: center;
+  background-color: oklch(0.7 0.05 230);
+  border-radius: 1rem;
+  padding: 0.25rem 0.85rem;
+  color: var(--text-muted);
+  /* 確保文字垂直置中 (因為你有用 flex) */
+  align-items: center;
+  margin-right: 1rem;
+  margin-top: 3.5rem;
+
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -389,9 +428,18 @@ p {
   &:hover {
     background-color: var(--bg-light);
     border-color: var(--border);
+    transition: var(--transition);
+      box-shadow: var(--shadow-l);
 
     .hot-creature-subtitle {
       color: var(--secondary);
+      transition: var(--transition);
+    }
+    // 城市發亮
+    .hot-creature-city {
+      transition: var(--transition);
+        box-shadow: var(--shadow-l);
+        border-top: white;
     }
   }
 }
@@ -401,6 +449,12 @@ p {
   font-weight: var(--fw-bold);
   color: var(--primary);
   transition: var(--transition);
+}
+
+.hot-creature-city {
+  border-radius: var(--radius-m);
+  color: var(--text);
+
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------

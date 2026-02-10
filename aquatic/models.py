@@ -24,9 +24,9 @@ def compress_image(uploaded_image, threshold_kb=500):
     return InMemoryUploadedFile(
         output, 'ImageField', 
         f"{uploaded_image.name.split('.')[0]}.jpg", 
-        'image/jpeg', sys.getsizeof(output), None
+        'image/jpeg', output.getbuffer().nbytes, None
     )
-
+# sys.getsizeof(output) 壓縮照片有錯在換回來
 # --- 資料庫模型放在下面 ---
 class AquaticLife(models.Model):
     CITY_CHOICES = [
