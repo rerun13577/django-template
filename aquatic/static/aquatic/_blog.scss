@@ -159,7 +159,7 @@ a {
 .article-title {
   display: flex;
   flex-wrap: wrap;
-  margin: 0rem 1rem 2.5rem 1rem;
+  margin: 0.25rem 1rem 2.5rem 1rem;
   font-size: 1.5rem;
   /* 🔥 關鍵指令：強迫換行 */
   word-break: break-all;
@@ -351,9 +351,13 @@ a {
   color: var(--text);
   transition: var(--transition);
 
-  &:hover {
-    svg {
+  /* 🔥 關鍵：只有在支援 hover 的裝置（如電腦）才執行 */
+  @media (hover: hover) {
+    &:hover:not(.liked) {
       color: #ff4b4b;
+      svg {
+        stroke: #ff4b4b;
+      }
     }
   }
 
