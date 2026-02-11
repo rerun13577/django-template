@@ -14,12 +14,10 @@
     <div class="blog-container">
       <form action="#" method="get" class="search">
         <select name="category" class="search-select">
-
           <option value="all" class="selection">全部</option>
           <option value="fish" class="selection">蝦魚板</option>
           <option value="layout" class="selection">造景版</option>
           <option value="qa" class="selection">解惑版</option>
-          
         </select>
 
         <input
@@ -30,7 +28,9 @@
           class="input-text"
         />
 
-        <button type="submit" class="search-btn">搜尋</button>
+        <button type="submit" class="search-btn">
+          {% include "icons/search.html" %}
+        </button>
         <!-- 圖片直接塞就好 -->
       </form>
       <!-- form會把裡面的輸入資料都打包 -->
@@ -45,18 +45,37 @@
               alt="文章照片"
               class="article-photo"
             />
-            <h3 class="article-title">我是第一篇貼文</h3>
-            <p class="article-subtitle">原來你點進來了阿？ 那留個言吧</p>
-
-            <div class="art-maker">
+            <div class="content">
               <img
                 src="https://picsum.photos/50/50"
                 alt="作者"
                 class="maker-photo"
               />
 
-              <span class="maker-name"> 豬大哥 </span>
-              <!-- span不換行 alt 破圖時候代替文字--->
+              <div class="content-without-maker-photo">
+                <a href="/" class="maker-name">豬大哥</a>
+                <!-- span不換行 alt 破圖時候代替文字--->
+                <h3 class="article-title">
+                  你你好你好你好你好你好你好你好你好你好你好
+                </h3>
+                <!-- <p class="article-subtitle-1">我很抱歉 但是你是深海魚</p> -->
+
+                <div class="action-s">
+                  <button class="action-btn like-btn" aria-label="按讚">
+                    {% include "icons/heart.html" %}
+                    <span class="action-num">128</span>
+                  </button>
+
+                  <button class="action-btn" aria-label="留言">
+                    {% include "icons/comment.html" %}
+                    <span class="action-num">125</span>
+                  </button>
+
+                  <button class="action-btn" aria-label="分享">
+                    {% include "icons/share.html" %}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -66,22 +85,52 @@
               alt="文章照片"
               class="article-photo"
             />
-            <h3 class="article-title">你~~~甚至滑下來了</h3>
-            <p class="article-subtitle">我很抱歉 但是你是深海魚</p>
-
-            <div class="art-maker">
+            <div class="content">
               <img
                 src="https://picsum.photos/50/50"
                 alt="作者"
                 class="maker-photo"
               />
 
-              <span class="maker-name"> 豬大哥 </span>
-              <!-- span不換行 alt 破圖時候代替文字--->
+              <div class="content-without-maker-photo">
+                <a href="/" class="maker-name">豬大哥</a>
+                <!-- span不換行 alt 破圖時候代替文字--->
+                <h3 class="article-title">
+                  你你好你好你好你好你好你好你好你好你好你好
+                </h3>
+                <!-- <p class="article-subtitle-1">我很抱歉 但是你是深海魚</p> -->
+
+                <div class="action-s">
+                  <button class="action-btn like-btn" aria-label="按讚">
+                    {% include "icons/heart.html" %}
+                    <span class="action-num">1288888</span>
+                  </button>
+
+                  <button class="action-btn" aria-label="留言">
+                    {% include "icons/comment.html" %}
+                    <span class="action-num">125</span>
+                  </button>
+
+                  <button class="action-btn" aria-label="分享">
+                    {% include "icons/share.html" %}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script>
+      const likeButtons = document.querySelectorAll(".like-btn");
+
+      likeButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          this.classList.toggle("liked"); // 切換 class
+          console.log("愛心切換成功！"); // 可以在 F12 console 看到這行字
+        });
+      });
+    </script>
   </body>
 </html>
