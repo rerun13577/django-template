@@ -20,3 +20,5 @@ def blog(request):
     return render(request, 'blog.html')
 
 
+def login_view(request): # 改成這個名字
+    return render(request, 'login.html')

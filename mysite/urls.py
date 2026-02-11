@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'), # 改成這樣，它才會去執行你撈資料庫的邏輯
     path('blog/', views.blog, name='blog'),
+    path('login/', views.login_view, name='login'),
     
 
     # 這是你的安全實驗室：
