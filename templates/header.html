@@ -40,11 +40,11 @@
             <li class="navber-list"><a href="/">賣場</a></li>
             <li class="navber-list"><a href="{% url 'blog' %}">部落格</a></li>
             <li class="navber-list"><a href="/">控制台</a></li>
-            <li class="navber-list"><a href="/">登入</a></li>
+            <li class="navber-list"><a href="{% url 'login' %}">登入</a></li>
             <li></li>
           </ul>
 
-          <a href="/" class="login-btn">登入</a>
+          <a href="{% url 'login' %}" class="login-btn">登入</a>
         </div>
       </div>
     </header>
