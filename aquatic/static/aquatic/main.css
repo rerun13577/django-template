@@ -19,6 +19,7 @@ body {
   --bg-dark: oklch(0.1 0 128); /*背景*/
   --bg: oklch(0.15 0 128); /*卡片*/
   --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light:oklch(0.252 0 0);
   --text: oklch(0.96 0 128); /*標題*/
   --text-muted: oklch(0.76 0 128); /*備註*/
   --highlight: oklch(0.5 0 128); /*top邊框  */
@@ -662,6 +663,7 @@ p {
   --bg-dark: oklch(0.1 0 128); /*背景*/
   --bg: oklch(0.15 0 128); /*卡片*/
   --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
   --text: oklch(0.96 0 128); /*標題*/
   --text-muted: oklch(0.76 0 128); /*備註*/
   --highlight: oklch(0.5 0 128); /*top邊框  */
@@ -724,11 +726,43 @@ p {
   margin: 0 auto 0 auto;
   /* 或者簡寫成 margin: 0 auto; 也可以 */
   margin-bottom: 1rem;
-  width: 608px;
+  width: 38rem;
 }
 
-.article {
-  margin-bottom: 1rem;
+.search {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  width: 38rem;
+  height: auto;
+  border: 1px solid var(--border);
+}
+
+.search-select {
+  width: 6rem;
+  height: 2.5rem;
+  text-align: center; /* 部分瀏覽器支援 */
+  padding-left: 1rem; /* 🔥 手動校正：讓文字往右推，看起來會更像在中間 */
+  padding-right: 0.5rem;
+  cursor: pointer;
+}
+
+.selection {
+  font-size: 1rem;
+}
+
+.input-text {
+  width: 26rem;
+  height: 2.5rem;
+}
+
+.search-btn {
+  width: 6rem;
+  height: 2.5rem;
+}
+
+.article-s {
+  margin-bottom: 0.5rem;
 }
 
 .article-photo {
@@ -737,7 +771,6 @@ p {
   height: auto; /* 高度自動計算，保持比例，才不會變形 */
   display: block; /* 消除圖片下方可能出現的小縫隙 */
   margin: 0 auto;
-  gap: 2rem;
   height: 300px;
   -o-object-fit: cover;
      object-fit: cover;
@@ -781,11 +814,85 @@ p {
 .blog-container {
   border: 1px solid var(--border);
   border-radius: 3rem;
+  background-color: var(--bg-dark);
+}
+
+.search {
+  background-color: var(--bg-light);
+  color: var(--primary);
+  border-radius: 1.5rem;
+  border: var(--bg-light);
+}
+
+.search-select {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  background-color: var(--bg-light);
+  outline: none;
+  border: none;
+  border-radius: 1.5rem 0 0 1.5rem;
+  color: var(--text-muted);
+}
+.search-select:focus {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+
+.selection {
+  background-color: var(--bg-light);
+  border-radius: 1.5rem;
+}
+
+.input-text {
+  background-color: var(--bg-light);
+  color: var(--text-muted);
+  outline: none;
+  border: none;
+  padding: 0.8rem 1.2rem; /* 增加左邊 padding，字才不會黏住 */
+  /* 🔥 點選時的顏色 */
+  /* 🔥 把 :active 改成 :focus */
+  /* 針對 Chrome, Safari, Edge 的叉叉 */
+}
+.input-text:focus {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+.input-text::-webkit-search-cancel-button {
+  /* 🔥 先讓它變明顯 (預設可能很淡) */
+  -webkit-appearance: none;
+  height: 1rem;
+  width: 1rem;
+  /* 🔥 核心技巧：用濾鏡改顏色 */
+  /* 下面這行會把原本的灰色變成白色，你可以調整 brightness */
+  filter: brightness(0) invert(1);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239FBD78' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>");
+  background-size: contain;
+  cursor: pointer;
+}
+
+.search-btn {
+  outline: none;
+  border: none;
+  background-color: var(--bg-light);
+  border-radius: 0rem 1.5rem 1.5rem 0rem;
+  color: var(--text-muted);
+}
+.search-btn:hover {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+
+.article-s {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .article {
-  border: 1px solid var(--border);
-  border-radius: 2.5rem;
   overflow: hidden;
   transition: var(--transition);
 }
@@ -809,4 +916,92 @@ p {
 
 .maker-name {
   color: var(--text-muted);
+}
+
+@media screen and (max-width: 768px) {
+  .blog-container {
+    /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+    max-width: 100%;
+    display: flex;
+    width: 41.5rem;
+    border: none;
+  }
+  .article-container {
+    border: 1px solid;
+    /* 🔥 關鍵：讓框框自己置中 */
+    margin: 0 auto 0 auto;
+    width: 95%;
+  }
+  .search {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 95%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+  .search-select {
+    width: 6rem;
+    height: 2.5rem;
+    text-align: center; /* 部分瀏覽器支援 */
+    padding-left: 1rem; /* 🔥 手動校正：讓文字往右推，看起來會更像在中間 */
+    padding-right: 0.5rem;
+    cursor: pointer;
+  }
+  .selection {
+    font-size: 3rem;
+  }
+  .input-text {
+    flex: 1;
+    height: 2.5rem;
+  }
+  .search-btn {
+    width: 3rem;
+    height: 2.5rem;
+  }
+  .article-s {
+    margin-bottom: 0.5rem;
+  }
+  .article {
+    height: 700px;
+  }
+  .article-photo {
+    /* 1. 絕對不要比你的爸爸還要寬 */
+    width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+    height: auto; /* 高度自動計算，保持比例，才不會變形 */
+    display: block; /* 消除圖片下方可能出現的小縫隙 */
+    margin: 0 auto;
+    height: 300px;
+    -o-object-fit: cover;
+       object-fit: cover;
+    margin-bottom: 0.5rem;
+    /* 3. 🔥 魔法：確保照片不被壓扁 */
+    /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+    object-fit: cover;
+  }
+  .article-title {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1rem 1rem 0.5rem 1rem;
+    font-size: 1.5rem;
+  }
+  .article-subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0rem 1rem 1.25rem 1rem;
+    font-size: 1rem;
+  }
+  .art-maker {
+    display: flex;
+    margin: 0rem 1rem 1rem 1rem;
+    align-items: center;
+    gap: 1rem;
+  }
+  .maker-photo {
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: 3rem;
+  }
+  .maker-name {
+    font-style: 1rem;
+  }
 }/*# sourceMappingURL=main.css.map */
