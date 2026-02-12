@@ -58,12 +58,7 @@ INSTALLED_APPS = [
     'aquatic',
 ]
 
-try:
-    from django.contrib.sites.models import Site
-    # 這行會自動抓資料庫裡現有的第一個 Site ID
-    SITE_ID = Site.objects.first().id if Site.objects.exists() else 1
-except:
-    SITE_ID = 1
+SITE_ID = 2
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
