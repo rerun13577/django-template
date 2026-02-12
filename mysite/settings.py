@@ -58,7 +58,12 @@ INSTALLED_APPS = [
     'aquatic',
 ]
 
-SITE_ID = 2
+try:
+    from django.contrib.sites.models import Site
+    # 這行會自動抓資料庫裡現有的第一個 Site ID
+    SITE_ID = Site.objects.first().id if Site.objects.exists() else 1
+except:
+    SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,7 +107,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'zeabur',
         'USER': 'root',
-        'PASSWORD': 'N9C3Dg628xXWVelG1rk0zS7Qv4PtZ5mq',
+        'PASSWORD': os.environ.get('MYSQLPASSWORD'),
         'HOST': '43.134.52.181',
         'PORT': '31207',
     }
