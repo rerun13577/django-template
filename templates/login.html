@@ -1,5 +1,5 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %} {% load socialaccount %}
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,7 +8,50 @@
 
     <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
   </head>
-<body>
-    
-</body>
+  <body class="bg-pic">
+    <div class="login-container">
+      <form method="post">
+        <!-- 產生一組獨一無二的數字且具有時效性 -->
+        {% csrf_token %}
+        <div>
+          <h2 class="login-tilte">登入 FisshShop</h2>
+        </div>
+
+        <div class="input-group">
+          <label for="username"></label>
+          <input
+            type="text"
+            id="username"
+            class="input-data"
+            placeholder="請輸入Email"
+            name="username"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="password"></label>
+          <input
+            type="password"
+            id="password"
+            class="input-data"
+            placeholder="請輸入密碼"
+            name="password"
+            required
+          />
+        </div>
+
+        <div class="forget-btn">
+          <a href="#">我知道拉 但是現在我只能用google登入 拍謝</a>
+        </div>
+        <!-- 上面是原本忘記密碼的位子 -->
+
+        <a href="{% provider_login_url 'google' %}" class="google-btn">
+          使用 Google 登入
+        </a>
+
+        <button type="submit" class="enter-btn">進入魚缸</button>
+      </form>
+    </div>
+  </body>
 </html>

@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
-import os
 import pymysql
 pymysql.install_as_MySQLdb()
+pymysql.version_info = (2, 2, 8, "final", 0) # 強行偽造一個合格的版本號
+from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,8 +48,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites', 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'aquatic',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -150,3 +163,8 @@ else:
     # 如果在你電腦，存到專案資料夾下的 media
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # fuckyou
+
+
+LOGIN_REDIRECT_URL = '/'      # 登入成功後跳轉到首頁
+LOGOUT_REDIRECT_URL = '/'     # 登出後跳轉到首頁
+SOCIALACCOUNT_LOGIN_ON_GET = True # 取消繼續頁面

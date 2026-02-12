@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 from aquatic import views # 確保有這行
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +31,7 @@ urlpatterns = [
     # 這是你的安全實驗室：
     # 只要在瀏覽器打 127.0.0.1:8000/lab 就能看到新模板
     path('lab/', TemplateView.as_view(template_name='index.html')),
+    path('accounts/', include('allauth.urls')),
 
     
 
