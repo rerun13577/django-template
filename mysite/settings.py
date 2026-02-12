@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'aquatic',
 ]
 
-SITE_ID = 3
+SITE_ID = 2
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
