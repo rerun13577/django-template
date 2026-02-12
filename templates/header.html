@@ -1,50 +1,65 @@
-    {% load static %}
-    <header class="header">
-      <div class="header-l">
-        <a href="/" class="logo">
-          <img
-            src="{% static 'image\新增標題 (2).png' %}"
-            class="logo-desktop"
-            alt="FisshShop Desktop"
-          />
+{% load static %}
+<header class="header">
+  <div class="header-l">
+    <a href="/" class="logo">
+      <img
+        src="{% static 'image\新增標題 (2).png' %}"
+        class="logo-desktop"
+        alt="FisshShop Desktop"
+      />
 
-          <img
-            src="{% static 'image\未命名設計 (1).png' %}"
-            class="logo-mobile"
-            alt="FisshShop Mobile"
-          />
-        </a>
+      <img
+        src="{% static 'image\未命名設計 (1).png' %}"
+        class="logo-mobile"
+        alt="FisshShop Mobile"
+      />
+    </a>
+  </div>
+
+  <div class="header-m">
+    <ul>
+      <li class="navber-list"><a href="/">首頁</a></li>
+      <li class="navber-list"><a href="/">賣場</a></li>
+      <li class="navber-list"><a href="{% url 'blog' %}">部落格</a></li>
+      <li class="navber-list"><a href="/">控制台</a></li>
+    </ul>
+  </div>
+
+  <div class="header-r">
+    <div class="login-btn-case">
+      <!-- 漢堡選單 傳   送訊號（權力轉移）靠的是 id 和 for 的綁定 class跟id一樣純屬好玩-->
+      <input type="checkbox" id="menu-control" class="menu-control" />
+      <label for="menu-control" class="hb-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+      <!-- 漢堡選單 -->
+      <ul>
+        <li class="navber-list"><a href="/">首頁</a></li>
+        <li class="navber-list"><a href="/">賣場</a></li>
+        <li class="navber-list"><a href="{% url 'blog' %}">部落格</a></li>
+        <li class="navber-list"><a href="/">控制台</a></li>
+        <li class="navber-list"><a href="{% url 'login' %}">登入</a></li>
+        <li></li>
+      </ul>
+
+      {% if user.is_authenticated %}
+      <div class="user-profile">
+        {% if user.socialaccount_set.all.0.get_avatar_url %}
+        <img
+          src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
+          alt="avatar"
+          class="nav-avatar"
+        />
+        {% else %}
+        <div class="default-avatar">{{ user.username|slice:":1" }}</div>
+        {% endif %}
+        <span class="username">{{ user.username }}</span>
       </div>
-
-      <div class="header-m">
-        <ul>
-          <li class="navber-list"><a href="/">首頁</a></li>
-          <li class="navber-list"><a href="/">賣場</a></li>
-          <li class="navber-list"><a href="{% url 'blog' %}">部落格</a></li>
-          <li class="navber-list"><a href="/">控制台</a></li>
-        </ul>
-      </div>
-
-      <div class="header-r">
-        <div class="login-btn-case">
-          <!-- 漢堡選單 傳   送訊號（權力轉移）靠的是 id 和 for 的綁定 class跟id一樣純屬好玩-->
-          <input type="checkbox" id="menu-control" class="menu-control" />
-          <label for="menu-control" class="hb-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-          </label>
-          <!-- 漢堡選單 -->
-          <ul>
-            <li class="navber-list"><a href="/">首頁</a></li>
-            <li class="navber-list"><a href="/">賣場</a></li>
-            <li class="navber-list"><a href="{% url 'blog' %}">部落格</a></li>
-            <li class="navber-list"><a href="/">控制台</a></li>
-            <li class="navber-list"><a href="{% url 'login' %}">登入</a></li>
-            <li></li>
-          </ul>
-
-          <a href="{% url 'login' %}" class="login-btn">登入</a>
-        </div>
-      </div>
-    </header>
+      {% else %}
+      <a href="{% url 'login' %}" class="login-btn">登入</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
