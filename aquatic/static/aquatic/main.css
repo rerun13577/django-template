@@ -172,6 +172,11 @@ p {
   transition: var(--transition); /* 之後做動畫用 */
 }
 
+.user-photo {
+  border-radius: 6rem;
+  height: 3rem;
+}
+
 /* 漢堡圖示樣式 (三條線) */
 .hb-icon {
   display: none; /* 電腦版先隱藏 */

@@ -50,16 +50,18 @@
         <img
           src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
           alt="avatar"
-          class="nav-avatar"
+          class="user-photo"
         />
         {% else %}
-        <div class="default-avatar">{{ user.username|slice:":1" }}</div>
+        <div class="user-photo">{{ user.username|slice:":1" }}</div>
+        <!-- 切第一個字下來 -->
         {% endif %}
-        <span class="username">{{ user.username }}</span>
       </div>
       {% else %}
       <a href="{% url 'login' %}" class="login-btn">登入</a>
-      {% endif %}
+      {% endif %} 
+      
+
     </div>
   </div>
 </header>
