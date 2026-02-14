@@ -65,4 +65,28 @@
       {% endif %}
     </div>
   </div>
+
+  <script>
+    // 使用 DOMContentLoaded 確保 Header 載入後才執行 JS
+    document.addEventListener("DOMContentLoaded", () => {
+      const userTrigger = document.querySelector(".user-case");
+      const dropdownMenu = document.querySelector(".dropdown-menu");
+
+      // 只有在「已登入」且元素存在時才執行，避免在未登入頁面噴錯
+      if (userTrigger && dropdownMenu) {
+        // 點擊頭像區塊：切換選單
+        userTrigger.addEventListener("click", (event) => {
+          event.stopPropagation(); // 防止事件傳到 window 導致選單秒關
+          dropdownMenu.classList.toggle("show");
+        });
+
+        // 點擊網頁任何地方：關閉選單
+        window.addEventListener("click", () => {
+          if (dropdownMenu.classList.contains("show")) {
+            dropdownMenu.classList.remove("show");
+          }
+        });
+      }
+    });
+  </script>
 </header>
