@@ -1,6 +1,6 @@
 /* main.scss */
 /* 引入 Inter (300, 400, 700, 900) 與 思源黑體 (300, 400, 700, 900) */
-
+// 部署失敗的原因是 mysqlclient 這個套件在 Linux 環境安裝時，需要系統內建的編譯工具（如 gcc 和 libmariadb-dev），但 Zeabur 的預設環境沒有這些工具。
 // git add .;git commit -m "fix: add fuck6";git push
 // python manage.py runserver
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap");
