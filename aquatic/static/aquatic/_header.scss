@@ -128,19 +128,12 @@ header {
 .user-case {
   position: relative; /* 核心：讓內部的 absolute 有參考點 */
   display: flex;
-  flex: 1;
+  justify-content: flex-end;
   align-items: center;
   cursor: pointer;
 }
 
 .user-photo {
-  object-fit: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  transition: var(--transition);
-
   &:hover {
     border-color: var(--primary); /* 滑鼠移上去有個綠圈圈，很帥 */
   }
@@ -152,30 +145,32 @@ header {
   top: 110%; /* 出現在頭像下方 10% 的距離 */
   right: 0; /* 靠右對齊 */
 
-  // background-color: #1a1a1a;
-  // border: 1px solid #333;
-  // border-radius: 8px;
-  // min-width: 120px;
-  // z-index: 1000;      /* 確保它浮在鯨魚圖上面 */
-  // overflow: hidden;   /* 讓內部的 hover 效果不會超出圓角 */
-  // box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  min-width: 120px;
+  z-index: 1000; /* 確保它浮在鯨魚圖上面 */
+  overflow: hidden; /* 讓內部的 hover 效果不會超出圓角 */
+  box-shadow: var(--shadow-m);
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 0.5rem;
 
-  .show {
-    display: block;
+  &.show {
+    display: block; /* 強制顯示 */
+    border: 1px solid var(--border);
   }
 }
 
 .logout-btn {
   display: block;
   padding: 12px 16px;
-  color: #ff4d4d; /* 登出按鈕用紅色比較醒目 */
+  color: var(--text); /* 登出按鈕用紅色比較醒目 */
   text-decoration: none;
   font-size: 14px;
   transition: var(--transition);
 
   &:hover {
     background-color: var(--bg-light);
-    color: var(--danger);
+    color: #ff4444;
+    box-shadow: var(--shadow-m);
   }
 }
 
@@ -236,6 +231,9 @@ p {
 .user-photo {
   border-radius: 6rem;
   height: 3rem;
+}
+
+.dropdown-menu {
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------

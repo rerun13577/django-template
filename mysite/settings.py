@@ -58,7 +58,14 @@ INSTALLED_APPS = [
     'aquatic',
 ]
 
-SITE_ID = 2
+
+# 根據環境變數自動切換，本地沒設 ZEABUR 就會抓 ID 2
+# 1. 動態 SITE_ID
+if os.getenv('ZEABUR'):
+    SITE_ID = 4  # 雲端用 4
+else:
+    SITE_ID = 2  # 本地用 2
+# SITE_ID = 2
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,7 +109,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'zeabur',
         'USER': 'root',
-        'PASSWORD': os.environ.get('MYSQLPASSWORD'),
+        'PASSWORD': os.environ.get('MYSQLPASSWORD') or 'N9C3Dg628xXWVelG1rk0zS7Qv4PtZ5mq',
         'HOST': '43.134.52.181',
         'PORT': '31207',
     }
@@ -170,12 +177,13 @@ else:
 LOGIN_REDIRECT_URL = '/'      # 登入成功後跳轉到首頁
 LOGOUT_REDIRECT_URL = '/'     # 登出後跳轉到首頁
 SOCIALACCOUNT_LOGIN_ON_GET = True # 取消繼續頁面
+ACCOUNT_LOGOUT_ON_GET = True
 
 # 讓 Django 認得 Zeabur 的 HTTPS 加密
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# 強制 Google 登入套件使用 https 生成回調網址
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+# 如果在雲端用 https，本地用 http
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if os.getenv('ZEABUR') else 'http'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
