@@ -43,9 +43,8 @@
         <li class="navber-list"><a href="{% url 'login' %}">登入</a></li>
         <li></li>
       </ul>
-
       {% if user.is_authenticated %}
-      <div class="user-profile">
+      <div class="user-case">
         {% if user.socialaccount_set.all.0.get_avatar_url %}
         <img
           src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
@@ -56,12 +55,14 @@
         <div class="user-photo">{{ user.username|slice:":1" }}</div>
         <!-- 切第一個字下來 -->
         {% endif %}
+
+        <div class="dropdown-menu" id="dropdown-menu">
+          <a href="{% url 'account_logout' %}" class="logout-btn">登出</a>
+        </div>
       </div>
       {% else %}
       <a href="{% url 'login' %}" class="login-btn">登入</a>
-      {% endif %} 
-      
-
+      {% endif %}
     </div>
   </div>
 </header>
