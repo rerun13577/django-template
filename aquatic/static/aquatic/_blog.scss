@@ -82,6 +82,10 @@ a {
 }
 
 .article-photo {
+  // 他這樣不會擋到article的遮罩
+  position: relative;
+  z-index: 2;
+
   /* 1. 絕對不要比你的爸爸還要寬 */
 
   width: 100%; /* 🔥 關鍵：寬度佔滿 100% */

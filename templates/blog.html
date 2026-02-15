@@ -39,52 +39,13 @@
       <div class="article-container">
         <!-- 為了要修飾員角 -->
         <div class="article-s">
-          <div class="article">
-            <img
-              src="{% static 'image\pexels-syd-trgt-335495720-32507178.jpg' %}"
-              alt="文章照片"
-              class="article-photo"
-            />
 
-            <div class="content">
-              <img
-                src="https://picsum.photos/50/50"
-                alt="作者"
-                class="maker-photo"
-              />
-
-              <div class="content-without-maker-photo">
-                <a href="/" class="maker-name">豬大哥</a>
-                <!-- span不換行 alt 破圖時候代替文字--->
-                <h3 class="article-title">
-                  你你好你好你好你好你好你好你好你好你好你好
-                </h3>
-                <!-- <p class="article-subtitle-1">我很抱歉 但是你是深海魚</p> -->
-
-                <div class="action-s">
-                  <button class="action-btn like-btn" aria-label="按讚">
-                    {% include "icons/heart.html" %}
-                    <span class="action-num">128</span>
-                  </button>
-
-                  <button class="action-btn" aria-label="留言">
-                    {% include "icons/comment.html" %}
-                    <span class="action-num">125</span>
-                  </button>
-
-                  <button class="action-btn" aria-label="分享">
-                    {% include "icons/share.html" %}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- -------------------------- -->
           {% for post in posts %}
           <div class="article">
             <!-- a標籤做一個遮罩 可以把整個article遮起來 然後點讚變成更高層的z這樣就不會遮住 -->
-            <a href="{{ post.get_absolute_url }}" class="article-link"></a>
+            <a href="{{ post.get_absolute_url }}" class="article-link" ></a>
             <img
               src="{{ post.image.url }}"
               alt="{{ post.title }}"

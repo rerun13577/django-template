@@ -848,6 +848,8 @@ a {
 }
 
 .article-photo {
+  position: relative;
+  z-index: 2;
   /* 1. 絕對不要比你的爸爸還要寬 */
   width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
   height: auto; /* 高度自動計算，保持比例，才不會變形 */
