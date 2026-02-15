@@ -1,8 +1,6 @@
 @charset "UTF-8";
 // 讓中文註解可以正確編碼
 
-
-
 a {
   text-decoration: none; /* 移除底線 */
 } // 醜底線
@@ -352,11 +350,11 @@ a {
   }
 
   .article-container {
-    border: 1px solid;
-
     /* 🔥 關鍵：讓框框自己置中 */
     margin: 0 auto 0 auto;
-    width: 95%;
+    width: 100%;
+
+    border: none;
   }
 
   .search {
@@ -372,6 +370,7 @@ a {
     height: 2.5rem;
     text-align: center; /* 部分瀏覽器支援 */
     cursor: pointer;
+    font-size: 15px;
   }
 
   .selection {
@@ -381,6 +380,7 @@ a {
   .input-text {
     flex: 1;
     height: 2.5rem;
+    font-size: 15px;
   }
 
   .search-btn {
@@ -390,6 +390,10 @@ a {
 
   .article-s {
     margin-bottom: 0.5rem;
+    overflow: visible; /* 或者用 unset / auto */
+
+    border-radius: 0rem;
+    
   }
 
   .article {

@@ -253,7 +253,7 @@ p {
   width: 30px;
   height: 3px;
   background-color: var(--primary); /* 配合你 Logo 的綠色 */
-  margin: 4px 0;
+  margin: 3.8px 0;
   display: block;
   transition: var(--transition); /* 之後做動畫用 */
 }
@@ -312,24 +312,53 @@ p {
   .logo-mobile {
     display: block; /* 顯示手機版 */
   }
+  .user-photo {
+    display: none;
+  }
   /* 開 icon */
   .hb-icon {
     display: flex; /* 手機版顯示漢堡 */
+    justify-content: center; /* 關鍵：讓內容在容器內「上下置中」 */
+    align-items: center; /* 讓內容在容器內「左右置中」 */
   }
   /* 先關navber(含登入)，等點hb-icon後打開 */
   .header-r ul {
-    display: none; /* 手機版預設把選單藏起來 */
+    padding: 20px 0;
+    /* 基礎排版 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: absolute;
-    top: 70px; /* 根據你 header 的高度調整 */
+    top: 100%; /* 從 Header 底部開始出現 */
     left: 0;
     width: 100%;
     background-color: var(--bg);
-    flex-direction: column;
-    padding: 20px 0;
+    /* 動態效果設定 */
+    opacity: 0; /* 完全透明 */
+    visibility: hidden; /* 確保點不到隱藏的選單 */
+    transform: translateY(-20px); /* 向上偏移 20px，營造下滑感 */
+    transition: var(--transition); /* 關鍵：平滑過渡曲線 */
+    z-index: 100;
   }
-  /* 看看hb-icon有沒有被點？ */
-  .menu-control:checked ~ ul {
+  .navber-list-case {
     display: flex;
+    align-items: center; /* 關鍵：水平方向置中 */
+    padding: 0; /* 移除預設內距，避免置中偏移 */
+    margin: 0;
+    list-style: none; /* 移除黑點 */
+    width: 100%; /* 確保寬度撐滿，基準點才會對 */
+  }
+  #menu-control:checked ~ .navber-list-case {
+    opacity: 1; /* 變回不透明 */
+    visibility: visible; /* 變回可見並可點擊 */
+    transform: translateY(0); /* 回到原始位置 */
+  }
+}
+/* 只有當裝置支援「滑鼠懸停」功能時，裡面的樣式才會生效 */
+@media (hover: hover) {
+  .navber-list a:hover {
+    background-color: var(--bg-light);
+    box-shadow: var(--shadow-m);
   }
 }
 .hero {
@@ -1043,10 +1072,10 @@ a {
     border: none;
   }
   .article-container {
-    border: 1px solid;
     /* 🔥 關鍵：讓框框自己置中 */
     margin: 0 auto 0 auto;
-    width: 95%;
+    width: 100%;
+    border: none;
   }
   .search {
     display: flex;
@@ -1060,6 +1089,7 @@ a {
     height: 2.5rem;
     text-align: center; /* 部分瀏覽器支援 */
     cursor: pointer;
+    font-size: 15px;
   }
   .selection {
     font-size: 3rem;
@@ -1067,6 +1097,7 @@ a {
   .input-text {
     flex: 1;
     height: 2.5rem;
+    font-size: 15px;
   }
   .search-btn {
     width: 3rem;
@@ -1074,6 +1105,8 @@ a {
   }
   .article-s {
     margin-bottom: 0.5rem;
+    overflow: visible; /* 或者用 unset / auto */
+    border-radius: 0rem;
   }
   .article {
     max-width: 700px;
