@@ -53,7 +53,6 @@
                 class="maker-photo"
               />
 
-
               <div class="content-without-maker-photo">
                 <a href="/" class="maker-name">豬大哥</a>
                 <!-- span不換行 alt 破圖時候代替文字--->
@@ -81,10 +80,12 @@
             </div>
           </div>
 
+          <!-- -------------------------- -->
+          {% for post in posts %}
           <div class="article">
             <img
-              src="{% static 'image\pexels-efebeydersiniz-36101415.jpg' %}"
-              alt="文章照片"
+              src="{{ post.image.url }}"
+              alt="{{ post.title }}"
               class="article-photo"
             />
 
@@ -96,22 +97,19 @@
               />
 
               <div class="content-without-maker-photo">
-                <a href="/" class="maker-name">豬大哥</a>
-                <!-- span不換行 alt 破圖時候代替文字--->
-                <h3 class="article-title">
-                  你你好你好你好你好你好你好你好你好你好你好
-                </h3>
-                <!-- <p class="article-subtitle-1">我很抱歉 但是你是深海魚</p> -->
+                <a href="/" class="maker-name">{{ post.author.username }}</a>
+
+                <h3 class="article-title">{{ post.title }}</h3>
 
                 <div class="action-s">
                   <button class="action-btn like-btn" aria-label="按讚">
                     {% include "icons/heart.html" %}
-                    <span class="action-num">1288888</span>
+                    <span class="action-num">{{ post.like_count }}</span>
                   </button>
 
                   <button class="action-btn" aria-label="留言">
                     {% include "icons/comment.html" %}
-                    <span class="action-num">125</span>
+                    <span class="action-num">{{ post.comment_count }}</span>
                   </button>
 
                   <button class="action-btn" aria-label="分享">
@@ -121,6 +119,13 @@
               </div>
             </div>
           </div>
+
+          {% empty %}
+          <p style="color: white; text-align: center">
+            目前資料庫是空的，快去後台加文章！
+          </p>
+          {% endfor %}
+          <!-- --------------------------------- -->
         </div>
       </div>
     </div>

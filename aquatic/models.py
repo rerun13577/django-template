@@ -3,6 +3,8 @@ from PIL import Image
 from io import BytesIO
 from django.db import models
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.contrib.auth.models import User # 引入內建的使用者模型
+
 
 # --- 壓縮積木放在上面 ---
 def compress_image(uploaded_image, threshold_kb=500):
@@ -62,3 +64,35 @@ class AquaticLife(models.Model):
 
     def __str__(self):
         return f"[{self.get_city_display()}] {self.name}"
+    
+
+
+
+class Post(models.Model):
+    # 1. 標題：限制 150 字
+    title = models.CharField(max_length=150)
+    
+    # 2. 內文：長文字
+    content = models.TextField()
+    
+    # 3. 照片：上傳到 media/blog_photos/
+    image = models.ImageField(upload_to='blog_photos/')
+    
+    # 4. 作者：連結到 User 表格
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    # 5. 互動數據：預設從 0 開始
+    like_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
+    
+    # 6. 時間：建立時自動記錄
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title # 讓後端管理介面顯示標題而不是 "Post object"
+    
+    def save(self, *args, **kwargs):
+        if self.image:
+            # 這裡就是呼叫你寫在最上面的那個壓縮功能
+            self.image = compress_image(self.image, threshold_kb=500)
+        super().save(*args, **kwargs)
