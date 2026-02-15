@@ -421,15 +421,16 @@ a {
   .article-title {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.25rem 1rem 0.5rem 1rem;
+    margin: 0.4rem 1rem 0.5rem 1rem;
     font-size: 1.25rem;
   }
 
   .article-subtitle {
     display: flex;
     flex-wrap: wrap;
-    margin: 0rem 1rem 1.25rem 1rem;
+    margin: 0.37rem 1rem 1.25rem 1rem;
     font-size: 1rem;
+    letter-spacing: 0.05rem;
   }
 
   .art-maker {
