@@ -1107,6 +1107,7 @@ a {
     margin-bottom: 0.5rem;
     overflow: visible; /* 或者用 unset / auto */
     border-radius: 0rem;
+    border: none;
   }
   .article {
     max-width: 700px;
@@ -1128,7 +1129,7 @@ a {
   .article-title {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.4rem 1rem 0.5rem 1rem;
+    margin: 3px 1rem 0.5rem 1rem;
     font-size: 1.25rem;
   }
   .article-subtitle {
