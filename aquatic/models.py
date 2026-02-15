@@ -4,6 +4,8 @@ from io import BytesIO
 from django.db import models
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.contrib.auth.models import User # 引入內建的使用者模型
+# 1. 先在檔案最上方加入這個引入
+from django.urls import reverse
 
 
 # --- 壓縮積木放在上面 ---
@@ -96,3 +98,8 @@ class Post(models.Model):
             # 這裡就是呼叫你寫在最上面的那個壓縮功能
             self.image = compress_image(self.image, threshold_kb=500)
         super().save(*args, **kwargs)
+
+    # 2. 在類別裡面加入這個「報地址」的方法
+    def get_absolute_url(self):
+        # 這行會對應到我們等下要在 urls.py 設定的 'post_detail' 門牌
+        return reverse('article', args=[str(self.id)])

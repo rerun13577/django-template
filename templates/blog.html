@@ -83,6 +83,8 @@
           <!-- -------------------------- -->
           {% for post in posts %}
           <div class="article">
+            <!-- a標籤做一個遮罩 可以把整個article遮起來 然後點讚變成更高層的z這樣就不會遮住 -->
+            <a href="{{ post.get_absolute_url }}" class="article-link"></a>
             <img
               src="{{ post.image.url }}"
               alt="{{ post.title }}"
@@ -122,7 +124,7 @@
 
           {% empty %}
           <p style="color: white; text-align: center">
-            目前資料庫是空的，快去後台加文章！
+            目前文章是空的，快去加文章！
           </p>
           {% endfor %}
           <!-- --------------------------------- -->

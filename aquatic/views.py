@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from aquatic.models import AquaticLife # 引入你的模型
 from .models import Post # 記得引入模型
+from django.shortcuts import render, get_object_or_404
 
 
 # 下面是資料庫的環節環節
@@ -35,3 +36,14 @@ def home(request):
 def login_view(request): 
     # 只負責顯示不負責去後面抓資料
     return render(request, 'login.html')
+
+
+
+# 2. 這是新的詳情頁函式
+def article_view(request, pk):
+    # 去 Post 資料庫裡，找一個 ID (pk) 符合的文章
+    # 如果找不到（比如網址亂打），它會自動跳出 404 頁面
+    post = get_object_or_404(Post, pk=pk)
+    
+    # 把這篇抓到的文章交給 post_detail.html 這個網頁檔案
+    return render(request, 'article.html', {'post': post})
