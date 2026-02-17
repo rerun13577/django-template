@@ -69,37 +69,28 @@ class AquaticLife(models.Model):
     
 
 
-
 class Post(models.Model):
-    # 1. 標題：限制 150 字
     title = models.CharField(max_length=150)
     
-    # 2. 內文：長文字
-    content = models.TextField()
+    # 關鍵修改：改用 JSONField，預設給它一個空清單 []
+    content = models.JSONField(default=list, help_text="儲存區塊資料的清單")
     
-    # 3. 照片：上傳到 media/blog_photos/
-    image = models.ImageField(upload_to='blog_photos/')
+    # 這裡保留，作為「文章封面圖」
+    image = models.ImageField(upload_to='blog_photos/', null=True, blank=True)
     
-    # 4. 作者：連結到 User 表格
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    
-    # 5. 互動數據：預設從 0 開始
     like_count = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
-    
-    # 6. 時間：建立時自動記錄
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title # 讓後端管理介面顯示標題而不是 "Post object"
+        return self.title
     
     def save(self, *args, **kwargs):
         if self.image:
-            # 這裡就是呼叫你寫在最上面的那個壓縮功能
+            # 這裡繼續跑你的壓縮功能
             self.image = compress_image(self.image, threshold_kb=500)
         super().save(*args, **kwargs)
 
-    # 2. 在類別裡面加入這個「報地址」的方法
     def get_absolute_url(self):
-        # 這行會對應到我們等下要在 urls.py 設定的 'post_detail' 門牌
         return reverse('article', args=[str(self.id)])
