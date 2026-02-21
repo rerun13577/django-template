@@ -26,10 +26,13 @@
         <!-- 顯示標題 -->
 
         <div class="in-article-maker">
-          <a href="{{ post.get_absolute_url }}" class="article-link"></a>
+          <a href="{{ post.get_absolute_url }}" class="in-maker-link"></a>
           <!-- 連接遮罩 -->
           <div class="in-maker-photo">
-            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="創作者照片" />
+            <img
+              src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
+              alt="創作者照片"
+            />
           </div>
           <span class="in-maker-name">{{ post.author.username }}</span>
         </div>
@@ -44,21 +47,83 @@
           <!-- |的意思就是把左邊的東西拿到右邊處理一下，linebreaker把文字裡的「換行符號（\n）」通通變成 HTML 的 <br> 標籤 -->
           <!-- 給出內文 -->
 
-          {% elif block.type == "image" %}
-          <figure class="in-article-photo-block">
-            <img src="{{ block.value }}" alt="內文圖片" />
-          </figure>
+          {% elif block.type == "image_group" %}
+          <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveSlide(-1, this)">
+              &#10094;
+            </button>
+            <!-- 等等改svg -->
+
+            <div class="carousel-viewport">
+              <div class="carousel-track">
+                {% for img_url in block.value %}
+                <figure class="carousel-item">
+                  <img src="{{ img_url }}" alt="Slide" />
+                </figure>
+                {% endfor %}
+              </div>
+            </div>
+
+            <button class="carousel-btn next" onclick="moveSlide(1, this)">
+              &#10095;
+            </button>
+          </div>
+
           {% endif %}
-          <!-- 給出文章照片 -->
+          <!-- 給出文章照片群 -->
 
           {% endfor %}
           <!-- 過濾塊 -->
         </div>
       </main>
 
+      <div class="in-article-action-s">
+        <button class="action-btn like-btn" aria-label="按讚">
+          {% include "icons/heart.html" %}
+          <span class="action-num">{{ post.like_count }}</span>
+        </button>
+
+        <button
+          class="action-btn share-btn"
+          onclick="shareArticle('{{ post.title }}')"
+        >
+          {% include "icons/share.html" %}
+        </button>
+        <!-- 判斷是否按下 -->
+      </div>
+
       <aside class="in-article-comment-s">
         <h2 class="comment-num">留言 ({{ post.comment_count }})</h2>
       </aside>
     </div>
+
+    <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
+    <script src="{% static 'aquatic\js\share.js' %}"></script>
+
+    <script>
+      function moveSlide(direction, btn) {
+        // 1. 透過 btn.closest 找到屬於這顆按鈕的那個大容器
+        const container = btn.closest(".carousel-container");
+        const track = container.querySelector(".carousel-track");
+        const slides = track.querySelectorAll(".carousel-item");
+        const total = slides.length;
+
+        // 2. 從容器讀取目前的索引 (如果是空的就預設 0)
+        let currentIndex = parseInt(container.getAttribute("data-index")) || 0;
+
+        // 3. 計算下一張的索引
+        currentIndex += direction;
+
+        // 4. 無限循環邏輯
+        if (currentIndex >= total) currentIndex = 0;
+        if (currentIndex < 0) currentIndex = total - 1;
+
+        // 5. 把新索引存回容器，下次按的時候才不會亂掉
+        container.setAttribute("data-index", currentIndex);
+
+        // 6. 執行位移：-100% 代表往左推一格
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+    </script>
   </body>
 </html>

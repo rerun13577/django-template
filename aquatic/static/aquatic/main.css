@@ -1485,7 +1485,7 @@ a {
   --fw-bold: 900;
   --fw-regular: 400;
   --fw-light: 300;
-  --article-margin: 1rem;
+  --article-margin: 2rem;
 }
 
 .in-article {
@@ -1509,10 +1509,22 @@ a {
 }
 
 .in-article-maker {
-  display: flex;
-  align-items: center; /* 關鍵：讓照片跟名字上下置中對齊 */
-  gap: 0.875rem; /* 照片跟名字之間的間距 */
-  margin: 1.5rem 0 1rem var(--article-margin); /* 整塊跟上下內容的距離 */
+  position: relative; /* 關鍵 1：讓絕對定位的 a 標籤鎖在這裡面 */
+  display: inline-flex; /* 關鍵 2：改成 inline，寬度才會「剛好包住」內容 */
+  align-items: center;
+  gap: 0.875rem;
+  margin: 1.5rem 0 1rem var(--article-margin);
+  /* 注意：inline-flex 會讓 margin: 0 auto 失效，
+     如果你要整塊置中，外層要加 text-align: center */
+}
+
+.in-maker-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3; /* 確保它在最上層才點得到 */
 }
 
 .in-maker-photo {
@@ -1529,6 +1541,7 @@ a {
 
 /* 修正：要針對裡面的 img 做限制 */
 .in-article-photo-block {
+  display: flex;
   width: 100%;
   margin: 1.5rem 0;
 }
@@ -1536,6 +1549,69 @@ a {
   max-width: 100%; /* 這行才是關鍵，讓圖片最寬等於父層 */
   height: auto;
   display: block;
+}
+
+.in-article-photo-s-block {
+  gap: 0rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: auto;
+}
+
+.carousel-container {
+  position: relative; /* 必備：讓按鈕可以絕對定位在裡面 */
+  width: 100%;
+  margin: 1.5rem 0;
+}
+.carousel-container .carousel-viewport {
+  width: 100%;
+  overflow: hidden; /* 關鍵：一次只讓你看到一張圖 */
+}
+.carousel-container .carousel-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑的移動動畫 */
+  width: 100%;
+}
+.carousel-container .carousel-item {
+  flex: 0 0 100%; /* 關鍵：每張圖強制佔滿 100% 寬度 */
+  margin: 0;
+}
+.carousel-container .carousel-item img {
+  width: 100%;
+  height: 400px; /* 高度可依蝦子照片比例調整 */
+  -o-object-fit: cover;
+     object-fit: cover; /* 確保照片不失真 */
+  display: block;
+}
+.carousel-container .carousel-btn {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  background: var(--text-muted);
+  opacity: 0.5;
+  color: var(--bg-dark);
+  border: none;
+  padding: 1rem 0.5rem;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* 消除文字內建的行高干擾 */
+  cursor: pointer;
+  transition: var(--transition);
+}
+.carousel-container .carousel-btn:hover {
+  background: var(--text);
+  opacity: 0.5;
+}
+.carousel-container .carousel-btn.prev {
+  left: 0.5rem; /* 往右縮 1.25rem */
+}
+.carousel-container .carousel-btn.next {
+  right: 0.5rem; /* 往左縮 1.25rem */
 }
 
 .in-article-content-block {
@@ -1546,8 +1622,15 @@ a {
   line-height: 1.7; /* 推薦範圍：1.6 ~ 1.8 */
 }
 
+.in-article-action-s {
+  display: flex;
+  align-items: center;
+  padding: 2.5rem var(--article-margin) 0rem var(--article-margin);
+  gap: 1.1rem;
+}
+
 .in-article-comment-s {
-  margin: 5rem 0 2rem 0;
+  margin: 1.5rem 0 2rem 0;
 }
 
 .comment-num {
@@ -1555,7 +1638,7 @@ a {
 }
 
 .in-article {
-  border-radius: 1.5rem;
+  border-radius: 3cqi;
   overflow: hidden;
   border: 1px solid var(--border);
 }
@@ -1566,4 +1649,25 @@ a {
 
 .in-maker-name {
   color: var(--text-muted);
+}
+
+@media (max-width: 902px) {
+  .in-article-photo-block {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
+  }
+  .in-article-photo-block::-webkit-scrollbar {
+    display: none;
+  }
 }/*# sourceMappingURL=main.css.map */
