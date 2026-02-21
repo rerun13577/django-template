@@ -10,12 +10,58 @@
   </head>
   <body>
     {% include 'header.html' %}
+    <main>
+      <article class="article-section">
+        <h1>{{ post.title }}</h1>
+        <div class="json-content">...</div>
+      </article>
 
-    <div>
+      <aside class="comment-sidebar">
+        <section class="comments-section">
+          <div class="comment-form-container">
+            <h4>發表留言</h4>
+            <form class="comment-form">
+              <textarea placeholder="說點什麼吧..." rows="3"></textarea>
+              <button type="submit" class="submit-btn">發佈</button>
+            </form>
+          </div>
 
-    </div>
-    <div>
-        
-    </div>
+          <hr class="divider" />
+          <div class="comment-list">
+            <div class="comment-item">
+              <img
+                src="https://picsum.photos/40/40"
+                alt="用戶頭像"
+                class="comment-avatar"
+              />
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">路人甲</span>
+                  <span class="comment-time">2 小時前</span>
+                </div>
+                <p class="comment-text">
+                  這篇文章寫得太讚了！尤其是 JSON 翻譯機的部分學到很多。
+                </p>
+              </div>
+            </div>
+
+            <div class="comment-item">
+              <img
+                src="https://picsum.photos/40/40?random=2"
+                alt="用戶頭像"
+                class="comment-avatar"
+              />
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">小魚兒</span>
+                  <span class="comment-time">1 天前</span>
+                </div>
+                <p class="comment-text">想請問這個側邊欄的 CSS 怎麼寫？</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
   </body>
 </html>
