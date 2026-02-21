@@ -1490,7 +1490,6 @@ a {
 
 .in-article {
   width: 41.5rem;
-  border: 1px solid var(--text-muted);
   margin: 0 auto 2rem auto;
 }
 
@@ -1507,6 +1506,23 @@ a {
 .in-article-title {
   color: var(--text);
   margin: 1.5rem var(--article-margin);
+}
+
+.in-article-maker {
+  display: flex;
+  align-items: center; /* 關鍵：讓照片跟名字上下置中對齊 */
+  gap: 0.875rem; /* 照片跟名字之間的間距 */
+  margin: 1.5rem 0 1rem var(--article-margin); /* 整塊跟上下內容的距離 */
+}
+
+.in-maker-photo {
+  overflow: hidden; /* 確保圖片不超出圓形 */
+  height: 3rem;
+  width: 3rem;
+}
+.in-maker-photo img {
+  -o-object-fit: cover;
+     object-fit: cover; /* 確保照片不失真 */
 }
 
 /* 修正：要針對裡面的 img 做限制 */
@@ -1533,5 +1549,19 @@ a {
 }
 
 .comment-num {
-  margin: 1.5rem 0.5rem;
+  margin: 1.5rem var(--article-margin);
+}
+
+.in-article {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.in-maker-photo {
+  border-radius: 3rem;
+}
+
+.in-maker-name {
+  color: var(--text-muted);
 }/*# sourceMappingURL=main.css.map */

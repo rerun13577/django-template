@@ -15,7 +15,6 @@
       <!-- back-btn等等改svg 上下排列 黏螢幕 -->
 
       <main class="in-article-content-s">
-        
         {% if post.image %}
         <div class="in-article-photo">
           <img src="{{ post.image.url }}" alt="{{ post.title }}" />
@@ -25,6 +24,17 @@
 
         <h1 class="in-article-title">{{ post.title }}</h1>
         <!-- 顯示標題 -->
+
+        <div class="in-article-maker">
+          <a href="{{ post.get_absolute_url }}" class="article-link"></a>
+          <!-- 連接遮罩 -->
+          <div class="in-maker-photo">
+            <img src="{{ post.author.profile.image.url }}" alt="創作者照片" />
+          </div>
+          <span class="in-maker-name">{{ post.author.username }}</span>
+        </div>
+
+        <!-- 顯示maker的照片 -->
 
         <!-- 放出封面照片 -->
 
