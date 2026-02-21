@@ -10,58 +10,42 @@
   </head>
   <body>
     {% include 'header.html' %}
-    <main>
-      <article class="article-section">
-        <h1>{{ post.title }}</h1>
-        <div class="json-content">...</div>
-      </article>
+    <!-- 不要刪我頁首 -->
+    <div class="in-article">
+      <!-- back-btn等等改svg 上下排列 黏螢幕 -->
 
-      <aside class="comment-sidebar">
-        <section class="comments-section">
-          <div class="comment-form-container">
-            <h4>發表留言</h4>
-            <form class="comment-form">
-              <textarea placeholder="說點什麼吧..." rows="3"></textarea>
-              <button type="submit" class="submit-btn">發佈</button>
-            </form>
-          </div>
+      <main class="in-article-content-s">
+        {% if post.image %}
+        <div class="in-article-photo">
+          <img src="{{ post.image.url }}" alt="{{ post.title }}" />
+        </div>
+        {% endif %}
+        <h1 class="in-article-title">{{ post.title }}</h1>
+        <!-- 顯示標題 -->
 
-          <hr class="divider" />
-          <div class="comment-list">
-            <div class="comment-item">
-              <img
-                src="https://picsum.photos/40/40"
-                alt="用戶頭像"
-                class="comment-avatar"
-              />
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">路人甲</span>
-                  <span class="comment-time">2 小時前</span>
-                </div>
-                <p class="comment-text">
-                  這篇文章寫得太讚了！尤其是 JSON 翻譯機的部分學到很多。
-                </p>
-              </div>
-            </div>
+        <!-- 放出封面照片 -->
 
-            <div class="comment-item">
-              <img
-                src="https://picsum.photos/40/40?random=2"
-                alt="用戶頭像"
-                class="comment-avatar"
-              />
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">小魚兒</span>
-                  <span class="comment-time">1 天前</span>
-                </div>
-                <p class="comment-text">想請問這個側邊欄的 CSS 怎麼寫？</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <div class="in-article-content">
+          {% for block in post.content %} {% if block.type == "text" %}
+          <p class="in-article-content-block">{{ block.value|linebreaksbr }}</p>
+          <!-- |的意思就是把左邊的東西拿到右邊處理一下，linebreaker把文字裡的「換行符號（\n）」通通變成 HTML 的 <br> 標籤 -->
+          <!-- 給出內文 -->
+
+          {% elif block.type == "image" %}
+          <figure class="in-article-photo-block">
+            <img src="{{ block.value }}" alt="內文圖片" />
+          </figure>
+          {% endif %}
+          <!-- 給出文章照片 -->
+
+          {% endfor %}
+          <!-- 過濾塊 -->
+        </div>
+      </main>
+
+      <aside class="in-article-comment-s">
+        <h2 class="comment-num">留言 ({{ post.comment_count }})</h2>
       </aside>
-    </main>
+    </div>
   </body>
 </html>
