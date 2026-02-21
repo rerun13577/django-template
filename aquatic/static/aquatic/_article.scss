@@ -70,6 +70,11 @@
 .in-article-photo {
   width: 100%;
   margin: 0 0 0.5rem 0;
+  img {
+    max-width: 100%; /* 這行才是關鍵，讓圖片最寬等於父層 */
+    height: auto;
+    display: block;
+  }
 }
 
 .in-article-title {

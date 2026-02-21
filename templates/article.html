@@ -15,11 +15,14 @@
       <!-- back-btn等等改svg 上下排列 黏螢幕 -->
 
       <main class="in-article-content-s">
+        
         {% if post.image %}
         <div class="in-article-photo">
           <img src="{{ post.image.url }}" alt="{{ post.title }}" />
         </div>
         {% endif %}
+        <!-- 有沒有封面照片 -->
+
         <h1 class="in-article-title">{{ post.title }}</h1>
         <!-- 顯示標題 -->
 
