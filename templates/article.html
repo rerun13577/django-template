@@ -29,7 +29,7 @@
           <a href="{{ post.get_absolute_url }}" class="article-link"></a>
           <!-- 連接遮罩 -->
           <div class="in-maker-photo">
-            <img src="{{ post.author.profile.image.url }}" alt="創作者照片" />
+            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="創作者照片" />
           </div>
           <span class="in-maker-name">{{ post.author.username }}</span>
         </div>

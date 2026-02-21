@@ -60,7 +60,7 @@
 
             <div class="content">
               <img
-                src="{{ post.author.profile.image.url }}"
+                src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
                 alt="作者"
                 class="maker-photo"
               />
