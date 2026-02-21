@@ -1499,7 +1499,7 @@ a {
   margin: 0 0 0.5rem 0;
 }
 .in-article-photo img {
-  max-width: 100%; /* 這行才是關鍵，讓圖片最寬等於父層 */
+  width: 100%; /* 強制撐滿，不管原圖多大 */
   height: auto;
   display: block;
 }
