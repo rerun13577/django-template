@@ -94,6 +94,8 @@
   width: 3rem;
   img {
     object-fit: cover; /* 確保照片不失真 */
+    height: 3rem;
+    width: 3rem;
   }
 }
 

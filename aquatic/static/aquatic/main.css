@@ -1523,6 +1523,8 @@ a {
 .in-maker-photo img {
   -o-object-fit: cover;
      object-fit: cover; /* 確保照片不失真 */
+  height: 3rem;
+  width: 3rem;
 }
 
 /* 修正：要針對裡面的 img 做限制 */
