@@ -94,3 +94,37 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('article', args=[str(self.id)])
+
+
+class Comment(models.Model):
+    # 1. 關聯到文章 (一篇文章可以有多個留言)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    
+    # 2. 關聯到使用者 (一個使用者可以發多個留言)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    # 3. 留言內容
+    content = models.TextField()
+
+    
+    like_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
+    
+    # 4. 建立時間
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # 5. [核心] 父層留言：用來實作「回覆」功能
+    # 如果這行是空的(null)，代表它是主留言；如果有值，代表它是某則留言的回覆
+    parent = models.ForeignKey(
+        'self', 
+        null=True, 
+        blank=True, 
+        on_delete=models.CASCADE, 
+        related_name='replies'
+    )
+
+    class Meta:
+        ordering = ['-created_at'] # 讓最新的留言排在最上面
+
+    def __str__(self):
+        return f'{self.author.username}: {self.content[:20]}'

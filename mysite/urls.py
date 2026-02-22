@@ -35,6 +35,8 @@ urlpatterns = [
 
     # 新增這一行：<int:pk> 代表這條路徑會根據文章的 ID (編號) 變動
     path('blog/post/<int:pk>/', views.article_view, name='article'),
+# 留言的言的路徑
+    path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -37,6 +37,7 @@
                 this.onerror = null;
               "
             />
+            <!-- 頭貼破圖這張就會自動換掉 -->
           </div>
           <span class="in-maker-name">{{ post.author.username }}</span>
         </div>
@@ -96,25 +97,28 @@
         <!-- 判斷是否按下 -->
       </div>
 
-      <!-- 留言區--------------------------------------------------------- -->
+      <!-- 留言區 豬大哥會在每個留言區守候--------------------------------------------------------- -->
       <aside class="in-article-comment-s">
         <h2 class="comment-num">留言 ({{ post.comment_count }})</h2>
 
-        <div class="content">
+        <div class="in-article-comment">
           <img
             src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
             alt="作者"
-            class="maker-photo"
+            class="in-comment-avatar"
             onerror="
               this.src = '/static/image/no-avatar.jpg';
               this.onerror = null;
             "
           />
+          <!-- 破圖就換掉 -->
 
-          <div class="content-without-maker-photo">
-            <a href="/" class="maker-name">{{ post.author.username }}</a>
+          <div class="in-comment-without-avatar">
+            <a href="/" class="in-comment-name">豬大哥</a>
 
-            <h3 class="article-title">{{ post.title }}</h3>
+            <p class="in-comment-content">
+              嗨你好你好你好你好你好你好你好你好你好你好好你好你好你好你好你好你好你好你好你好好你好你好你好你好你好你好你好你好你好
+            </p>
 
             <div class="action-s">
               <button class="action-btn like-btn" aria-label="按讚">
@@ -126,12 +130,46 @@
                 {% include "icons/comment.html" %}
                 <span class="action-num">{{ post.comment_count }}</span>
               </button>
+            </div>
+          </div>
+        </div>
+<!-- 下面dj語法的案例------------------------------------------------------------------------- -->
+        <div class="in-article-comment">
+          {% for comment in post.comments.all %}
+          <img
+            src="{{ comment.author.socialaccount_set.all.0.get_avatar_url }}"
+            alt="{{ comment.author.username }}"
+            class="in-comment-avatar"
+            onerror="
+              this.src = '/static/image/no-avatar.jpg';
+              this.onerror = null;
+            "
+          />
 
-              <button class="action-btn" aria-label="分享">
-                {% include "icons/share.html" %}
+          <div class="in-comment-without-avatar">
+            <a href="#" class="in-comment-name"
+              >{{ comment.author.username }}</a
+            >
+
+            <p class="in-comment-content">{{ comment.content }}</p>
+
+            <div class="action-s">
+              <button class="action-btn like-btn" aria-label="按讚">
+                {% include "icons/heart.html" %}
+                <span class="action-num"
+                  >{{ comment.like_count|default:0 }}</span
+                >
+              </button>
+
+              <button class="action-btn" aria-label="回覆">
+                {% include "icons/comment.html" %}
+                <span class="action-num">{{ comment.replies.count }}</span>
               </button>
             </div>
           </div>
+          {% empty %}
+          <p>目前還沒有留言喔，快來搶頭香！</p>
+          {% endfor %}
         </div>
       </aside>
     </div>

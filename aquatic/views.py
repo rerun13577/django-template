@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from aquatic.models import AquaticLife # 引入你的模型
-from .models import Post # 記得引入模型
-from django.shortcuts import render, get_object_or_404
+from .models import Post , Comment # 記得引入模型
+from django.shortcuts import render, get_object_or_404 , redirect
+from django.contrib.auth.decorators import login_required
 
 
 # 下面是資料庫的環節環節
@@ -47,3 +48,26 @@ def article_view(request, pk):
     
     # 把這篇抓到的文章交給 post_detail.html 這個網頁檔案
     return render(request, 'article.html', {'post': post})
+
+@login_required # 確保有登入才能留言
+def add_comment(request, post_id):
+    if request.method == "POST":
+        post = get_object_or_404(Post, id=post_id)
+        content = request.POST.get('content') # 抓取 HTML 裡 textarea 的內容
+        
+        if content:
+            # 建立留言物件但先不存檔
+            comment = Comment(
+                post=post,
+                author=request.user,
+                content=content
+            )
+            
+            # 如果是回覆某則留言，抓取 parent_id
+            parent_id = request.POST.get('parent_id')
+            if parent_id:
+                comment.parent = Comment.objects.get(id=parent_id)
+                
+            comment.save() # 正式存入資料庫
+            
+    return redirect('article_detail', pk=post_id) # 留言完跳回文章頁
