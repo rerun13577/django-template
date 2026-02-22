@@ -40,14 +40,18 @@ def login_view(request):
 
 
 
-# 2. 這是新的詳情頁函式
 def article_view(request, pk):
-    # 去 Post 資料庫裡，找一個 ID (pk) 符合的文章
-    # 如果找不到（比如網址亂打），它會自動跳出 404 頁面
-    post = get_object_or_404(Post, pk=pk)
+    # 優化版：一次把文章、留言、回覆、留言者頭像通通抓好
+    # 這樣你在 HTML 跑迴圈時，才不會因為留言太多而卡住
+    post = Post.objects.prefetch_related(
+        'comments__replies',     # 預抓回覆
+        'comments__author'      # 預抓留言者資料
+    ).get(pk=pk)
     
-    # 把這篇抓到的文章交給 post_detail.html 這個網頁檔案
+    # 這裡你可以順便計算總留言數（包含回覆）傳給前端
     return render(request, 'article.html', {'post': post})
+
+
 
 @login_required # 確保有登入才能留言
 def add_comment(request, post_id):
@@ -70,4 +74,4 @@ def add_comment(request, post_id):
                 
             comment.save() # 正式存入資料庫
             
-    return redirect('article_detail', pk=post_id) # 留言完跳回文章頁
+    return redirect('article', pk=post_id)

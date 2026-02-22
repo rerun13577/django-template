@@ -1628,14 +1628,102 @@ a {
   gap: 1.1rem;
 }
 
+.in-article {
+  border-radius: 3rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.in-article-title {
+  color: var(--text);
+}
+
+.in-maker-photo {
+  border-radius: 3rem;
+}
+
+.in-maker-name {
+  color: var(--text-muted);
+}
+
+@media (max-width: 902px) {
+  .in-article-photo-block {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
+  }
+  .in-article-photo-block::-webkit-scrollbar {
+    display: none;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.76 0.1 128),
+    oklch(0.76 0.1 308)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+}
+
 .in-article-comment-s {
-  margin: 1.5rem 0 2rem 0;
+  margin: 1.5rem 1.5rem 0rem 0;
+}
+
+.outside-comment {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* 確保容器撐滿 */
 }
 
 .in-article-comment {
   display: flex;
   flex-direction: row;
-  margin: 0.5rem 0 2rem 0;
+  margin: 0.5rem 0 0.75rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
 }
 
 .comment-num {
@@ -1661,22 +1749,110 @@ a {
   margin: 0.25rem 0rem 0rem 1rem;
 }
 
-.in-article {
-  border-radius: 3rem;
-  overflow: hidden;
-  border: 1px solid var(--border);
+/* 1. 讓整台傳送機在頁面中央 */
+.comment-form {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  width: 90%;
+  height: 3.75rem;
+  max-height: 10rem;
+  margin: 2.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  border-radius: 1.5rem;
+  border: none;
+  border: 2px solid var(--text-muted);
+  background-color: var(--bg-light);
+}
+.comment-form:focus-within {
+  background-color: var(--bg-big-light);
+  border-color: var(--text);
 }
 
-.in-article-title {
+/* 2. 內容物容器 */
+.outside-comment-input {
+  display: flex;
+  flex-direction: row; /* 框與按鈕橫著排 */
+  align-items: flex-end; /* 讓按鈕對齊框框的底部 */
+  width: 100%; /* 寬螢幕上限 */
+}
+
+/* 3. 輸入框本體 */
+.input-comment {
+  width: 100%; /* 讓輸入框撐滿剩下的空間 */
+  background-color: var(--bg-big-light);
+  color: var(--text); /* 改回正常文字顏色，打字才看得見 */
+  outline: none;
+  border-radius: 1.5rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: var(--transition);
+  border: none;
+  /* 🚀 2026 自動長高 (取代 JS) */
+  field-sizing: content;
+  min-height: 45px;
+  max-height: 300px; /* 設定上限，免得打太長把頁面撐爆 */
+  resize: none;
+}
+.input-comment::-moz-placeholder {
+  color: var(--text-muted);
+}
+.input-comment::placeholder {
+  color: var(--text-muted);
+}
+
+/* 4. 送出按鈕美化 */
+.send-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  height: 3.55rem; /* 固定高度 */
+  transition: var(--transition);
+  margin-bottom: 0rem; /* 讓按鈕在垂直方向置中 */
+  align-items: flex-end;
+  width: 7rem;
+}
+.send-btn:hover {
+  opacity: 0.8;
   color: var(--text);
 }
 
-.in-maker-photo {
-  border-radius: 3rem;
+.in-reply-s {
+  margin: 0rem 0 1rem 3.75rem;
 }
 
-.in-maker-name {
-  color: var(--text-muted);
+.in-reply {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0 1rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.in-reply-avatar {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem var(--article-margin);
+}
+
+.in-reply-name {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.in-reply-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 0rem 0rem 1rem;
+}
+
+.show-reply {
+  margin: 0.5rem 0rem 0rem 3.75rem;
+  border: none;
 }
 
 .in-comment-avatar {
@@ -1691,23 +1867,20 @@ a {
   color: var(--text);
 }
 
-@media (max-width: 902px) {
-  .in-article-photo-block {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    flex: 0 0 350px;
-    min-height: 300px;
-    max-height: 480px;
-    overflow-y: hidden;
-    touch-action: pan-x pan-y;
-    scroll-behavior: smooth;
-  }
-  .in-article-photo-block::-webkit-scrollbar {
-    display: none;
-  }
+.in-reply-avatar {
+  border-radius: 50%;
+}
+
+.in-reply-name {
+  color: var(--text);
+}
+
+.in-reply-content {
+  color: var(--text);
+}
+
+.show-reply {
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
 }/*# sourceMappingURL=main.css.map */

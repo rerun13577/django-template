@@ -1,0 +1,100 @@
+<!-- 留言區 豬大哥會在每個留言區守候--------------------------------------------------------- -->
+<aside class="in-article-comment-s">
+  <h2 class="comment-num">留言 ({{ post.comment_count }})</h2>
+
+  <!-- 下面dj語法的案例------------------------------------------------------------------------- -->
+  <!-- 因為你在迴圈寫的是 post.comments.all： -->
+  <!-- 在資料庫裡，不管是「主留言」還是「回覆」，它們的 post 欄位都是這篇文。所以 all 會把它們全部抓出來，不分輩分地印在網頁上。 -->
+
+  <!-- 輸入留言結構 -->
+
+  <form
+    action="{% url 'add_comment' post.id %}"
+    method="POST"
+    class="comment-form"
+  >
+    {% csrf_token %}
+    <div class="outside-comment-input">
+      <textarea
+        name="content"
+        placeholder="對這個文章有什麼看法？"
+        class="input-comment"
+        required
+      ></textarea>
+      <input type="hidden" name="parent_id" value="" />
+      <button type="submit" class="send-btn">送出留言</button>
+    </div>
+  </form>
+
+  <div class="outside-comment">
+    {% for comment in post.comments.all %} {% if not comment.parent %}
+    <div class="in-article-comment">
+      <img
+        src="{{ comment.author.socialaccount_set.all.0.get_avatar_url }}"
+        alt="{{ comment.author.username }}"
+        class="in-comment-avatar"
+        onerror="
+          this.src = '/static/image/no-avatar.jpg';
+          this.onerror = null;
+        "
+      />
+
+      <div class="in-comment-without-avatar">
+        <a href="#" class="in-comment-name">{{ comment.author.username }}</a>
+        <p class="in-comment-content">{{ comment.content }}</p>
+
+        <div class="action-s">
+          <button class="action-btn like-btn" aria-label="按讚">
+            {% include "icons/heart.html" %}
+            <span class="action-num">{{ comment.like_count|default:0 }}</span>
+          </button>
+
+          <button class="action-btn" aria-label="回覆">
+            {% include "icons/comment.html" %}
+            <span class="action-num">{{ comment.replies.count }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- 回覆區------------------------------------------------------------------------------------------ -->
+    <div class="in-reply-s">
+      {% for reply in comment.replies.all %}
+      <div class="in-reply">
+        <!-- 單個用來排版正確的回覆區 -->
+        <img
+          src="{{ reply.author.socialaccount_set.all.0.get_avatar_url }}"
+          alt="{{ reply.author.username }}"
+          class="in-reply-avatar"
+          onerror="
+            this.src = '/static/image/no-avatar.jpg';
+            this.onerror = null;
+          "
+        />
+
+        <div class="in-reply-without-avatar">
+          <a href="#" class="in-reply-name">{{ reply.author.username }}</a>
+          <p class="in-reply-content">{{ reply.content }}</p>
+
+          <div class="action-s">
+            <button class="action-btn like-btn" aria-label="按讚">
+              {% include "icons/heart.html" %}
+              <span class="action-num">{{ reply.like_count|default:0 }}</span>
+            </button>
+
+            <button class="action-btn" aria-label="回覆">
+              {% include "icons/comment.html" %}
+              <span class="action-num">{{ reply.replies.count }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 讓所有的回覆顯示出來--------------------------------------------------------------------------------------- -->
+      {% endfor %}
+      <!-- <button class="show-reply">-------------------------</button> -->
+    </div>
+    {% endif %} {% empty %}
+    <p class="no-comment">目前還沒有留言喔，快來搶頭香！</p>
+    {% endfor %}
+  </div>
+</aside>

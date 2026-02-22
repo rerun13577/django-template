@@ -49,6 +49,7 @@
 .bg-pic {
   display: flex;
   /* 修正：改用 background-image */
+
   background-image: var(--green-gradient);
 
   /* 或者是更乾淨的簡寫 */
@@ -57,7 +58,7 @@
   /* 建議補上這兩行，確保漸層鋪滿整個螢幕 */
   height: 100vh;
   width: 100%;
-  
+
   align-items: center; /* 水平置中子元素 */
   justify-content: center; /* 垂直置中子元素 */
 }
