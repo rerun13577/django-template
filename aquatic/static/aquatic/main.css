@@ -1513,7 +1513,7 @@ a {
   display: inline-flex; /* 關鍵 2：改成 inline，寬度才會「剛好包住」內容 */
   align-items: center;
   gap: 0.875rem;
-  margin: 1.5rem 0 1rem var(--article-margin);
+  margin: 1rem 0 1rem var(--article-margin);
   /* 注意：inline-flex 會讓 margin: 0 auto 失效，
      如果你要整塊置中，外層要加 text-align: center */
 }
