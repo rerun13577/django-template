@@ -30,7 +30,7 @@
           <!-- 連接遮罩 -->
           <div class="in-maker-photo">
             <img
-              src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
+              src="{{ post.author.socialaccount_set.all.0.get_avatar_url }}"
               alt="創作者照片"
               onerror="
                 this.src = '/static/image/no-avatar.jpg';
@@ -97,10 +97,8 @@
         <!-- 判斷是否按下 -->
       </div>
 
-       {% include "component/comment.html" %}
-       
+      {% include "component/comment.html" %}
     </div>
-
 
     <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
     <script src="{% static 'aquatic/js/share.js' %}"></script>
