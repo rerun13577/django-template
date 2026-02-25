@@ -52,10 +52,7 @@
               class="article-photo"
             />
             {% else %}
-            <div
-              class="no-article-photo"
-              style="height: 1rem"
-            ></div>
+            <div class="no-article-photo" style="height: 1rem"></div>
             {% endif %}
 
             <div class="content">
@@ -98,6 +95,8 @@
         </div>
       </div>
     </div>
+
+    {% include "component/add-article.html" %}
 
     <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
   </body>

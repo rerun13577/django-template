@@ -1,0 +1,241 @@
+@charset "UTF-8";
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.add-article-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  font-size: 3.5rem;
+  cursor: pointer;
+  z-index: 999; /* 🚀 確保它蓋在所有文章上面 */
+
+  /* 2. 🚀 核心置中邏輯 */
+  display: flex; /* 開啟 Flex 佈局 */
+  justify-content: center; /* 水平置中 */
+  align-items: center; /* 垂直置中 */
+
+  i svg {
+    font-size: 2rem; /* 稍微放大一點比較大氣 */
+    line-height: 1; /* 🚀 關鍵：強制行高為 1，消除字體上下多餘空間 */
+    display: block; /* 🚀 關鍵：不讓它被當成文字處理 */
+  }
+}
+
+.add-article-overlay {
+  /* 填滿全螢幕 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh; /* */
+  z-index: 1000;
+
+  /* 🚀 初始狀態：隱藏 */
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: var(--bg);
+  backdrop-filter: blur(10px); /* 讓背景模糊更有質感 */
+
+  /* 🚀 當被加上 .is-active 類別時顯示 */
+  &.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    // 讓你可以點裡面的文章內容，或是滾動文章內容，但點不到底層的東西
+
+    .add-article-page {
+      transform: scale(1); /* 進場動畫：放大到正常大小 */
+    }
+  }
+}
+
+.add-article-page {
+  width: 90%;
+  max-width: 41.5rem; /* 🚀 你指定的寬度 */
+  height: auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center; /* 🚀 上下置中 (垂直) */
+  /* 🚀 1. 設定為相對定位，作為按鈕的參考座標 */
+  position: relative;
+  height: 4rem;
+}
+
+.page-title {
+  margin: auto;
+}
+
+.back-btn {
+  /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+  position: absolute;
+  left: 0; /* 貼齊左邊 */
+  padding: 5px 15px;
+  cursor: pointer;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.input-article-content {
+  padding: 1.5rem 2rem 1.5rem 2rem;
+  text-align: center;
+  height: 20rem;
+
+  color: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+}
+
+.input-hint {
+  color: var(--text-muted);
+}
+
+.add-block-btn-s {
+  display: flex;
+  height: 5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem auto 0 auto;
+
+  border: none;
+}
+
+.add-block-btn {
+  flex: 1;
+  height: 3.5rem;
+  font-size: 1rem;
+
+  background: var(--bg-big-light);
+  color: var(--text-muted);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-m);
+  cursor: pointer;
+  transition: var(--transition);
+
+  /* 只有在電腦版（有滑鼠）才觸發 */
+  @media (hover: hover) {
+    // 這裡用 & 代替原本的類別名稱
+    &:hover {
+      box-shadow: var(--shadow-l);
+      color: var(--text);
+    }
+  }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------
+//----------------- 樣式 ------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------
+
+.add-article-btn {
+  border-radius: 50%;
+  background-color: var(--primary);
+  cursor: pointer;
+  opacity: 0.6; /* 🚀 你要的透明感 */
+  transition: var(--transition);
+  box-shadow: var(--shadow-s);
+
+  &:hover {
+    opacity: 1; /* 滑鼠移上去變不透明 */
+    box-shadow: var(--shadow-l); /* 加強陰影 */
+  }
+
+  &:active {
+    transform: scale(0.85); /* 點擊時稍微縮小 */
+    box-shadow: var(--shadow-m); /* 中等陰影 */
+  }
+  i svg {
+    color: var(--border);
+  }
+}
+
+.add-article-page {
+  background: var(--bg-light); /* 配合你的深色主題 */
+  border-radius: var(--radius-l);
+  padding: 2rem;
+  border: 1px solid var(--border);
+
+  /* 🚀 進場動畫：稍微縮小並往下沉一點 */
+  transform: scale(0.9);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.page-header {
+  background: var(--bg-light); /* 配合你的深色主題 */
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-s);
+
+  svg {
+    color: var(--text-muted);
+    transition: var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}

@@ -34,9 +34,21 @@ def home(request):
 
 
 
-def login_view(request): 
-    # 只負責顯示不負責去後面抓資料
-    return render(request, 'login.html')
+def login_view(request):
+    # 拿到網址裡的 next 參數，如果沒有就預設去首頁 (LOGIN_REDIRECT_URL)
+    next_url = request.GET.get('next', '/') 
+
+    if request.method == 'POST':
+        # ... 執行你的登入驗證程式碼 ...
+        # if user_is_valid:
+            login(request, user)
+            
+            # 關鍵：登入成功後，檢查 POST 資料裡有沒有帶 next
+            # 因為 HTML Form 送出後，next 會變成 POST 資料的一部分
+            redirect_to = request.POST.get('next', next_url)
+            return redirect(redirect_to)
+    
+    return render(request, 'login.html', {'next': next_url})
 
 
 

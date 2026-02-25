@@ -174,6 +174,7 @@ else:
 # fuckyou
 
 
+LOGIN_URL = '/login/'  # 🚀 這一行沒加，它就永遠不會去跑你的 login_view
 LOGIN_REDIRECT_URL = '/'      # 登入成功後跳轉到首頁
 LOGOUT_REDIRECT_URL = '/'     # 登出後跳轉到首頁
 SOCIALACCOUNT_LOGIN_ON_GET = True # 取消繼續頁面

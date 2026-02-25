@@ -1,5 +1,3 @@
-<!-- 留言區 豬大哥會在每個留言區守候--------------------------------------------------------- -->
-<aside class="in-article-comment-s">
   <h2 class="comment-num">留言 ({{ post.comment_count }})</h2>
 
   <!-- 下面dj語法的案例------------------------------------------------------------------------- -->
@@ -25,6 +23,12 @@
       <button type="submit" class="send-btn">送出留言</button>
     </div>
   </form>
+
+
+<!-- 留言區 豬大哥會在每個留言區守候--------------------------------------------------------- -->
+<aside class="in-article-comment-s">
+
+  <!-- form單純做左右定位外框 div做樣式 這樣才可以置中 -->
 
   <div class="outside-comment">
     {% for comment in post.comments.all %} {% if not comment.parent %}

@@ -1,0 +1,29 @@
+{% load static %}
+<button class="add-article-btn" id="openModal">
+  <i> {% include "icons/add.html" %}</i>
+</button>
+<!-- 在外框設計一個id讓js去抓取，然後在js裡面寫一個事件監聽器，當點擊這個按鈕的時候就把模態框顯示出來。 -->
+<div class="add-article-overlay" id="add-article-overlay">
+
+  <div class="add-article-page">
+
+    <header class="page-header">
+
+      <button class="action-btn back-btn" id="closeBtn">{% include "icons/back.html" %}</button>
+      <h2 class="page-title">發表新文章</h2>
+    </header>
+
+    <div
+      class="input-article-content"
+    >
+      <p class="input-hint">點擊下方按鈕新增內文或者照片區塊！</p>
+    </div>
+    <div class="add-block-btn-s">
+        <button class="add-block-btn" aria-label="新增內文區塊">新增內文區塊</button>
+        <button class="add-block-btn" aria-label="新增照片區塊">新增照片區塊</button>
+    </div>
+  </div>
+</div>
+
+<!-- 導入邏輯 -->
+<script src="{% static 'aquatic/js/add-article.js' %}"></script>

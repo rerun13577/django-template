@@ -317,7 +317,7 @@ a {
   transition: var(--transition);
   &:active svg {
     /* 縮小到 0.9 倍 (你可以自己調 0.8 或 0.95) */
-    transform: scale(0.8);
+    transform: scale(0.85);
   }
 }
 
