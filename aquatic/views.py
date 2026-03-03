@@ -1,9 +1,12 @@
-from django.shortcuts import redirect, render
 from aquatic.models import AquaticLife # 引入你的模型
 from .models import Post , Comment # 記得引入模型
 from django.shortcuts import render, get_object_or_404 , redirect
 from django.contrib.auth.decorators import login_required
 
+import json # 🚀 處理前端傳來的 JSON 字串
+from django.http import JsonResponse # 🚀 回傳成功或失敗的訊息給 JS
+from django.core.files.storage import default_storage # 🚀 處理內文照片的儲存
+from .models import Post, Comment, compress_image # 🚀 確保有引入你的壓縮工具
 
 # 下面是資料庫的環節環節
 
@@ -87,3 +90,47 @@ def add_comment(request, post_id):
             comment.save() # 正式存入資料庫
             
     return redirect('article', pk=post_id)
+
+# 發文邏輯-----------------------------------------------------------------------------------------------------
+@login_required
+def create_post_api(request):
+    if request.method == "POST":
+        # 1. 抓取標題與大圖
+        title = request.POST.get("title")
+        cover_image = request.FILES.get("cover_image")
+        
+        # 2. 抓取內容清單 (JSON 字串變回 Python 列表)
+        raw_content = request.POST.get("content_json", "[]")
+        content_list = json.loads(raw_content)
+
+        # 3. 🚀 處理內文中的多張照片 (巡邏說明書，把暗號換成網址)
+        for block in content_list:
+            if block["type"] == "image_group":
+                real_urls = []
+                for secret_key in block["value"]:
+                    file_obj = request.FILES.get(secret_key)
+                    if file_obj:
+                        # 呼叫你 models.py 寫好的壓縮功能
+                        compressed_file = compress_image(file_obj)
+                        # 儲存到 media/blog_photos/ 並拿網址
+                        path = default_storage.save(f'blog_photos/{compressed_file.name}', compressed_file)
+                        real_urls.append(default_storage.url(path))
+                
+                # 替換 JSON 裡的內容
+                block["value"] = real_urls
+
+        # 4. 正式存入資料庫
+        new_post = Post.objects.create(
+            title=title,
+            image=cover_image,  # 這裡會觸發 Post.save() 裡的自動壓縮
+            content=content_list,
+            author=request.user
+        )
+
+        return JsonResponse({
+            "status": "success", 
+            "post_id": new_post.id,
+            "url": f"/blog/post/{new_post.id}/" # 跳轉回文章頁
+        })
+
+    return JsonResponse({"status": "error", "message": "無效請求"}, status=400)

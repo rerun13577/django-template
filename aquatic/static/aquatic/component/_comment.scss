@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 :root {
   --bg-dark: oklch(0.1 0 128); /*背景*/
   --bg: oklch(0.15 0 128); /*卡片*/
@@ -17,7 +19,7 @@
 
   --green-gradient: linear-gradient(
     to bottom,
-    oklch(0.76 0.1 128),
+    oklch(0.8199 0.1381 140.2),
     oklch(0.76 0.1 308)
   );
 
@@ -66,7 +68,7 @@
 }
 
 .comment-num {
-  margin: 3rem var(--article-margin) 1.5rem  var(--article-margin);
+  margin: 3rem var(--article-margin) 1.5rem var(--article-margin);
 }
 
 .in-comment-avatar {
@@ -103,27 +105,25 @@
 
   margin: 2.5rem auto; /* 增加上下間距，比較有呼吸感 */
   border: none;
-
 }
-
 
 /* 2. 內容物膠囊 (外框) */
 .outside-comment-input {
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   align-items: flex-end; /* 按鈕靠底部對齊 */
   width: 90%;
-  max-width: 41.5rem; 
-  margin: 0 auto;        /* 🚀 讓這塊地基左右置中 */
-  
+  max-width: 41.5rem;
+  margin: 0 auto; /* 🚀 讓這塊地基左右置中 */
+
   height: auto;
   max-height: 20rem;
 }
 
 /* 3. 輸入框本體 (內部的純文字區) */
 .input-comment {
-  flex: 1;               /* 🚀 關鍵：自動填滿剩餘空間，不搶按鈕位置 */
-  padding: 1rem 1.5rem 1rem 1.5rem;   /* 調整內距，讓字不要黏住邊緣 */
+  flex: 1; /* 🚀 關鍵：自動填滿剩餘空間，不搶按鈕位置 */
+  padding: 1rem 1.5rem 1rem 1.5rem; /* 調整內距，讓字不要黏住邊緣 */
   font-size: 1rem;
   line-height: 1.5;
 
@@ -143,7 +143,6 @@
   margin-bottom: 0rem; /* 讓按鈕在垂直方向置中 */
   align-items: flex-end;
   width: 7rem;
-
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -152,9 +151,18 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+.no-comment {
+  display: flex;
+  margin: 0.5rem auto 1.5rem auto;
+  @extend %center;
+  height: 5rem;
+  width: auto;
+  padding: 1.5rem;
+  font-size: 1rem;
+}
 
 .in-reply-s {
-  margin: 0rem 0 1rem 3.75rem;
+  margin: 0rem 0 0rem 3.75rem;
 }
 
 .in-reply {
@@ -202,15 +210,13 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
 
-
-
 /* 2. 內容物膠囊 (外框) */
 .outside-comment-input {
   /* 視覺樣式：這層才需要背景和邊框 */
   background-color: var(--bg-light);
   border: 2px solid var(--text-muted);
   border-radius: 1.5rem;
-  overflow: hidden;      /* 確保內容不會超出圓角 */
+  overflow: hidden; /* 確保內容不會超出圓角 */
   transition: 0.3s;
 
   &:focus-within {
@@ -222,14 +228,14 @@
 /* 3. 輸入框本體 (內部的純文字區) */
 .input-comment {
   background: transparent; /* 🚀 關鍵：透明背景，顯示外層膠囊的顏色 */
-  border: none ; /* 拔掉所有邊框 */
+  border: none; /* 拔掉所有邊框 */
   outline: none;
   color: var(--text);
 
   &::placeholder {
     color: var(--text-muted);
   }
-//   提示文字樣式
+  //   提示文字樣式
 }
 
 /* 4. 送出按鈕美化 */
@@ -246,11 +252,6 @@
     color: var(--text);
   }
 }
-
-
-
-
-
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -269,6 +270,14 @@
 
 .in-comment-content {
   color: var(--text);
+}
+
+.no-comment {
+  color: var(--text-muted);
+  font-size: 1rem;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-m);
+  border: none;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -294,4 +303,70 @@
   color: var(--text);
 
   font-size: 1rem;
+}
+
+:root {
+  --article-margin-mobile: 1.2rem;
+}
+
+@media (max-width: 667px) {
+  .comment-num {
+    margin: 2rem var(--article-margin-mobile) 1.5rem
+      var(--article-margin-mobile);
+  }
+
+  .comment-form {
+    margin: 1.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  }
+  /* 3. 輸入框本體 (內部的純文字區) */
+  .input-comment {
+    color: var(--text);
+
+    &::placeholder {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    //   提示文字樣式
+  }
+
+  .in-comment-avatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0.5rem 0rem 0rem var(--article-margin-mobile);
+  }
+
+  .in-article-comment-s {
+  margin: 1.5rem var(--article-margin-mobile) 0rem 0;
+}
+
+  .in-article-comment {
+    display: flex;
+    flex-direction: row;
+    margin: 0rem 0 0rem 0;
+    width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+  }
+
+  .in-reply-s {
+  margin: 0rem 0 0.875rem 3.75rem;
+}
+
+.in-reply {
+  margin: 0.875rem 0 1rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.in-reply-avatar {
+  height: 2.5rem;
+  width: 2.5rem;
+  margin: 0rem 0rem 0rem 1rem;
+}
+
+  .send-btn {
+    font-size: 0.875rem;
+  }
+
+  .no-comment {
+    font-size: 0.875rem;
+    height: 3.5rem;
+  }
 }

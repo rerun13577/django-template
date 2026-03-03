@@ -1,0 +1,52 @@
+{% load static %}
+<!-- 文章大圖----------------------------------------------------------------------------------- -->
+
+<template id="photo-item-template">
+  <div class="photo-item">
+    <img src="" class="photo-preview" />
+    <button type="button" class="remove-photo" onclick="this.parentElement.remove()">
+      {% include "icons/cross.html" %}
+    </button>
+  </div>
+</template>
+
+<div class="input-area-card cover-section">
+  <div class="input-card-header">
+    <p class="input-title">大圖</p>
+  </div>
+
+  <div class="input-photo-area">
+    <div class="photo-viewport" data-index="0">
+      <!-- 避免抓不到數字閃退 -->
+
+      <div class="photo-item-s">
+        <div class="photo-item upload-item">
+          <label class="photo-upload">
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onchange="handleFileUpload(this)"
+            />
+            <!-- 只能上傳圖片 -->
+            <i class="upload-icon"> {% include "icons/upload.html" %}</i>
+            <span>點擊上傳文章大圖</span>
+            <span>(建議16:9)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 文章標題----------------------------------------------------------------------------------- -->
+<!-- title-section用來讓js抓的 -->
+<div class="input-area-card title-section">
+  <div class="input-card-header">
+    <p class="input-title">標題</p>
+  </div>
+
+  <textarea
+    class="input-text-area"
+    placeholder="在此輸入文章標題..."
+  ></textarea>
+</div>

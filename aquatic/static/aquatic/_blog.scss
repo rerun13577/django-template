@@ -91,10 +91,8 @@ a {
   width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
   height: auto; /* 高度自動計算，保持比例，才不會變形 */
   display: block; /* 消除圖片下方可能出現的小縫隙 */
-
   margin: 0 auto;
-  height: 300px;
-  //   max-height: 600px;
+
   object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
   margin-bottom: 0.5rem;
 
@@ -102,6 +100,9 @@ a {
   /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
   object-fit: cover;
 }
+
+
+
 
 .content {
   display: flex;
@@ -117,8 +118,6 @@ a {
   flex-wrap: wrap;
   margin: 0.25rem 1rem 2.5rem 1rem;
   font-size: 1.5rem;
-  /* 🔥 關鍵指令：強迫換行 */
-  word-break: break-all;
 }
 
 .maker-photo {
@@ -433,7 +432,6 @@ a {
     display: block; /* 消除圖片下方可能出現的小縫隙 */
 
     margin: 0 auto;
-    height: 300px;
     //   max-height: 600px;
     object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
     margin-bottom: 0.5rem;

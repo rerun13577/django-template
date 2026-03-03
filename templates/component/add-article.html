@@ -4,26 +4,65 @@
 </button>
 <!-- 在外框設計一個id讓js去抓取，然後在js裡面寫一個事件監聽器，當點擊這個按鈕的時候就把模態框顯示出來。 -->
 <div class="add-article-overlay" id="add-article-overlay">
-
   <div class="add-article-page">
-
     <header class="page-header">
-
-      <button class="action-btn back-btn" id="closeBtn">{% include "icons/back.html" %}</button>
+      <button class="action-btn back-btn" id="closeBtn">
+        {% include "icons/back.html" %}
+      </button>
       <h2 class="page-title">發表新文章</h2>
+      <button class="post-btn" id="postBtn">
+        發佈
+      </button>
     </header>
 
-    <div
-      class="input-article-content"
-    >
+    <div class="input-article-content">
+      {% include "component/default-article.html" %}
+
       <p class="input-hint">點擊下方按鈕新增內文或者照片區塊！</p>
     </div>
+
     <div class="add-block-btn-s">
-        <button class="add-block-btn" aria-label="新增內文區塊">新增內文區塊</button>
-        <button class="add-block-btn" aria-label="新增照片區塊">新增照片區塊</button>
+      <button
+        class="add-block-btn"
+        id="add-text-block"
+        aria-label="新增內文區塊"
+      >
+        新增內文區塊
+      </button>
+      <button
+        class="add-block-btn"
+        id="add-image-block"
+        aria-label="新增照片區塊"
+      >
+        新增照片區塊
+      </button>
     </div>
   </div>
 </div>
+
+<!-- 
+ 這裡是新增文章的模態框，裡面有兩個template，一個是文字區塊的template，
+一個是圖片區塊的template，這樣在js裡面就可以很方便的去複製這兩個template來新增區塊了。
+ -->
+<template id="text-block-template">
+  <div class="input-area-card">
+    <div class="input-card-header">
+      <p class="input-title">文字框</p>
+      <button class="delete-btn" type="button">
+        {% include "icons/cross.html" %}
+      </button>
+    </div>
+
+    <textarea
+      class="input-text-area"
+      placeholder="在此輸入文字內容..."
+    ></textarea>
+  </div>
+</template>
+
+<template id="photo-block-template">
+  {% include "component/photo-train.html" %}
+</template>
 
 <!-- 導入邏輯 -->
 <script src="{% static 'aquatic/js/add-article.js' %}"></script>
