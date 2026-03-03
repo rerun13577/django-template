@@ -1,7 +1,5 @@
 @charset "UTF-8";
 
-
-
 //內文架構
 .input-area-card {
   display: block; /* 視窗不用 flex，裡面裝火車就好 */
@@ -186,5 +184,31 @@
   span {
     color: var(--text-muted);
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 667px) {
+
+
+  .photo-item-s {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-height: 175px;
+    height: auto; /* 確保沒有任何東西鎖死它的高度 */
+
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑的移動動畫 */
+  }
+
+  .input-photo-area {
+    display: flex;
+    overflow: hidden;
+
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-height: 175px;
+    height: auto; /* 確保沒有任何東西鎖死它的高度 */
   }
 }
