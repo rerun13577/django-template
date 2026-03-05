@@ -180,6 +180,9 @@ LOGOUT_REDIRECT_URL = '/'     # 登出後跳轉到首頁
 SOCIALACCOUNT_LOGIN_ON_GET = True # 取消繼續頁面
 ACCOUNT_LOGOUT_ON_GET = True
 
+# 讓 WhiteNoise 幫你壓縮靜態檔案並加上快取標籤
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # 讓 Django 認得 Zeabur 的 HTTPS 加密
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
