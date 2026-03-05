@@ -8,6 +8,10 @@ from django.http import JsonResponse # 🚀 回傳成功或失敗的訊息給 JS
 from django.core.files.storage import default_storage # 🚀 處理內文照片的儲存
 from .models import Post, Comment, compress_image # 🚀 確保有引入你的壓縮工具
 
+
+# aquatic/views.py
+from django.db.models import Exists, OuterRef
+
 # 下面是資料庫的環節環節
 
 # # --- 部落格邏輯 ---
@@ -23,9 +27,21 @@ from .models import Post, Comment, compress_image # 🚀 確保有引入你的�
 def blog(request):
     # 🚀 加上 select_related('author')，一次把文章和作者資料全部打包
     all_posts = Post.objects.select_related('author').all().order_by('-created_at')
+
+    user = request.user
+    posts = Post.objects.select_related('author').all().order_by('-created_at')
+
+    if user.is_authenticated:
+        # 🚀 預先標記 is_liked 狀態
+        posts = posts.annotate(
+            is_liked=Exists(
+                Post.objects.filter(id=OuterRef('pk'), likes=user)
+            )
+        )
     
     # 這是正確的送貨員，包裹裡有裝 'posts'
     return render(request, 'blog.html', {'posts': all_posts})
+
 
 def index(request):
     # 撈出資料庫裡所有的水生生物
@@ -73,6 +89,26 @@ def article_view(request, pk):
     
     # 這裡你可以順便計算總留言數（包含回覆）傳給前端
     return render(request, 'article.html', {'post': post})
+
+
+
+@login_required # 確保有登入才能點讚
+def toggle_like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+    
+    if user in post.likes.all():
+        post.likes.remove(user)
+        is_liked = False
+    else:
+        post.likes.add(user)
+        is_liked = True
+    
+    return JsonResponse({
+        "is_liked": is_liked,
+        "new_count": post.likes.count()
+    })
+
 
 
 

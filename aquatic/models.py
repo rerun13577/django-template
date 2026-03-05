@@ -79,7 +79,11 @@ class Post(models.Model):
     image = models.ImageField(upload_to='blog_photos/', null=True, blank=True)
     
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # likes 用來判斷「我有沒有按讚」，like_count 用來快速顯示「總數」（不用每次都讓資料庫數一遍）。   
     like_count = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+
     comment_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -106,8 +110,10 @@ class Comment(models.Model):
     # 3. 留言內容
     content = models.TextField()
 
-    
+    # likes 用來判斷「我有沒有按讚」，like_count 用來快速顯示「總數」（不用每次都讓資料庫數一遍）。
     like_count = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='liked_comments', blank=True)
+
     comment_count = models.IntegerField(default=0)
     
     # 4. 建立時間

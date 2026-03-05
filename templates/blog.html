@@ -70,7 +70,11 @@
                 <h3 class="article-title">{{ post.title }}</h3>
 
                 <div class="action-s">
-                  <button class="action-btn like-btn" aria-label="按讚">
+                  <button
+                    class="action-btn like-btn {% if post.is_liked %}liked{% endif %}"
+                    data-post-id="{{ post.id }}"
+                    aria-label="按讚"
+                  >
                     {% include "icons/heart.html" %}
                     <span class="action-num">{{ post.like_count }}</span>
                   </button>
