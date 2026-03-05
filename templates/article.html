@@ -7,7 +7,7 @@
     <title>FisshShop | 水族交易平台</title>
 
     <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
-    
+
     <link rel="stylesheet" href="{% static 'aquatic/article.css' %}" />
   </head>
   <body>
@@ -85,9 +85,13 @@
       </main>
 
       <div class="in-article-action-s">
-        <button class="action-btn like-btn" aria-label="按讚">
+        <button
+          class="action-btn like-btn {% if post.is_liked %}liked{% endif %}"
+          data-post-id="{{ post.id }}"
+          aria-label="按讚"
+        >
           {% include "icons/heart.html" %}
-          <span class="action-num">{{ post.like_count }}</span>
+          <span class="action-num">{{ post.likes.count }}</span>
         </button>
 
         <button

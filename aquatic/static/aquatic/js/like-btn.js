@@ -40,6 +40,21 @@ likeButtons.forEach((button) => {
   });
 });
 
+
+// 2. 🚀 留言按讚邏輯 (新加入)
+document.querySelectorAll(".comment-like-btn").forEach((button) => {
+  button.addEventListener("click", async function (e) {
+    const commentId = this.dataset.commentId; // 注意這裡抓的是 comment-id
+    const response = await fetch(`/comment/like/${commentId}/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCookie("csrftoken") }
+    });
+    const data = await response.json();
+    this.classList.toggle("liked", data.is_liked);
+    this.querySelector(".action-num").innerText = data.new_count;
+  });
+});
+
 // 🚀 這段是幫你抓 Django CSRF 貼紙的小工具（直接貼上即可）
 function getCookie(name) {
   let cookieValue = null;
@@ -55,3 +70,4 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+

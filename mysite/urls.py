@@ -28,4 +28,7 @@ urlpatterns = [
     # 🚀 補上這行！JS 傳來的「讚」要送到這裡處理
     path('blog/like/<int:post_id>/', views.toggle_like, name='toggle_like'),
 
+    # 🚀 補上這行：處理「留言」按讚
+    path('comment/like/<int:comment_id>/', views.toggle_comment_like, name='comment_like'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

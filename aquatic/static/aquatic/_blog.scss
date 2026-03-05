@@ -101,9 +101,6 @@ a {
   object-fit: cover;
 }
 
-
-
-
 .content {
   display: flex;
   flex-direction: row;
@@ -321,7 +318,9 @@ a {
 }
 
 // 給愛心一點效果點效果-----------------------------------------------
-.like-btn {
+
+.like-btn,
+.comment-like-btn {
   /* 1. 這是原本的滑鼠滑過效果 (Hover) - 變紅但還是空心 */
   color: var(--text);
   transition: var(--transition);

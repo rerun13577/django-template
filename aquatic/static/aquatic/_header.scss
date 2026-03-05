@@ -368,10 +368,4 @@ p {
   }
 }
 
-/* 只有當裝置支援「滑鼠懸停」功能時，裡面的樣式才會生效 */
-@media (hover: hover) {
-  .navber-list a:hover {
-    background-color: var(--bg-light);
-    box-shadow: var(--shadow-m);
-  }
-}
+

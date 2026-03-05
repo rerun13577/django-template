@@ -361,13 +361,6 @@ p {
     transform: translateY(0); /* 回到原始位置 */
   }
 }
-/* 只有當裝置支援「滑鼠懸停」功能時，裡面的樣式才會生效 */
-@media (hover: hover) {
-  .navber-list a:hover {
-    background-color: var(--bg-light);
-    box-shadow: var(--shadow-m);
-  }
-}
 .hero {
   width: 100%;
   background-image: url("../image/pexels-ben-phillips-3129726-4781925.jpg");
@@ -1065,28 +1058,34 @@ a {
   transform: scale(0.85);
 }
 
-.like-btn {
+.like-btn,
+.comment-like-btn {
   /* 1. 這是原本的滑鼠滑過效果 (Hover) - 變紅但還是空心 */
   color: var(--text);
   transition: var(--transition);
   /* 🔥 關鍵：只有在支援 hover 的裝置（如電腦）才執行 */
 }
 @media (hover: hover) {
-  .like-btn:hover:not(.liked) {
+  .like-btn:hover:not(.liked),
+  .comment-like-btn:hover:not(.liked) {
     color: #ff4b4b;
   }
-  .like-btn:hover:not(.liked) svg {
+  .like-btn:hover:not(.liked) svg,
+  .comment-like-btn:hover:not(.liked) svg {
     stroke: #ff4b4b;
   }
 }
-.like-btn {
+.like-btn,
+.comment-like-btn {
   /* 🔥 2. 這是「按下去之後」的狀態 (Liked State) */
   /* 當 JavaScript 幫它加上 .liked 這個 class 之後... */
 }
-.like-btn.liked {
+.like-btn.liked,
+.comment-like-btn.liked {
   color: #ff4b4b; /* 線條變紅 */
 }
-.like-btn.liked svg {
+.like-btn.liked svg,
+.comment-like-btn.liked svg {
   fill: #ff4b4b; /* 🔥 重點：把愛心裡面填滿紅色！ */
   stroke: #ff4b4b; /* 🔥 關鍵：讓線條也變紅，不要變回白色 */
 }
