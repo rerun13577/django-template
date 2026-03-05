@@ -38,6 +38,7 @@
                 this.src = '/static/image/no-avatar.jpg';
                 this.onerror = null;
               "
+              loading="lazy"
             />
             <!-- 頭貼破圖這張就會自動換掉 -->
           </div>
@@ -65,7 +66,7 @@
               <div class="carousel-track">
                 {% for img_url in block.value %}
                 <figure class="carousel-item">
-                  <img src="{{ img_url }}" alt="Slide" />
+                  <img src="{{ img_url }}" alt="Slide" loading="lazy" />
                 </figure>
                 {% endfor %}
               </div>

@@ -110,8 +110,15 @@ def article_view(request, pk):
     post = get_object_or_404(post_queryset, pk=pk)
     return render(request, 'article.html', {'post': post})
 
-@login_required # 確保有登入才能點讚
+
 def toggle_like(request, post_id):
+
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": "unauthorized",
+            "login_url": f"/login/?next={request.path}" 
+        }, status=401) # 回傳 401 錯誤碼
+    
     post = get_object_or_404(Post, id=post_id)
     user = request.user
     
@@ -127,8 +134,16 @@ def toggle_like(request, post_id):
         "new_count": post.likes.count()
     })
 
-@login_required
+
 def toggle_comment_like(request, comment_id):
+
+    # 🚀 留言這邊也要手動判斷，不能只靠 @login_required
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": "unauthorized",
+            "login_url": f"/login/?next={request.path}" 
+        }, status=401)
+    
     comment = get_object_or_404(Comment, id=comment_id)
     user = request.user
     
