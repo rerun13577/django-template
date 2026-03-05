@@ -25,11 +25,9 @@ from django.db.models import Exists, OuterRef
 
 # --- 部落格邏輯 ---
 def blog(request):
-    # 🚀 加上 select_related('author')，一次把文章和作者資料全部打包
-    all_posts = Post.objects.select_related('author').all().order_by('-created_at')
 
-    user = request.user
-    posts = Post.objects.select_related('author').all().order_by('-created_at')
+    user = request.user# 🚀 1. 統一用一個變數就好，先抓基礎資料
+    posts = Post.objects.select_related('author').order_by('-created_at')
 
     if user.is_authenticated:
         # 🚀 預先標記 is_liked 狀態
@@ -38,9 +36,8 @@ def blog(request):
                 Post.objects.filter(id=OuterRef('pk'), likes=user)
             )
         )
-    
-    # 這是正確的送貨員，包裹裡有裝 'posts'
-    return render(request, 'blog.html', {'posts': all_posts})
+    # 🚀 3. 確保包裹裡的名稱也是 posts
+    return render(request, 'blog.html', {'posts': posts})
 
 
 def index(request):
