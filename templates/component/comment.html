@@ -82,11 +82,6 @@
           <p class="in-reply-content">{{ reply.content }}</p>
 
           <div class="action-s">
-            <button class="action-btn like-btn" aria-label="按讚">
-              {% include "icons/heart.html" %}
-              <span class="action-num">{{ reply.like_count|default:0 }}</span>
-            </button>
-
             <button
               class="action-btn comment-like-btn {% if reply.is_liked %}liked{% endif %}"
               data-comment-id="{{ reply.id }}"
