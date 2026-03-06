@@ -1,13 +1,15 @@
 from django.contrib import admin
-from .models import AquaticLife # 引入你剛剛寫的模型
-from .models import Post # 引入你剛寫好的模型
-from .models import Comment  # 1. 這裡要引入 Comment
+from .models import AquaticLife, Post, Comment
 
- # 在後台登記它
-admin.site.register(Post)
-
- # 在後台登記它
+# 1. 簡單的直接登記
 admin.site.register(Comment)
-
-# 把你的水生生物模型註冊進管理後台
 admin.site.register(AquaticLife)
+
+# 2. 需要「特異功能」的用這個寫法
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    # 🚀 這一行是解決轉圈圈的神藥
+    raw_id_fields = ('likes', 'author') 
+    
+    # 加這行可以讓你一眼看到誰是作者
+    list_display = ('title', 'author', 'created_at')
