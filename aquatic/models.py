@@ -72,8 +72,12 @@ class AquaticLife(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=150)
     
-    # 關鍵修改：改用 JSONField，預設給它一個空清單 []
-    content = models.JSONField(default=list, help_text="儲存區塊資料的清單")
+    content = models.JSONField(
+        default=list, 
+        blank=True, 
+        null=True, 
+        help_text="儲存區塊資料的清單"
+    )
     
     # 這裡保留，作為「文章封面圖」
     image = models.ImageField(upload_to='blog_photos/', null=True, blank=True)
