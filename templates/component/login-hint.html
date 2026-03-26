@@ -1,0 +1,95 @@
+<div
+  id="login-guide-overlay"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100000;
+    /* 改用這三行來居中，不要用 margin */
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <div
+    style="
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(8px);
+    "
+  ></div>
+
+  <div
+    style="
+      position: relative;
+      background: #262626;
+      color: white;
+      width: 85%;
+      max-width: 320px;
+      /* 刪除原有的 margin: 150px auto */
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      font-family: sans-serif;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    "
+  >
+    <div style="font-size: 40px; margin-bottom: 20px">😎</div>
+    <h3 style="margin-bottom: 10px">安全登入提示</h3>
+    <p style="font-size: 14px; color: #a8a8a8; line-height: 1.5">
+      由於 Google 與 Facebook 的安全安全性原則，在 Threads/LINE 內建瀏覽器
+      使用第三方登入會導致驗證失敗。
+    </p>
+
+    <a
+      id="android-jump-link"
+      href="#"
+      style="
+        display: none;
+        background: #0095f6;
+        color: white;
+        text-decoration: none;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-weight: bold;
+      "
+      >使用 Chrome 開啟並登入</a
+    >
+
+    <div
+      id="ios-instruction"
+      style="
+        display: none;
+        margin-top: 20px;
+        border-top: 1px solid #3d3d3d;
+        padding-top: 15px;
+      "
+    >
+      <p style="font-size: 14px">
+        請點擊右上角
+        <span style="font-weight: bold; color: #fff">「...」</span> 選擇
+        <span style="font-weight: bold; color: #fff">「在瀏覽器中開啟」</span
+        >，即可正常登入。
+      </p>
+    </div>
+
+    <button
+      onclick="closeLoginGuide()"
+      style="
+        background: none;
+        border: none;
+        color: #555;
+        margin-top: 20px;
+        cursor: pointer;
+        font-size: 14px;
+      "
+    >
+      取消
+    </button>
+  </div>
+</div>

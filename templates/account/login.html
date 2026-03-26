@@ -1,0 +1,109 @@
+{% load static %} {% load socialaccount %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+      cd
+    />
+    <title>FisshShop | 進入魚缸</title>
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+    {% endcomment %}
+    <link rel="stylesheet" href="{% static 'aquatic/main.css' %}?v=1.0.1" />
+  </head>
+  <body class="bg-pic">
+    <div class="login-container">
+      <form method="POST" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        <div>
+          <h2 class="login-tilte">登入 FisshShop</h2>
+        </div>
+
+        <div class="input-group">
+          <input
+            type="text"
+            name="login"
+            class="input-data"
+            placeholder="請輸入 Email"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <input
+            type="password"
+            name="password"
+            class="input-data"
+            placeholder="請輸入密碼"
+            required
+          />
+        </div>
+
+        <div class="hint-btn">
+          <a href="{% url 'account_reset_password' %}">忘記密碼？</a>
+          <a href="{% url 'account_signup' %}">立即註冊</a>
+        </div>
+
+        <div class="login-choise">
+          <a
+            href="{% provider_login_url 'facebook' %}"
+            class="google-btn"
+            onclick="return handleGoogleLogin(event);"
+          >
+            {% include 'icons/facebook.html' %}
+          </a>
+          <a
+            href="{% provider_login_url 'google' %}"
+            class="google-btn"
+            onclick="return handleGoogleLogin(event);"
+          >
+            {% include 'icons/google.html' %}
+          </a>
+
+          <a
+            href="{% provider_login_url 'line' %}"
+            class="google-btn"
+            onclick="return handleGoogleLogin(event);"
+          >
+            {% include 'icons/line.html' %}
+          </a>
+        </div>
+
+        <button type="submit" class="enter-btn">進入魚缸</button>
+      </form>
+    </div>
+    {% include 'component/login-hint.html' %}
+  </body>
+  <script src="{% static 'aquatic/js/check-env.js' %}"></script>
+  <script>
+    function handleGoogleLogin(event) {
+      const isSafe = checkLoginEnvironment();
+
+      if (!isSafe) {
+        event.preventDefault();
+
+        // 顯示彈窗並鎖定背景
+        const overlay = document.getElementById("login-guide-overlay");
+        if (overlay) {
+          overlay.style.display = "flex";
+          document.body.classList.add("no-scroll"); // 鎖定滾動
+        }
+        return false;
+      }
+      return true;
+    }
+
+    // 關閉彈窗並解除鎖定
+    function closeLoginGuide() {
+      document.getElementById("login-guide-overlay").style.display = "none";
+      document.body.classList.remove("no-scroll"); // 解除滾動
+    }
+  </script>
+</html>

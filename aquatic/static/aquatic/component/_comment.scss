@@ -1,0 +1,372 @@
+@charset "UTF-8";
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.76 0.1 308)
+  );
+
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+
+  --article-margin: 2rem;
+}
+
+.in-article-comment-s {
+  margin: 1.5rem 1.5rem 0rem 0;
+}
+
+.outside-comment {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* 確保容器撐滿 */
+}
+
+.in-article-comment {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0 0.75rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.comment-num {
+  margin: 3rem var(--article-margin) 1.5rem var(--article-margin);
+}
+
+.in-comment-avatar {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem var(--article-margin);
+}
+
+.in-comment-name {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.in-comment-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 0rem 0rem 1rem;
+}
+//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
+// 輸入框跟留言大標結構----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/* 1. 讓整台傳送機在頁面中央 */
+.comment-form {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  width: 100%;
+  height: auto;
+  max-height: 20rem;
+
+  margin: 2.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  border: none;
+}
+
+/* 2. 內容物膠囊 (外框) */
+.outside-comment-input {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end; /* 按鈕靠底部對齊 */
+  width: 90%;
+  max-width: 41.5rem;
+  margin: 0 auto; /* 🚀 讓這塊地基左右置中 */
+
+  height: auto;
+  max-height: 20rem;
+}
+
+/* 3. 輸入框本體 (內部的純文字區) */
+.input-comment {
+  flex: 1; /* 🚀 關鍵：自動填滿剩餘空間，不搶按鈕位置 */
+  padding: 1rem 1.5rem 1rem 1.5rem; /* 調整內距，讓字不要黏住邊緣 */
+  font-size: 1rem;
+  line-height: 1.5;
+
+  /* 🚀 2026 自動長高 */
+  field-sizing: content;
+  min-height: 45px;
+  height: auto;
+  max-height: 20rem;
+  resize: none;
+}
+
+/* 4. 送出按鈕美化 */
+.send-btn {
+  padding: 8px 18px;
+  font-weight: 600;
+  height: 3.55rem; /* 固定高度 */
+  margin-bottom: 0rem; /* 讓按鈕在垂直方向置中 */
+  align-items: flex-end;
+  width: 7rem;
+}
+
+//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
+// 輸入框跟留言大標結構----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+.no-comment {
+  display: flex;
+  margin: 0.5rem auto 1.5rem auto;
+  @extend %center;
+  height: 5rem;
+  width: auto;
+  padding: 1.5rem;
+  font-size: 1rem;
+}
+
+.in-reply-s {
+  margin: 0rem 0 0rem 3.75rem;
+}
+
+.in-reply {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0 1rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.in-reply-avatar {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem var(--article-margin);
+}
+
+.in-reply-without-avatar {
+}
+
+.in-reply-name {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.in-reply-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 0rem 0rem 1rem;
+}
+
+.show-reply {
+  margin: 0.5rem 0rem 0rem 3.75rem;
+  border: none;
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// 上面結構區--------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// 下面是輸入框區裝飾--------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+
+/* 2. 內容物膠囊 (外框) */
+.outside-comment-input {
+  /* 視覺樣式：這層才需要背景和邊框 */
+  background-color: var(--bg-light);
+  border: 2px solid var(--text-muted);
+  border-radius: 1.5rem;
+  overflow: hidden; /* 確保內容不會超出圓角 */
+  transition: 0.3s;
+
+  &:focus-within {
+    background-color: var(--bg-big-light);
+    border-color: var(--text);
+  }
+}
+
+/* 3. 輸入框本體 (內部的純文字區) */
+.input-comment {
+  background: transparent; /* 🚀 關鍵：透明背景，顯示外層膠囊的顏色 */
+  border: none; /* 拔掉所有邊框 */
+  outline: none;
+  color: var(--text);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+  //   提示文字樣式
+}
+
+/* 4. 送出按鈕美化 */
+.send-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:hover {
+    opacity: 0.8;
+    color: var(--text);
+  }
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// 下面是留言區裝飾--------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+
+.in-comment-avatar {
+  border-radius: 50%;
+}
+
+.in-comment-name {
+  color: var(--text);
+}
+
+.in-comment-content {
+  color: var(--text);
+}
+
+.no-comment {
+  color: var(--text-muted);
+  font-size: 1rem;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-m);
+  border: none;
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+// 上面是回復區區的裝飾--------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
+
+.in-reply-avatar {
+  border-radius: 50%;
+}
+
+.in-reply-name {
+  color: var(--text);
+}
+
+.in-reply-content {
+  color: var(--text);
+}
+
+.show-reply {
+  background-color: var(--bg);
+  color: var(--text);
+
+  font-size: 1rem;
+}
+
+:root {
+  --article-margin-mobile: 1.2rem;
+}
+
+@media (max-width: 667px) {
+  .comment-num {
+    margin: 2rem var(--article-margin-mobile) 1.5rem
+      var(--article-margin-mobile);
+  }
+
+  .comment-form {
+    margin: 1.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  }
+  /* 3. 輸入框本體 (內部的純文字區) */
+  .input-comment {
+    color: var(--text);
+
+    &::placeholder {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    //   提示文字樣式
+  }
+
+  .in-comment-avatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0.5rem 0rem 0rem var(--article-margin-mobile);
+  }
+
+  .in-article-comment-s {
+  margin: 1.5rem var(--article-margin-mobile) 0rem 0;
+}
+
+  .in-article-comment {
+    display: flex;
+    flex-direction: row;
+    margin: 0rem 0 0rem 0;
+    width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+  }
+
+  .in-reply-s {
+  margin: 0rem 0 0.875rem 3.75rem;
+}
+
+.in-reply {
+  margin: 0.875rem 0 1rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.in-reply-avatar {
+  height: 2.5rem;
+  width: 2.5rem;
+  margin: 0rem 0rem 0rem 1rem;
+}
+
+  .send-btn {
+    font-size: 0.875rem;
+  }
+
+  .no-comment {
+    font-size: 0.875rem;
+    height: 3.5rem;
+  }
+}

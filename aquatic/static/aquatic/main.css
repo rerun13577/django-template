@@ -1,0 +1,2845 @@
+@charset "UTF-8";
+/* main.scss */
+/* 引入 Inter (300, 400, 700, 900) 與 思源黑體 (300, 400, 700, 900) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap");
+/* 確保網頁佔滿版 */
+html,
+body {
+  width: 100%;
+  overflow-x: hidden; /* 防止出現討厭的橫向捲軸 */
+}
+
+body {
+  margin: 0; /* 徹底消除那 預設 8px 的白邊 */
+  /* 只要寫在 body，裡面所有的 div, p, h1~h6, span 都會跟著變 */
+  letter-spacing: 0.02em;
+}
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(to bottom, oklch(0.8199 0.1381 140.2), oklch(0.76 0.1 308));
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+  --article-margin-mobile: 1.2rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* 確保寬度計算包含 padding */
+  font-family: var(--ff-primary);
+}
+
+a {
+  text-decoration: none; /* 移除底線 */
+  color: inherit;
+}
+
+.photo-upload, .photo-item, .no-comment {
+  justify-content: center;
+  align-items: center;
+}
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.911 0.0963 140)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+header {
+  background-color: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 5%; /* 給 header 一些左右內邊距 */
+  height: 5rem; /* 給它一個高度 */
+}
+
+.logo-mobile {
+  height: 2.75rem;
+}
+
+.logo-desktop {
+  height: 2.75rem;
+}
+
+.header-l img {
+  height: 2.75rem; /* 根據你的 header 高度 (4rem) 調整，這大約是 60% */
+  width: auto; /* 重要：讓寬度自動縮放，圖片才不會變形 */
+}
+
+.header-m ul {
+  display: flex;
+  gap: 2rem; /* 每個選項之間的間距 */
+  list-style: none; /* 拿掉討人厭的黑點 */
+  margin: 0;
+  padding: 0;
+}
+
+.header-l {
+  flex: 1;
+  display: flex; /* 移除圖片下方的微小間隙 */
+  align-items: center; /* 讓圖片跟文字「垂直中心線」對齊 */
+  gap: 0.5rem; /* 圖片和文字之間的間距 */
+}
+
+.header-m {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-r {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.login-btn-case {
+  display: flex;
+  justify-content: flex-end;
+  width: 250px;
+}
+
+.user-case {
+  position: relative; /* 核心：讓內部的 absolute 有參考點 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-photo:hover {
+  border-color: var(--primary); /* 滑鼠移上去有個綠圈圈，很帥 */
+}
+
+.dropdown-menu {
+  display: none; /* 預設隱藏 */
+  position: absolute; /* 核心：脫離文件流，不佔空間 */
+  top: 110%; /* 出現在頭像下方 10% 的距離 */
+  right: 0; /* 靠右對齊 */
+  min-width: 120px;
+  z-index: 1000; /* 確保它浮在鯨魚圖上面 */
+  overflow: hidden; /* 讓內部的 hover 效果不會超出圓角 */
+  box-shadow: var(--shadow-m);
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: 0.5rem;
+}
+.dropdown-menu.show {
+  display: block; /* 強制顯示 */
+  border: 1px solid var(--border);
+}
+
+.logout-btn {
+  display: block;
+  padding: 12px 16px;
+  color: var(--text); /* 登出按鈕用紅色比較醒目 */
+  text-decoration: none;
+  font-size: 14px;
+  transition: var(--transition);
+}
+.logout-btn:hover {
+  background-color: var(--bg-light);
+  color: #ff4444;
+  box-shadow: var(--shadow-m);
+}
+
+body {
+  background-color: var(--bg-dark);
+}
+
+span {
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.navber-list {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  margin: 0.5rem;
+  white-space: nowrap;
+}
+.navber-list:hover {
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.login-btn {
+  background-color: var(--primary);
+  color: var(--text);
+  border-radius: 1.5rem;
+  padding: 0.5rem 2rem;
+  border: none;
+  cursor: pointer;
+}
+.login-btn:hover {
+  background-color: var(--secondary);
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.hb-icon span {
+  width: 30px;
+  height: 3px;
+  background-color: var(--primary); /* 配合你 Logo 的綠色 */
+  margin: 3.8px 0;
+  display: block;
+  transition: var(--transition); /* 之後做動畫用 */
+}
+
+.user-photo {
+  border-radius: 6rem;
+  height: 3rem;
+}
+
+/* 漢堡圖示樣式 (三條線) */
+.hb-icon {
+  display: none; /* 電腦版先隱藏 */
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  /* 讓三條線垂直置中 */
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-desktop {
+  display: block; /* 顯示電腦版 */
+}
+
+.logo-mobile {
+  display: none; /* 隱藏手機版 */
+}
+
+.header-r ul {
+  display: none; /* 隱藏電腦版 */
+}
+
+.hb-icon {
+  display: none; /* 電腦版先隱藏 */
+}
+
+/* 把真正的 checkbox 藏起來 */
+.menu-control {
+  display: none;
+}
+
+@media screen and (max-width: 902px) {
+  .login-btn {
+    display: none; /* 隱藏電腦版 */
+  }
+}
+@media screen and (max-width: 902px) {
+  /* 關 navber */
+  .header-m {
+    display: none;
+  }
+  /* 關 login-btn */
+  .logo-desktop {
+    display: none; /* 隱藏電腦版 */
+  }
+  .logo-mobile {
+    display: block; /* 顯示手機版 */
+  }
+  .user-photo {
+    display: none;
+  }
+  /* 開 icon */
+  .hb-icon {
+    display: flex; /* 手機版顯示漢堡 */
+    justify-content: center; /* 關鍵：讓內容在容器內「上下置中」 */
+    align-items: center; /* 讓內容在容器內「左右置中」 */
+  }
+  /* 先關navber(含登入)，等點hb-icon後打開 */
+  .header-r ul {
+    padding: 20px 0;
+    /* 基礎排版 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 100%; /* 從 Header 底部開始出現 */
+    left: 0;
+    width: 100%;
+    background-color: var(--bg);
+    /* 動態效果設定 */
+    opacity: 0; /* 完全透明 */
+    visibility: hidden; /* 確保點不到隱藏的選單 */
+    transform: translateY(-20px); /* 向上偏移 20px，營造下滑感 */
+    transition: var(--transition); /* 關鍵：平滑過渡曲線 */
+    z-index: 100;
+  }
+  .navber-list-case {
+    display: flex;
+    align-items: center; /* 關鍵：水平方向置中 */
+    padding: 0; /* 移除預設內距，避免置中偏移 */
+    margin: 0;
+    list-style: none; /* 移除黑點 */
+    width: 100%; /* 確保寬度撐滿，基準點才會對 */
+  }
+  #menu-control:checked ~ .navber-list-case {
+    opacity: 1; /* 變回不透明 */
+    visibility: visible; /* 變回可見並可點擊 */
+    transform: translateY(0); /* 回到原始位置 */
+  }
+}
+.hero {
+  width: 100%;
+  background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-ben-phillips-3129726-4781925.webp");
+  background-size: cover; /* 圖片鋪滿整個區域 */
+  background-position: center; /* 蝦子如果偏了再調這裡 */
+  min-height: 700px; /* 關鍵：手機版就算寬度縮小，高度至少要保持 350px，內容才不會爆掉 */
+  display: flex;
+  flex-direction: column; /*交換主軸方向，讓內容從上到下排列，下面子層主軸都是y*/
+  justify-content: center; /* 因為上下有兩個元素 要用content來對齊 */
+  align-items: center; /* 因為左右有1個元素 要用items來對齊 */
+  text-align: center; /* 讓文字換行 第二行也能置中 */
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  background-repeat: no-repeat;
+}
+
+.hero-title {
+  font-size: 3.75rem;
+}
+
+.hero-btn {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 1.5rem;
+  font-size: 1.25rem;
+  cursor: pointer; /* 鼠標變成小手 */
+}
+
+.slogan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-size: cover;
+  padding: 9rem 5.25rem;
+}
+
+.slogan {
+  display: flex; /* 改成 flex 才能用 gap */
+  justify-content: center; /* 讓內容水平置中 */
+  flex-wrap: wrap;
+  align-items: baseline; /* 讓中英文底部對齊，視覺更穩 */
+  gap: 2rem; /* 這裡就是你要的空間！ */
+  margin-bottom: 6rem;
+  color: var(--text);
+}
+
+/* 內層不需要再寫 text-align: center，因為父層 flex 搞定了 */
+.slogan-ch,
+.slogan-en {
+  font-size: 4.25rem;
+  font-weight: 700;
+}
+
+.slogan-qa-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.slogan-qa-card {
+  flex: 1;
+  min-width: 280px;
+  padding: 20px;
+  text-align: center;
+  flex: 0 0 15rem;
+  max-width: 25rem;
+  padding: 3rem 2rem;
+  border: 1px solid;
+}
+
+.slogan-qu {
+  margin-bottom: 0.5rem;
+}
+
+.section-s {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.section {
+  width: 100%;
+  padding: 1.25rem 5.25rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  padding: 0rem 1rem 0.25rem 1rem;
+  margin-bottom: 0.25rem;
+  /* 1. 先把漸層設為背景 */
+  background: var(--green-gradient); /* 注意變數名稱要對喔！ */
+  /* 2. 把背景「剪」成文字的形狀 */
+  background-clip: text;
+  -webkit-background-clip: text; /* 為了相容 Chrome/Safari 必加 */
+  /* 3. 把文字本身變透明，才看得到下面的漸層 */
+  color: transparent;
+}
+
+.section-subtitle {
+  margin-bottom: 1.5rem;
+  padding: 0rem 1rem;
+  font-size: 1rem;
+}
+
+.hot-article-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 1px solid;
+  gap: 2rem;
+  padding: 1rem 0 1rem 1rem;
+  flex: 0 0 350px;
+  min-height: 480px;
+}
+
+.hot-article {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 350px;
+  border: 1px solid; /* 關鍵設定：最小高度 */
+  min-height: 450px;
+  scroll-snap-align: center;
+}
+
+/* _index.scss */
+.hot-article img {
+  width: 100%;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.hot-article-title {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  width: 100%;
+}
+
+.hot-article-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  margin-left: 1rem;
+  width: 100%;
+}
+
+.hot-creature-s {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 1px solid;
+  gap: 2rem;
+  padding: 1rem 0 1rem 1rem;
+  flex: 0 0 350px;
+  min-height: 480px;
+  scroll-behavior: smooth;
+}
+
+.hot-creature {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 350px;
+  border: 1px solid; /* 關鍵設定：最小高度 */
+  min-height: 450px;
+  scroll-snap-align: center;
+}
+
+.hot-creature img {
+  width: 100%;
+  height: 250px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+.hot-creature-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  width: 100%;
+  font-size: 1.5rem;
+}
+
+.hot-creature-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 1rem;
+  width: 100%;
+  font-size: 1.25rem;
+}
+
+.hot-creature-city {
+  /* 原本的 display: flex 保留，這樣你可以控制裡面的對齊 */
+  display: flex;
+  /* ★ 關鍵：加上這行！ */
+  width: -moz-fit-content;
+  width: fit-content;
+  /* ★ 關鍵：這行確保它會自動跑到最右邊 */
+  margin-left: auto;
+  /* 其他保留 */
+  align-items: center;
+  background-color: oklch(70% 0.05 230deg);
+  border-radius: 1rem;
+  padding: 0.25rem 0.85rem;
+  color: var(--text-muted);
+  /* 確保文字垂直置中 (因為你有用 flex) */
+  align-items: center;
+  margin-right: 1rem;
+  margin-top: 3.5rem;
+}
+
+body {
+  background-color: var(--bg-dark);
+}
+
+h3,
+h2,
+h1,
+span {
+  color: var(--text);
+}
+
+p {
+  color: var(--text-muted);
+}
+
+.hero-btn {
+  background-color: var(--primary);
+  color: var(--text);
+  border-radius: 1.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.hero-btn:hover {
+  background-color: var(--secondary);
+  color: var(--text);
+}
+
+.slogan-container {
+  background: linear-gradient(to bottom, #00284a, #030303);
+}
+
+.slogan {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.slogan-qa-card {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  transition: var(--transition);
+}
+.slogan-qa-card:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.icon {
+  width: 5rem;
+  height: 5rem;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  stroke-width: 1.25px; /* 調整線條粗細，讓圖示更精緻 */
+  transition: var(--transition);
+}
+
+.slogan-qa-card:hover .icon {
+  color: var(--secondary); /* 懸停時圖示變色，增加互動感 */
+  transform: scale(1.2); /* 懸停時圖示放大，增加動感 */
+  transition: var(--transition); /* 確保圖示的變化也有過渡效果 */
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.hot-article {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.hot-article:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+}
+
+.hot-creature {
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-l);
+  border-color: var(--border-muted);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.hot-creature:hover {
+  background-color: var(--bg-light);
+  border-color: var(--border);
+  transition: var(--transition);
+  box-shadow: var(--shadow-l);
+}
+.hot-creature:hover .hot-creature-subtitle {
+  color: var(--secondary);
+  transition: var(--transition);
+}
+.hot-creature:hover .hot-creature-city {
+  transition: var(--transition);
+  box-shadow: var(--shadow-l);
+  border-top: white;
+}
+
+.hot-creature-subtitle {
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  color: var(--primary);
+  transition: var(--transition);
+}
+
+.hot-creature-city {
+  border-radius: var(--radius-m);
+  color: var(--text);
+}
+
+@media screen and (max-width: 785px) {
+  .hero {
+    background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-chevanon-325044%20-%20%E8%A4%87%E8%A3%BD.webp");
+    /* 2. 關鍵修改：讓圖片「包含」在框框內，隨寬度縮放 */
+    background-size: contain;
+    /* 4. 不重複 */
+    background-repeat: no-repeat;
+  }
+}
+/* 這樣寫才是對的：明確指出是啥要改 */
+@media (max-width: 902px) {
+  .slogan {
+    margin-bottom: 4rem;
+    gap: 0.75rem;
+  }
+  .slogan-ch,
+  .slogan-en {
+    font-size: 3.5rem;
+  }
+  .slogan-container {
+    padding: 3rem 1.5rem;
+  }
+  .section-s {
+    padding: 0rem;
+    width: 100%;
+  }
+  .section {
+    padding: 0rem;
+    width: 100%;
+  }
+  .section-title {
+    font-size: 1.75rem;
+    padding-left: 1.5rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+    padding-left: 1.5rem;
+  }
+  .hot-article-s {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x pan-y;
+  }
+  .hot-article-s::-webkit-scrollbar {
+    display: none;
+  }
+  .hot-article {
+    flex: 0 0 326px;
+    scroll-snap-align: center;
+  }
+  .hot-creature-s {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
+  }
+  .hot-creature-s::-webkit-scrollbar {
+    display: none;
+  }
+  .hot-creature {
+    flex: 0 0 326px;
+    scroll-snap-align: center;
+  }
+}
+a {
+  text-decoration: none; /* 移除底線 */
+}
+
+.blog-container {
+  /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 41.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin-left: auto;
+  margin-right: auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+}
+
+.search {
+  margin: 1.5rem auto 1.5rem auto;
+}
+
+.article-container {
+  border: 1px solid;
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin: 0 auto 0 auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+  margin-bottom: 1rem;
+  width: 38rem;
+}
+
+.search {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  width: 38rem;
+  height: auto;
+  border: 1px solid var(--border);
+}
+
+.search-select {
+  width: 6rem;
+  height: 2.5rem;
+  text-align: center; /* 部分瀏覽器支援 */
+  padding-left: 1rem; /* 🔥 手動校正：讓文字往右推，看起來會更像在中間 */
+  padding-right: 0.5rem;
+  cursor: pointer;
+}
+
+.selection {
+  font-size: 1rem;
+}
+
+.input-text {
+  width: 26rem;
+  height: 2.5rem;
+}
+
+.search-btn {
+  width: 6rem;
+  height: 2.5rem;
+}
+
+.article-s {
+  margin-bottom: 0.5rem;
+}
+
+.article-photo {
+  position: relative;
+  z-index: 2;
+  /* 1. 絕對不要比你的爸爸還要寬 */
+  width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+  height: auto; /* 高度自動計算，保持比例，才不會變形 */
+  display: block; /* 消除圖片下方可能出現的小縫隙 */
+  margin: 0 auto;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 0.5rem;
+  /* 3. 🔥 魔法：確保照片不被壓扁 */
+  /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+}
+
+.content-without-maker-photo {
+  margin-bottom: 1rem;
+}
+
+.article-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 1rem 2.5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.maker-photo {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.maker-name {
+  position: relative;
+  z-index: 2;
+  /* 其他你原本的樣式... */
+  /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.action-s {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0 0.5rem 1rem;
+  gap: 1.1rem;
+}
+
+.article {
+  position: relative;
+}
+
+.article-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 它的層級是 1，蓋住圖和字 */
+}
+
+.action-btn {
+  background: none; /* 去掉背景 */
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  position: relative; /* 必須設為 relative，z-index 才會生效 */
+  z-index: 2; /* 它的層級是 2，比連結高，所以點得到愛心 */
+}
+
+.action-btn svg {
+  /* 🔥 這裡用 rem 蓋掉 HTML 裡的設定 */
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.action-num {
+  margin-left: 0.5rem;
+}
+
+.blog-container {
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+  background-color: var(--bg-dark);
+}
+
+.search {
+  background-color: var(--bg-light);
+  color: var(--primary);
+  border-radius: 1.5rem;
+  border: var(--bg-light);
+}
+
+.search-select {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  background-color: var(--bg-light);
+  outline: none;
+  border: none;
+  border-radius: 1.5rem 0 0 1.5rem;
+  color: var(--text-muted);
+}
+.search-select:focus {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+
+.selection {
+  background-color: var(--bg-light);
+  border-radius: 1.5rem;
+}
+
+.input-text {
+  background-color: var(--bg-light);
+  color: var(--text-muted);
+  outline: none;
+  border: none;
+  padding: 0.8rem 1.2rem; /* 增加左邊 padding，字才不會黏住 */
+  /* 🔥 點選時的顏色 */
+  /* 🔥 把 :active 改成 :focus */
+}
+.input-text:focus {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+.input-text {
+  /* 針對 Chrome, Safari, Edge 的叉叉 */
+}
+.input-text::-webkit-search-cancel-button {
+  /* 🔥 先讓它變明顯 (預設可能很淡) */
+  -webkit-appearance: none;
+  height: 1rem;
+  width: 1rem;
+  /* 🔥 核心技巧：用濾鏡改顏色 */
+  /* 下面這行會把原本的灰色變成白色，你可以調整 brightness */
+  filter: brightness(0) invert(1);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239FBD78' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>");
+  background-size: contain;
+  cursor: pointer;
+}
+
+.search-btn {
+  outline: none;
+  border: none;
+  background-color: var(--bg-light);
+  border-radius: 0rem 1.5rem 1.5rem 0rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.search-btn:hover {
+  color: var(--text);
+  /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+  background-color: var(--bg-big-light);
+}
+.search-btn:active svg {
+  transform: scale(0.8);
+}
+
+.article-s {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.article {
+  overflow: hidden;
+  transition: var(--transition);
+}
+.article:hover {
+  background-color: var(--bg-light);
+}
+
+.article-title {
+  color: var(--text);
+}
+
+.maker-photo {
+  border-radius: 3rem;
+}
+
+.maker-name {
+  /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
+  display: inline-block;
+  color: var(--text);
+}
+
+.action-btn svg {
+  color: var(--text);
+}
+
+.action-btn {
+  transition: var(--transition);
+}
+.action-btn:active svg {
+  /* 縮小到 0.9 倍 (你可以自己調 0.8 或 0.95) */
+  transform: scale(0.85);
+}
+
+.like-btn,
+.comment-like-btn {
+  /* 1. 這是原本的滑鼠滑過效果 (Hover) - 變紅但還是空心 */
+  color: var(--text);
+  transition: var(--transition);
+  /* 🔥 關鍵：只有在支援 hover 的裝置（如電腦）才執行 */
+}
+@media (hover: hover) {
+  .like-btn:hover:not(.liked),
+  .comment-like-btn:hover:not(.liked) {
+    color: #ff4b4b;
+  }
+  .like-btn:hover:not(.liked) svg,
+  .comment-like-btn:hover:not(.liked) svg {
+    stroke: #ff4b4b;
+  }
+}
+.like-btn,
+.comment-like-btn {
+  /* 🔥 2. 這是「按下去之後」的狀態 (Liked State) */
+  /* 當 JavaScript 幫它加上 .liked 這個 class 之後... */
+}
+.like-btn.liked,
+.comment-like-btn.liked {
+  color: #ff4b4b; /* 線條變紅 */
+}
+.like-btn.liked svg,
+.comment-like-btn.liked svg {
+  fill: #ff4b4b; /* 🔥 重點：把愛心裡面填滿紅色！ */
+  stroke: #ff4b4b; /* 🔥 關鍵：讓線條也變紅，不要變回白色 */
+}
+
+@media screen and (max-width: 768px) {
+  .blog-container {
+    /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+    max-width: 100%;
+    display: flex;
+    width: 41.5rem;
+    border: none;
+  }
+  .article-container {
+    /* 🔥 關鍵：讓框框自己置中 */
+    margin: 0 auto 0 auto;
+    width: 100%;
+    border: none;
+  }
+  .search {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 95%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+  .search-select {
+    width: 5.5rem;
+    height: 2.5rem;
+    text-align: center; /* 部分瀏覽器支援 */
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .selection {
+    font-size: 3rem;
+  }
+  .input-text {
+    flex: 1;
+    height: 2.5rem;
+    font-size: 15px;
+  }
+  .search-btn {
+    width: 3rem;
+    height: 2.5rem;
+  }
+  .article-s {
+    margin-bottom: 0.5rem;
+    overflow: visible; /* 或者用 unset / auto */
+    border-radius: 0rem;
+    border: none;
+  }
+  .article {
+    max-width: 700px;
+  }
+  .article-photo {
+    /* 1. 絕對不要比你的爸爸還要寬 */
+    width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+    height: auto; /* 高度自動計算，保持比例，才不會變形 */
+    display: block; /* 消除圖片下方可能出現的小縫隙 */
+    margin: 0 auto;
+    -o-object-fit: cover;
+       object-fit: cover;
+    margin-bottom: 0.5rem;
+    /* 3. 🔥 魔法：確保照片不被壓扁 */
+    /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+    object-fit: cover;
+  }
+  .article-title {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 3px 1rem 0.5rem 1rem;
+    font-size: 1.25rem;
+  }
+  .article-subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0.37rem 1rem 1.25rem 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.05rem;
+  }
+  .art-maker {
+    display: flex;
+    margin: 0rem 1rem 1rem 1rem;
+    align-items: center;
+    gap: 1rem;
+  }
+  .maker-photo {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 3rem;
+  }
+  .maker-name {
+    font-size: 1rem;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(to bottom, oklch(0.76 0.1 128), oklch(0.76 0.1 308));
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.bg-pic {
+  display: flex;
+  background-image: var(--green-gradient);
+  align-items: center; /* 水平置中子元素 */
+  justify-content: center; /* 垂直置中子元素 */
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  background-image: var(--green-gradient);
+  background-size: 100% 100%;
+  background-position: center;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平置中子元素 */
+  justify-content: center; /* 垂直置中子元素 */
+  margin: auto; /* 距離頂部 10% 視窗高度，左右自動置中 */
+  width: 30rem; /* 這是電腦版最舒適的寬度 */
+  max-width: 90%; /* 手機版不破版 */
+  height: auto;
+  padding: 1rem 2rem; /* 增加內邊距，讓裡面不擁擠 */
+  opacity: 0.8;
+}
+
+.login-tilte {
+  display: flex;
+  margin: 1rem 0rem 1rem 0rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  margin: 1.5rem auto 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 19rem;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.input-data {
+  height: 4.75rem;
+  width: 19rem;
+  font-size: 1rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.hint-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 1rem;
+}
+
+.login-choise {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中，這點很重要 */
+  margin-top: 1.5rem;
+  gap: 2.5rem;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center; /* 內容垂直置中 */
+  justify-content: center; /* 內容水平置中 */
+  background-color: var(--text); /* 修正括號 */
+  border-radius: 50%; /* 變成正圓形 */
+  padding: 0.3rem;
+}
+.google-btn svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.enter-btn {
+  display: flex;
+  margin: 1.5rem auto 2rem auto;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  height: 3rem;
+  width: 12rem;
+}
+
+.login-container {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-s);
+  border-color: var(--border-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  transition: var(--transition);
+}
+.login-container:hover {
+  box-shadow: var(--shadow-l);
+}
+
+.login-tilte {
+  color: var(--text);
+  /* 1. 設定漸層顏色，可以用你 `:root` 裡的變數 */
+  background-image: var(--green-gradient);
+  /* 2. 把背景裁切到文字上 */
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* 3. 把原本的文字顏色變透明，漸層才露得出來 */
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.input-group {
+  border-radius: 1rem;
+  border: 2px solid var(--border);
+  transition: var(--transition);
+}
+@media (hover: hover) {
+  .input-group:hover {
+    border: 2px solid var(--primary);
+  }
+}
+.input-group:focus-within {
+  border: 2px solid var(--secondary);
+}
+
+.hint-btn {
+  color: var(--text-muted);
+}
+
+.google-btn {
+  border-radius: 50%;
+  border: 1px solid var(--border-muted);
+  background-color: var(--bg-light);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-m);
+  border: none; /* 去除預設邊框 */
+  cursor: pointer;
+  transition: var(--transition);
+}
+.google-btn:hover {
+  background-color: var(--bg-big-light);
+  box-shadow: var(--shadow-l);
+  color: var(--text);
+  transition: var(--transition);
+}
+
+.enter-btn {
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-muted);
+  background-color: var(--bg-light);
+  color: var(--primary);
+  box-shadow: var(--shadow-m);
+  transition: var(--transition);
+}
+.enter-btn:hover {
+  background-color: var(--bg-big-light);
+  box-shadow: var(--shadow-l);
+  color: var(--secondary);
+  transition: var(--transition);
+}
+
+.login-container .input-data {
+  border-radius: 0.9rem;
+  outline: none; /* 關鍵：移除點擊後的醜黑框 */
+  border: var(--border);
+  color: var(--text-muted);
+  background-color: var(--bg-big-light) !important;
+  caret-color: white;
+}
+.login-container .input-data:-webkit-autofill {
+  /* 這裡就是你剛刪掉的關鍵，放回去保證一進頁面就是綠的 */
+  box-shadow: 0 0 0px 1000px var(--bg-big-light) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+  border: var(--border);
+}
+
+@media screen and (max-width: 768px) {
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平置中子元素 */
+    justify-content: center; /* 垂直置中子元素 */
+    width: 25rem;
+    max-width: 90%; /* 手機版不破版 */
+    height: auto;
+    padding: 1rem 0rem; /* 增加內邊距，讓裡面不擁擠 */
+    opacity: 0.8;
+  }
+  .login-tilte {
+    display: flex;
+    margin: 1rem auto 1rem auto;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    max-width: 90%;
+  }
+  .input-group {
+    display: flex;
+    margin: 2rem auto 0 auto;
+    border: 2px solid var(--border);
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    height: auto;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+  }
+  .input-group:focus-within {
+    border: 2px solid var(--secondary);
+  }
+  .input-data {
+    height: 3.5rem;
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    box-sizing: border-box;
+  }
+  .hint-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1rem;
+    flex-wrap: wrap;
+  }
+  .login-choise {
+    margin-top: 1.25rem;
+    gap: 1.5rem;
+  }
+  .google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* 變成正圓形 */
+    margin: none;
+    padding: 0.3rem;
+  }
+  .google-btn svg {
+    width: 3rem;
+    height: 3rem;
+  }
+  .enter-btn {
+    display: flex;
+    margin: 1.5rem auto 2rem auto;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    height: 3rem;
+    width: 12rem;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.76 0.1 128),
+    oklch(0.76 0.1 308)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.send-email-btn {
+  display: flex;
+  margin: 3rem auto 1rem auto;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  height: 3rem;
+  width: 12rem;
+}
+
+.send-email-btn {
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-muted);
+  background-color: var(--bg-light);
+  color: var(--primary);
+  box-shadow: var(--shadow-m);
+  transition: var(--transition);
+}
+.send-email-btn:hover {
+  background-color: var(--bg-big-light);
+  box-shadow: var(--shadow-l);
+  color: var(--secondary);
+  transition: var(--transition);
+}
+
+@media screen and (max-width: 768px) {
+  .send-email-btn {
+    display: flex;
+    margin: 2.5rem auto 1rem auto;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    height: 3rem;
+    width: 12rem;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(to bottom, oklch(0.76 0.1 128), oklch(0.76 0.1 308));
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+}
+
+.signup-btn {
+  display: flex;
+  margin: 1.5rem auto 1rem auto;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  height: 3rem;
+  width: 12rem;
+}
+
+.have-account-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem auto 1.25rem auto;
+}
+
+.signup-btn {
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-muted);
+  background-color: var(--bg-light);
+  color: var(--primary);
+  box-shadow: var(--shadow-m);
+  transition: var(--transition);
+}
+.signup-btn:hover {
+  background-color: var(--bg-big-light);
+  box-shadow: var(--shadow-l);
+  color: var(--secondary);
+  transition: var(--transition);
+}
+
+.have-account-btn {
+  color: var(--text-muted);
+}
+
+@media screen and (max-width: 768px) {
+  .signup-btn {
+    display: flex;
+    margin: 1.5rem auto 1rem auto;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    height: 3rem;
+    width: 12rem;
+  }
+  .have-account-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 1. 關鍵：讓換行後的文字也置中 */
+    margin: 0rem auto 1rem auto;
+    text-align: center;
+    flex-wrap: wrap;
+    width: 70%;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.76 0.1 308)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+  --article-margin-mobile: 1.2rem;
+}
+
+.hint-sended-email {
+  color: var(--text-muted);
+  text-align: center;
+  margin: 1rem auto 0.5rem auto; /* 🚀 確保在容器內水平置中 */
+  line-height: 1.8; /* 🚀 拉開行高，中文才不會黏在一起 */
+  width: 85%; /* 🚀 不要讓字直接撞到邊框，留點呼吸空間 */
+  font-size: 0.95rem; /* 🚀 稍微縮小，視覺上會更精緻 */
+  text-wrap: balance; /* 🚀 核心：自動平衡每行長度 */
+  word-break: keep-all; /* 🚀 防止標點符號單獨掉到下一行 */
+}
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.76 0.1 308)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+}
+
+.in-article {
+  width: 41.5rem;
+  margin: 0 auto 2rem auto;
+}
+
+.in-article-photo {
+  width: 100%;
+  margin: 0 0 0.5rem 0;
+}
+.in-article-photo img {
+  display: block;
+  width: 100%; /* 強制撐滿，不管原圖多大 */
+  height: auto;
+}
+
+.in-article-title {
+  margin: 1.5rem var(--article-margin);
+}
+
+.in-article-maker {
+  position: relative; /* 關鍵 1：讓絕對定位的 a 標籤鎖在這裡面 */
+  display: inline-flex; /* 關鍵 2：改成 inline，寬度才會「剛好包住」內容 */
+  align-items: center;
+  gap: 0.875rem;
+  margin: 1rem 0 1rem var(--article-margin);
+  /* 注意：inline-flex 會讓 margin: 0 auto 失效，
+     如果你要整塊置中，外層要加 text-align: center */
+}
+
+.in-maker-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3; /* 確保它在最上層才點得到 */
+}
+
+.in-maker-photo {
+  overflow: hidden; /* 確保圖片不超出圓形 */
+  height: 3rem;
+  width: 3rem;
+}
+.in-maker-photo img {
+  -o-object-fit: cover;
+     object-fit: cover; /* 確保照片不失真 */
+  height: 3rem;
+  width: 3rem;
+}
+
+/* 修正：要針對裡面的 img 做限制 */
+.in-article-photo-block {
+  display: flex;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+.in-article-photo-block img {
+  max-width: 100%; /* 這行才是關鍵，讓圖片最寬等於父層 */
+  height: auto;
+  display: block;
+}
+
+.in-article-photo-s-block {
+  gap: 0rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: auto;
+}
+
+.carousel-container {
+  position: relative; /* 必備：讓按鈕可以絕對定位在裡面 */
+  width: 100%;
+  margin: 1.5rem 0;
+}
+.carousel-container .carousel-viewport {
+  width: 100%;
+  overflow: hidden; /* 關鍵：一次只讓你看到一張圖 */
+}
+.carousel-container .carousel-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑的移動動畫 */
+  width: 100%;
+}
+.carousel-container .carousel-item {
+  flex: 0 0 100%; /* 關鍵：每張圖強制佔滿 100% 寬度 */
+  margin: 0;
+}
+.carousel-container .carousel-item img {
+  width: 100%;
+  height: auto; /* 高度可依蝦子照片比例調整 */
+  -o-object-fit: cover;
+     object-fit: cover; /* 確保照片不失真 */
+  display: block;
+}
+.carousel-container .carousel-btn {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  background: var(--text-muted);
+  opacity: 0.5;
+  color: var(--bg-dark);
+  border: none;
+  padding: 1rem 0.5rem;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* 消除文字內建的行高干擾 */
+  cursor: pointer;
+  transition: var(--transition);
+}
+.carousel-container .carousel-btn:hover {
+  background: var(--text);
+  opacity: 0.5;
+}
+.carousel-container .carousel-btn.prev {
+  left: 0.5rem; /* 往右縮 1.25rem */
+}
+.carousel-container .carousel-btn.next {
+  right: 0.5rem; /* 往左縮 1.25rem */
+}
+
+.in-article-content-block {
+  max-width: 100%;
+  flex-wrap: wrap;
+  margin: 0 var(--article-margin);
+  color: var(--text);
+  line-height: 1.7; /* 推薦範圍：1.6 ~ 1.8 */
+}
+
+.in-article-action-s {
+  display: flex;
+  align-items: center;
+  padding: 2.5rem var(--article-margin) 0rem var(--article-margin);
+  gap: 1.1rem;
+}
+
+.in-article {
+  border-radius: 3rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.in-article-title {
+  color: var(--text);
+}
+
+.in-maker-photo {
+  border-radius: 3rem;
+}
+
+.in-maker-name {
+  color: var(--text-muted);
+}
+
+@media (max-width: 902px) {
+  .in-article-photo-block {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex: 0 0 350px;
+    min-height: 300px;
+    max-height: 480px;
+    overflow-y: hidden;
+    touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
+  }
+  .in-article-photo-block::-webkit-scrollbar {
+    display: none;
+  }
+}
+:root {
+  --article-margin-mobile: 1.2rem;
+}
+
+@media (max-width: 667px) {
+  .in-article {
+    width: 100%;
+    margin: 0 auto 2rem auto;
+    border-radius: 0px;
+    border: none;
+  }
+  .in-article-title {
+    margin: 1.5rem var(--article-margin-mobile) 1rem var(--article-margin-mobile);
+    font-size: 1.2rem;
+  }
+  .in-article-maker {
+    align-items: center;
+    gap: 0.875qrem;
+    margin: 1rem 0 1rem var(--article-margin-mobile);
+    /* 注意：inline-flex 會讓 margin: 0 auto 失效，
+     如果你要整塊置中，外層要加 text-align: center */
+  }
+  .in-article-content-block {
+    max-width: 100%;
+    flex-wrap: wrap;
+    margin: 0 var(--article-margin-mobile);
+    color: var(--text);
+    line-height: 1.7; /* 推薦範圍：1.6 ~ 1.8 */
+    font-size: 0.875rem;
+  }
+  .in-article-action-s {
+    display: flex;
+    align-items: center;
+    padding: 2.5rem var(--article-margin-mobile) 0rem var(--article-margin-mobile);
+    gap: 1.1rem;
+  }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.05 30);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(
+    to bottom,
+    oklch(0.8199 0.1381 140.2),
+    oklch(0.76 0.1 308)
+  );
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s:
+    inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030,
+    /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m:
+    inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030,
+    /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l:
+    inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030,
+    /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+}
+
+.in-article-comment-s {
+  margin: 1.5rem 1.5rem 0rem 0;
+}
+
+.outside-comment {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* 確保容器撐滿 */
+}
+
+.in-article-comment {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0 0.75rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.comment-num {
+  margin: 3rem var(--article-margin) 1.5rem var(--article-margin);
+}
+
+.in-comment-avatar {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem var(--article-margin);
+}
+
+.in-comment-name {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.in-comment-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 0rem 0rem 1rem;
+}
+
+/* 1. 讓整台傳送機在頁面中央 */
+.comment-form {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  width: 100%;
+  height: auto;
+  max-height: 20rem;
+  margin: 2.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  border: none;
+}
+
+/* 2. 內容物膠囊 (外框) */
+.outside-comment-input {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end; /* 按鈕靠底部對齊 */
+  width: 90%;
+  max-width: 41.5rem;
+  margin: 0 auto; /* 🚀 讓這塊地基左右置中 */
+  height: auto;
+  max-height: 20rem;
+}
+
+/* 3. 輸入框本體 (內部的純文字區) */
+.input-comment {
+  flex: 1; /* 🚀 關鍵：自動填滿剩餘空間，不搶按鈕位置 */
+  padding: 1rem 1.5rem 1rem 1.5rem; /* 調整內距，讓字不要黏住邊緣 */
+  font-size: 1rem;
+  line-height: 1.5;
+  /* 🚀 2026 自動長高 */
+  field-sizing: content;
+  min-height: 45px;
+  height: auto;
+  max-height: 20rem;
+  resize: none;
+}
+
+/* 4. 送出按鈕美化 */
+.send-btn {
+  padding: 8px 18px;
+  font-weight: 600;
+  height: 3.55rem; /* 固定高度 */
+  margin-bottom: 0rem; /* 讓按鈕在垂直方向置中 */
+  align-items: flex-end;
+  width: 7rem;
+}
+
+.no-comment {
+  display: flex;
+  margin: 0.5rem auto 1.5rem auto;
+  height: 5rem;
+  width: auto;
+  padding: 1.5rem;
+  font-size: 1rem;
+}
+
+.in-reply-s {
+  margin: 0rem 0 0rem 3.75rem;
+}
+
+.in-reply {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5rem 0 1rem 0;
+  width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+}
+
+.in-reply-avatar {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem var(--article-margin);
+}
+
+.in-reply-name {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.in-reply-content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 0rem 0rem 1rem;
+}
+
+.show-reply {
+  margin: 0.5rem 0rem 0rem 3.75rem;
+  border: none;
+}
+
+/* 2. 內容物膠囊 (外框) */
+.outside-comment-input {
+  /* 視覺樣式：這層才需要背景和邊框 */
+  background-color: var(--bg-light);
+  border: 2px solid var(--text-muted);
+  border-radius: 1.5rem;
+  overflow: hidden; /* 確保內容不會超出圓角 */
+  transition: 0.3s;
+}
+.outside-comment-input:focus-within {
+  background-color: var(--bg-big-light);
+  border-color: var(--text);
+}
+
+/* 3. 輸入框本體 (內部的純文字區) */
+.input-comment {
+  background: transparent; /* 🚀 關鍵：透明背景，顯示外層膠囊的顏色 */
+  border: none; /* 拔掉所有邊框 */
+  outline: none;
+  color: var(--text);
+}
+.input-comment::-moz-placeholder {
+  color: var(--text-muted);
+}
+.input-comment::placeholder {
+  color: var(--text-muted);
+}
+
+/* 4. 送出按鈕美化 */
+.send-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.send-btn:hover {
+  opacity: 0.8;
+  color: var(--text);
+}
+
+.in-comment-avatar {
+  border-radius: 50%;
+}
+
+.in-comment-name {
+  color: var(--text);
+}
+
+.in-comment-content {
+  color: var(--text);
+}
+
+.no-comment {
+  color: var(--text-muted);
+  font-size: 1rem;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-m);
+  border: none;
+}
+
+.in-reply-avatar {
+  border-radius: 50%;
+}
+
+.in-reply-name {
+  color: var(--text);
+}
+
+.in-reply-content {
+  color: var(--text);
+}
+
+.show-reply {
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+:root {
+  --article-margin-mobile: 1.2rem;
+}
+
+@media (max-width: 667px) {
+  .comment-num {
+    margin: 2rem var(--article-margin-mobile) 1.5rem var(--article-margin-mobile);
+  }
+  .comment-form {
+    margin: 1.5rem auto; /* 增加上下間距，比較有呼吸感 */
+  }
+  /* 3. 輸入框本體 (內部的純文字區) */
+  .input-comment {
+    color: var(--text);
+  }
+  .input-comment::-moz-placeholder {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .input-comment::placeholder {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  .in-comment-avatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0.5rem 0rem 0rem var(--article-margin-mobile);
+  }
+  .in-article-comment-s {
+    margin: 1.5rem var(--article-margin-mobile) 0rem 0;
+  }
+  .in-article-comment {
+    display: flex;
+    flex-direction: row;
+    margin: 0rem 0 0rem 0;
+    width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+  }
+  .in-reply-s {
+    margin: 0rem 0 0.875rem 3.75rem;
+  }
+  .in-reply {
+    margin: 0.875rem 0 1rem 0;
+    width: 100%; /* 關鍵：強制每一則留言佔滿一整行 */
+  }
+  .in-reply-avatar {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0rem 0rem 0rem 1rem;
+  }
+  .send-btn {
+    font-size: 0.875rem;
+  }
+  .no-comment {
+    font-size: 0.875rem;
+    height: 3.5rem;
+  }
+}
+.input-area-card {
+  display: block; /* 視窗不用 flex，裡面裝火車就好 */
+  margin: 1.5rem 0;
+  width: 90%;
+}
+
+.input-photo-area {
+  display: flex;
+  overflow: hidden;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  min-height: 300px;
+  height: auto; /* 確保沒有任何東西鎖死它的高度 */
+}
+
+.photo-viewport {
+  position: relative; /* 關鍵：讓按鈕對準這裡 */
+  width: 100%;
+  height: auto;
+  flex-shrink: 0; /* 🚀 防止被 Flex 容器擠壓高度 */
+  display: flex; /* 讓裡面的火車軌道能正常運作 */
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
+  overflow: hidden;
+}
+
+.trasform-btn {
+  position: absolute; /* 關鍵：絕對定位，讓它浮在卡片上 */
+  top: 50%; /* 🚀 改成垂直置中 */
+  transform: translateY(-50%); /* 🚀 真正達成居中 */
+  z-index: 10; /* 🚀 關鍵：確保按鈕浮在照片「上面」 */
+  padding: 5px;
+  cursor: pointer;
+}
+.trasform-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--text-muted);
+}
+
+.prev {
+  transform: translateY(-50%) rotate(180deg);
+  left: 0.5rem;
+}
+
+.next {
+  right: 0.5rem;
+  /* 🚀 這裡也要補上垂直置中 */
+  transform: translateY(-50%);
+}
+
+.photo-item-s {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  min-height: 300px;
+  height: auto; /* 確保沒有任何東西鎖死它的高度 */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑的移動動畫 */
+}
+
+.photo-item {
+  display: flex;
+  position: relative; /* 讓叉叉可以對準照片 */
+  flex-shrink: 0; /* 👈 加上這行！告訴火車：絕對不准把車廂擠扁 */
+  width: 100%;
+  height: auto;
+}
+
+.remove-photo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.4); /* 墊個黑底，白色叉叉才清楚 */
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+.remove-photo svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--text);
+}
+
+.photo-upload {
+  display: flex;
+  flex-direction: column; /* 讓內容由上往下排，一人一行 */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+}
+
+.photo-item img {
+  width: 100%;
+  height: auto;
+}
+
+.photo-preview {
+  /* 🚀 核心：佔滿父層框框的 100% 寬度 */
+  width: 100%;
+  /* 🚀 核心：長度 auto，不設限制，照片多長就多長 */
+  height: auto;
+  max-height: none;
+  -o-object-fit: contain;
+     object-fit: contain; /* 確保比例正确，不變形 */
+}
+
+/* 🚀 統一所有區塊的「外殼」 */
+.input-area-card {
+  background: var(--bg-big-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  margin-bottom: 1rem;
+  transition: var(--transition);
+  /* 每當這個 class 出現在 DOM 裡面，就會跑 0.4 秒動畫 */
+  animation: slide-in-up 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3) forwards;
+  /* 為了防止動畫結束前閃爍，可以先設透明度為 0 */
+  opacity: 0;
+}
+
+/* 1. 定義動畫內容 */
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98); /* 從下面一點、縮小一點的地方開始 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1); /* 回到原位 */
+  }
+}
+.trasform-btn {
+  background: transparent;
+  border: none;
+  transition: var(--transition);
+}
+.trasform-btn:hover svg {
+  color: var(--text);
+}
+
+.photo-upload {
+  display: flex;
+}
+.photo-upload svg {
+  display: inline-flex;
+  height: 5rem;
+  width: 5rem;
+}
+.photo-upload span {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 667px) {
+  .photo-item-s {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-height: 175px;
+    height: auto; /* 確保沒有任何東西鎖死它的高度 */
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 絲滑的移動動畫 */
+  }
+  .input-photo-area {
+    display: flex;
+    overflow: hidden;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-height: 175px;
+    height: auto; /* 確保沒有任何東西鎖死它的高度 */
+  }
+}
+.input-area-card {
+  display: block; /* 視窗不用 flex，裡面裝火車就好 */
+  margin: 1.5rem 0;
+  width: 90%;
+}
+
+.add-article-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  font-size: 3.5rem;
+  cursor: pointer;
+  z-index: 999; /* 🚀 確保它蓋在所有文章上面 */
+  /* 2. 🚀 核心置中邏輯 */
+  display: flex; /* 開啟 Flex 佈局 */
+  justify-content: center; /* 水平置中 */
+  align-items: center; /* 垂直置中 */
+}
+.add-article-btn i svg {
+  font-size: 2rem; /* 稍微放大一點比較大氣 */
+  line-height: 1; /* 🚀 關鍵：強制行高為 1，消除字體上下多餘空間 */
+  display: block; /* 🚀 關鍵：不讓它被當成文字處理 */
+}
+
+.add-article-overlay {
+  /* 填滿全螢幕 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh; /* */
+  z-index: 1000;
+  /* 🚀 初始狀態：隱藏 */
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  backdrop-filter: blur(10px); /* 讓背景模糊更有質感 */
+  /* 🚀 當被加上 .is-active 類別時顯示 */
+}
+.add-article-overlay.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.add-article-overlay.is-active .add-article-page {
+  transform: scale(1); /* 進場動畫：放大到正常大小 */
+}
+
+.add-article-page {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 41.5rem; /* 🚀 你指定的寬度 */
+  height: 95dvh; /* 🚀 讓它幾乎填滿整個視窗高度，留一點空隙 */
+  padding: 1.5rem; /* 🚀 內距，讓內容不會貼邊 */
+}
+
+.page-header {
+  display: flex;
+  align-items: center; /* 🚀 上下置中 (垂直) */
+  /* 🚀 1. 設定為相對定位，作為按鈕的參考座標 */
+  position: relative;
+  height: 4rem;
+}
+
+.page-title {
+  margin: auto;
+}
+
+.back-btn {
+  /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+  position: absolute;
+  left: 0; /* 貼齊左邊 */
+  padding: 5px 15px;
+  cursor: pointer;
+}
+.back-btn svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.post-btn {
+  /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+  position: absolute;
+  right: 0; /* 貼齊左邊 */
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.input-article-content {
+  /* 🚀 1. 開啟 Flex 佈局 */
+  display: flex;
+  flex-direction: column; /* 讓卡片由上往下排 */
+  align-items: center;
+  padding-bottom: 1.5rem;
+  flex: 1; /* 🚀 自動吃掉剩下的空間 */
+  overflow-y: auto; /* 🚀 重點：內容滿出來時自動出現捲軸 */
+  /* 🚀 1. 關鍵屬性：讓捲軸浮在內容之上，不擠壓寬度 */
+  scrollbar-gutter: stable;
+  padding-left: 8px; /* 左邊原本的 Padding */
+  transition: var(--transition);
+  /* 🚀 2. 捲軸軌道 (Track) */
+}
+.input-article-content::-webkit-scrollbar-track {
+  background: transparent; /* 保持透明，不佔視覺空間 */
+}
+.input-article-content {
+  /* 🚀 3. 捲軸滑塊 (Thumb) */
+}
+.input-article-content::-webkit-scrollbar-thumb {
+  /* 使用半透明白色，能自動適應各種深色背景 */
+  background: var(--bg-big-light);
+  border-radius: 100px; /* 🚀 極致圓角 */
+  border: 2px solid transparent; /* 技巧：用透明邊框縮小滑塊視覺大小 */
+  background-clip: content-box; /* 配合上面的 border，讓滑塊縮在中間 */
+  -webkit-transition: var(--transition);
+  transition: var(--transition);
+  /* 🚀 4. 互動效果：移上去時變亮 */
+}
+.input-article-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+.input-article-content::-webkit-scrollbar-thumb {
+  /* 點擊抓取時最亮 */
+}
+.input-article-content::-webkit-scrollbar-thumb:active {
+  background: var(--text);
+}
+.input-article-content {
+  /* 🚀 5. Firefox 相容性設定 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.add-block-btn-s {
+  display: flex;
+  height: 5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 0rem auto 0 auto;
+  border: none;
+}
+
+.add-block-btn {
+  width: 15rem;
+  height: 3.5rem;
+  font-size: 1rem;
+}
+
+.input-card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  height: 3rem;
+}
+
+.input-title {
+  margin-right: auto;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.delete-btn {
+  cursor: pointer;
+  margin-left: auto;
+  display: flex; /* 讓按鈕內部的 SVG 也置中 */
+  align-items: center;
+  background: transparent;
+  border: none;
+}
+.delete-btn svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.delete-btn svg:hover {
+  color: var(--text);
+}
+
+.input-text-area {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.5rem 1rem 1rem 1rem; /* 內距讓文字不會貼邊，增加可讀性 */
+  display: block; /* 確保它獨佔一行 */
+  font-size: 1.1rem; /* 內文稍微大一點才好讀 */
+  line-height: 1.6; /* 🚀 設定行高，讓文字不再擠在一起 */
+  font-family: inherit; /* 跟隨全站字體 */
+  field-sizing: content; /* 🚀 自動長高功能：文字打到哪，框框就長到哪 */
+  /* 🚀 2. 關鍵：禁止內部捲動（這是解決文字跑上去的唯一招） */
+  overflow: hidden !important; /* 🚀 最關鍵：禁止內部捲動。沒了捲軸，它為了顯示文字就必須變長 */
+  height: auto !important; /* 確保沒有任何東西鎖死它的高度 */
+}
+
+.add-article-btn {
+  border-radius: 50%;
+  background-color: var(--primary);
+  cursor: pointer;
+  opacity: 0.6; /* 🚀 你要的透明感 */
+  transition: var(--transition);
+  box-shadow: var(--shadow-s);
+}
+.add-article-btn:hover {
+  opacity: 1; /* 滑鼠移上去變不透明 */
+  box-shadow: var(--shadow-l); /* 加強陰影 */
+}
+.add-article-btn:active {
+  transform: scale(0.85); /* 點擊時稍微縮小 */
+  box-shadow: var(--shadow-m); /* 中等陰影 */
+}
+.add-article-btn i svg {
+  color: var(--border);
+}
+
+.add-article-page {
+  background: var(--bg-light); /* 配合你的深色主題 */
+  border-radius: var(--radius-l);
+  border: 1px solid var(--border);
+  /* 🚀 進場動畫：稍微縮小並往下沉一點 */
+  transform: scale(0.9);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.page-header {
+  background: var(--bg-light); /* 配合你的深色主題 */
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-s);
+  transition: var(--transition);
+}
+.back-btn svg {
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.back-btn svg:hover {
+  color: var(--text);
+}
+
+.post-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-s);
+  transition: var(--transition);
+}
+.post-btn:hover {
+  color: var(--text);
+}
+
+.input-article-content {
+  color: var(--bg-light);
+  border: none;
+  border-radius: var(--radius-l);
+}
+
+.input-hint {
+  color: var(--text-muted);
+}
+
+.add-block-btn {
+  background: var(--bg-big-light);
+  color: var(--text-muted);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-m);
+  cursor: pointer;
+  transition: var(--transition);
+  /* 只有在電腦版（有滑鼠）才觸發 */
+}
+@media (hover: hover) {
+  .add-block-btn:hover {
+    box-shadow: var(--shadow-l);
+    color: var(--text);
+  }
+}
+
+.input-card-header {
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
+}
+
+.input-text-area {
+  background: transparent; /* 既然在卡片裡，背景就全透明 */
+  border: none; /* 🚀 拿掉預設醜邊框，精品感來源 */
+  outline: none; /* 點擊時不要出現藍色外框 */
+  resize: none; /* 🚫 禁用右下角手動調整大小，避免破壞排版 */
+  transition: var(--transition);
+  color: var(--text); /* 使用你主色調的變數 */
+}
+.input-text-area::-moz-placeholder {
+  color: var(--text-muted);
+}
+.input-text-area::placeholder {
+  color: var(--text-muted);
+}
+
+@media (max-width: 667px) {
+  .add-article-page {
+    padding: 1rem 0.5rem 0.5rem 0.5rem; /* 🚀 內距，讓內容不會貼邊 */
+  }
+  .page-header {
+    height: 3.25rem;
+  }
+  .page-title {
+    margin: auto;
+    font-size: 1.25rem;
+  }
+  .back-btn {
+    /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+    position: absolute;
+    left: 0; /* 貼齊左邊 */
+    padding: 5px 15px;
+  }
+  .back-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .post-btn {
+    /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+    position: absolute;
+    right: 0; /* 貼齊左邊 */
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .input-article-content {
+    /* 🚀 1. 開啟 Flex 佈局 */
+    display: flex;
+    flex-direction: column; /* 讓卡片由上往下排 */
+    align-items: center;
+    padding-bottom: 0.875rem;
+    width: 100%; /* 手機版寬度撐滿 */
+    padding-left: 0rem;
+    flex: 1; /* 🚀 自動吃掉剩下的空間 */
+    overflow-y: auto; /* 🚀 重點：內容滿出來時自動出現捲軸 */
+    /* 🚀 1. 關鍵屬性：讓捲軸浮在內容之上，不擠壓寬度 */
+    scrollbar-gutter: stable;
+    transition: var(--transition);
+    /* 🚀 2. 捲軸軌道 (Track) */
+  }
+  .input-article-content::-webkit-scrollbar-track {
+    background: transparent; /* 保持透明，不佔視覺空間 */
+  }
+  .input-article-content {
+    /* 🚀 3. 捲軸滑塊 (Thumb) */
+  }
+  .input-article-content::-webkit-scrollbar-thumb {
+    /* 使用半透明白色，能自動適應各種深色背景 */
+    background: var(--bg-big-light);
+    border-radius: 100px; /* 🚀 極致圓角 */
+    border: 2px solid transparent; /* 技巧：用透明邊框縮小滑塊視覺大小 */
+    background-clip: content-box; /* 配合上面的 border，讓滑塊縮在中間 */
+    -webkit-transition: var(--transition);
+    transition: var(--transition);
+    /* 🚀 4. 互動效果：移上去時變亮 */
+  }
+  .input-article-content::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+  .input-article-content::-webkit-scrollbar-thumb {
+    /* 點擊抓取時最亮 */
+  }
+  .input-article-content::-webkit-scrollbar-thumb:active {
+    background: var(--text);
+  }
+  .input-article-content {
+    /* 🚀 5. Firefox 相容性設定 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+  .add-block-btn-s {
+    width: 90%;
+    display: flex;
+    height: 4rem;
+    gap: 0.5rem;
+    margin: 0.875rem auto 0 auto;
+    border: none;
+  }
+  .add-block-btn {
+    width: 50%;
+    height: 3rem;
+    font-size: 0.875rem;
+  }
+}
+@media (max-width: 667px) {
+  .input-area-card {
+    display: block; /* 視窗不用 flex，裡面裝火車就好 */
+    margin: 0.75rem 0;
+    width: 90%;
+  }
+}/*# sourceMappingURL=main.css.map */

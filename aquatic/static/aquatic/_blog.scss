@@ -1,0 +1,474 @@
+@charset "UTF-8";
+// 讓中文註解可以正確編碼
+
+a {
+  text-decoration: none; /* 移除底線 */
+} // 醜底線
+
+.blog-container {
+  /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+  max-width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  width: 41.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin-left: auto;
+  margin-right: auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+}
+
+//到時候有文章
+// 我用for迴圈拉資料
+// 框框自己會無限長
+
+.search {
+  margin: 1.5rem auto 1.5rem auto;
+}
+
+.article-container {
+  border: 1px solid;
+
+  /* 🔥 關鍵：讓框框自己置中 */
+  margin: 0 auto 0 auto;
+  /* 或者簡寫成 margin: 0 auto; 也可以 */
+  margin-bottom: 1rem;
+  width: 38rem;
+}
+
+.search {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  width: 38rem;
+  height: auto;
+  border: 1px solid var(--border);
+}
+
+.search-select {
+  width: 6rem;
+  height: 2.5rem;
+
+  text-align: center; /* 部分瀏覽器支援 */
+  padding-left: 1rem; /* 🔥 手動校正：讓文字往右推，看起來會更像在中間 */
+  padding-right: 0.5rem;
+  cursor: pointer;
+}
+
+.selection {
+  font-size: 1rem;
+  // padding: 10px;
+}
+
+.input-text {
+  width: 26rem;
+  height: 2.5rem;
+}
+
+.search-btn {
+  width: 6rem;
+  height: 2.5rem;
+}
+
+.search-icon {
+}
+
+.article-s {
+  margin-bottom: 0.5rem;
+}
+
+.article-photo {
+  // 他這樣不會擋到article的遮罩
+  position: relative;
+  z-index: 2;
+
+  /* 1. 絕對不要比你的爸爸還要寬 */
+
+  width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+  height: auto; /* 高度自動計算，保持比例，才不會變形 */
+  display: block; /* 消除圖片下方可能出現的小縫隙 */
+  margin: 0 auto;
+
+  object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
+  margin-bottom: 0.5rem;
+
+  /* 3. 🔥 魔法：確保照片不被壓扁 */
+  /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+}
+
+.content-without-maker-photo {
+  margin-bottom: 1rem;
+}
+
+.article-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0.25rem 1rem 2.5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.maker-photo {
+  height: 3rem;
+  width: 3rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.maker-name {
+  // 他這樣不會擋到article的遮罩
+  position: relative;
+  z-index: 2;
+  /* 其他你原本的樣式... */
+  /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin: 0.5rem 0rem 0rem 1rem;
+}
+
+.action-s {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0 0.5rem 1rem;
+  gap: 1.1rem;
+}
+
+// 用來定位進入文章的遮罩的遮罩
+.article {
+  position: relative;
+}
+
+.article-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 它的層級是 1，蓋住圖和字 */
+}
+
+.action-btn {
+  background: none; /* 去掉背景 */
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  position: relative; /* 必須設為 relative，z-index 才會生效 */
+  z-index: 2; /* 它的層級是 2，比連結高，所以點得到愛心 */
+}
+
+.action-btn svg {
+  /* 🔥 這裡用 rem 蓋掉 HTML 裡的設定 */
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.action-num {
+  margin-left: 0.5rem;
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// 很會裝嘛？--------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+.blog-container {
+  border: 1px solid var(--border);
+  border-radius: 3rem;
+  background-color: var(--bg-dark);
+}
+
+.search {
+  background-color: var(--bg-light);
+  color: var(--primary);
+  border-radius: 1.5rem;
+  border: var(--bg-light);
+}
+
+.search-select {
+  display: flex;
+  align-items: center; /* 🔥 關鍵：讓選單、輸入框、按鈕「垂直置中」對齊 */
+  justify-content: center; /* 🔥 關鍵：讓所有東西「水平置中」 */
+  background-color: var(--bg-light);
+  // 去掉框框
+  outline: none;
+  border: none;
+  border-radius: 1.5rem 0 0 1.5rem;
+  color: var(--text-muted);
+
+  &:focus {
+    color: var(--text);
+    /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+    background-color: var(--bg-big-light);
+  }
+}
+
+.selection {
+  background-color: var(--bg-light);
+  border-radius: 1.5rem;
+}
+
+.input-text {
+  background-color: var(--bg-light);
+  color: var(--text-muted);
+  // 去掉框框
+  outline: none;
+  border: none;
+  padding: 0.8rem 1.2rem; /* 增加左邊 padding，字才不會黏住 */
+
+  /* 🔥 點選時的顏色 */
+  /* 🔥 把 :active 改成 :focus */
+  &:focus {
+    color: var(--text);
+    /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+    background-color: var(--bg-big-light);
+  }
+
+  /* 針對 Chrome, Safari, Edge 的叉叉 */
+  &::-webkit-search-cancel-button {
+    /* 🔥 先讓它變明顯 (預設可能很淡) */
+    -webkit-appearance: none;
+    height: 1rem;
+    width: 1rem;
+    /* 🔥 核心技巧：用濾鏡改顏色 */
+    /* 下面這行會把原本的灰色變成白色，你可以調整 brightness */
+    filter: brightness(0) invert(1);
+
+    // background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239FBD78' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M18 6 6 18'/><path d='m6 6 12 12'/></svg>");
+    background-size: contain;
+    cursor: pointer;
+  }
+}
+
+.search-btn {
+  // 去掉框框
+  outline: none;
+  border: none;
+  background-color: var(--bg-light);
+  border-radius: 0rem 1.5rem 1.5rem 0rem;
+  color: var(--text-muted);
+
+  transition: var(--transition);
+
+  &:hover {
+    color: var(--text);
+    /* 如果想讓整個搜尋列在打字時有質感，可以加下面這行 */
+    background-color: var(--bg-big-light);
+  }
+
+  &:active svg {
+    transform: scale(0.8);
+  }
+}
+
+.article-s {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.article {
+  overflow: hidden;
+
+  transition: var(--transition);
+
+  &:hover {
+    background-color: var(--bg-light);
+  }
+}
+
+.article-title {
+  color: var(--text);
+}
+
+.maker-photo {
+  border-radius: 3rem;
+}
+
+.maker-name {
+  /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
+  display: inline-block;
+  color: var(--text);
+}
+
+.action-btn svg {
+  color: var(--text);
+}
+
+//按到action就可以變小不用那麼精準
+.action-btn {
+  transition: var(--transition);
+  &:active svg {
+    /* 縮小到 0.9 倍 (你可以自己調 0.8 或 0.95) */
+    transform: scale(0.85);
+  }
+}
+
+// 給愛心一點效果點效果-----------------------------------------------
+
+.like-btn,
+.comment-like-btn {
+  /* 1. 這是原本的滑鼠滑過效果 (Hover) - 變紅但還是空心 */
+  color: var(--text);
+  transition: var(--transition);
+
+  /* 🔥 關鍵：只有在支援 hover 的裝置（如電腦）才執行 */
+  @media (hover: hover) {
+    &:hover:not(.liked) {
+      color: #ff4b4b;
+      svg {
+        stroke: #ff4b4b;
+      }
+    }
+  }
+
+  /* 🔥 2. 這是「按下去之後」的狀態 (Liked State) */
+  /* 當 JavaScript 幫它加上 .liked 這個 class 之後... */
+  &.liked {
+    color: #ff4b4b; /* 線條變紅 */
+
+    svg {
+      fill: #ff4b4b; /* 🔥 重點：把愛心裡面填滿紅色！ */
+      stroke: #ff4b4b; /* 🔥 關鍵：讓線條也變紅，不要變回白色 */
+    }
+  }
+}
+// 繼續送幸福------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------
+// 下面所是傳說中的rwd--------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@media screen and (max-width: 768px) {
+  .blog-container {
+    /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
+    max-width: 100%;
+
+    display: flex;
+    width: 41.5rem;
+    border: none;
+  }
+
+  //到時候有文章
+  // 我用for迴圈拉資料
+  // 框框自己會無限長
+
+  .search {
+  }
+
+  .article-container {
+    /* 🔥 關鍵：讓框框自己置中 */
+    margin: 0 auto 0 auto;
+    width: 100%;
+
+    border: none;
+  }
+
+  .search {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 95%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
+  .search-select {
+    width: 5.5rem;
+    height: 2.5rem;
+    text-align: center; /* 部分瀏覽器支援 */
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .selection {
+    font-size: 3rem;
+  }
+
+  .input-text {
+    flex: 1;
+    height: 2.5rem;
+    font-size: 15px;
+  }
+
+  .search-btn {
+    width: 3rem;
+    height: 2.5rem;
+  }
+
+  .article-s {
+    margin-bottom: 0.5rem;
+    overflow: visible; /* 或者用 unset / auto */
+
+    border-radius: 0rem;
+
+    border: none;
+  }
+
+  .article {
+    max-width: 700px;
+  }
+
+  .article-photo {
+    /* 1. 絕對不要比你的爸爸還要寬 */
+
+    width: 100%; /* 🔥 關鍵：寬度佔滿 100% */
+    height: auto; /* 高度自動計算，保持比例，才不會變形 */
+    display: block; /* 消除圖片下方可能出現的小縫隙 */
+
+    margin: 0 auto;
+    //   max-height: 600px;
+    object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
+    margin-bottom: 0.5rem;
+
+    /* 3. 🔥 魔法：確保照片不被壓扁 */
+    /* 就像手機內建相簿那樣，會自動裁切多餘部分，但照片比例不變 */
+    object-fit: cover;
+  }
+
+  .article-title {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 3px 1rem 0.5rem 1rem;
+    font-size: 1.25rem;
+  }
+
+  .article-subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0.37rem 1rem 1.25rem 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.05rem;
+  }
+
+  .art-maker {
+    display: flex;
+    margin: 0rem 1rem 1rem 1rem;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .maker-photo {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 3rem;
+  }
+
+  .maker-name {
+    font-size: 1rem;
+  }
+}

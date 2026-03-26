@@ -1,0 +1,455 @@
+@charset "UTF-8";
+
+//內文架構
+.input-area-card {
+  display: block; /* 視窗不用 flex，裡面裝火車就好 */
+  margin: 1.5rem 0;
+  width: 90%;
+}
+
+.add-article-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  font-size: 3.5rem;
+  cursor: pointer;
+  z-index: 999; /* 🚀 確保它蓋在所有文章上面 */
+
+  /* 2. 🚀 核心置中邏輯 */
+  display: flex; /* 開啟 Flex 佈局 */
+  justify-content: center; /* 水平置中 */
+  align-items: center; /* 垂直置中 */
+
+  i svg {
+    font-size: 2rem; /* 稍微放大一點比較大氣 */
+    line-height: 1; /* 🚀 關鍵：強制行高為 1，消除字體上下多餘空間 */
+    display: block; /* 🚀 關鍵：不讓它被當成文字處理 */
+  }
+}
+
+.add-article-overlay {
+  /* 填滿全螢幕 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh; /* */
+  z-index: 1000;
+
+  /* 🚀 初始狀態：隱藏 */
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: var(--bg);
+  backdrop-filter: blur(10px); /* 讓背景模糊更有質感 */
+
+  /* 🚀 當被加上 .is-active 類別時顯示 */
+  &.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    // 讓你可以點裡面的文章內容，或是滾動文章內容，但點不到底層的東西
+
+    .add-article-page {
+      transform: scale(1); /* 進場動畫：放大到正常大小 */
+    }
+  }
+}
+
+.add-article-page {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 41.5rem; /* 🚀 你指定的寬度 */
+  height: 95dvh; /* 🚀 讓它幾乎填滿整個視窗高度，留一點空隙 */
+  padding: 1.5rem; /* 🚀 內距，讓內容不會貼邊 */
+}
+
+// 新增文章的樣式
+.page-header {
+  display: flex;
+  align-items: center; /* 🚀 上下置中 (垂直) */
+  /* 🚀 1. 設定為相對定位，作為按鈕的參考座標 */
+  position: relative;
+  height: 4rem;
+}
+
+.page-title {
+  margin: auto;
+}
+
+.back-btn {
+  /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+  position: absolute;
+  left: 0; /* 貼齊左邊 */
+  padding: 5px 15px;
+  cursor: pointer;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+.post-btn {
+  /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+  position: absolute;
+  right: 0; /* 貼齊左邊 */
+  padding: 5px 15px;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.input-article-content {
+  /* 🚀 1. 開啟 Flex 佈局 */
+  display: flex;
+  flex-direction: column; /* 讓卡片由上往下排 */
+  align-items: center;
+  padding-bottom: 1.5rem;
+
+  flex: 1; /* 🚀 自動吃掉剩下的空間 */
+  overflow-y: auto; /* 🚀 重點：內容滿出來時自動出現捲軸 */
+  /* 🚀 1. 關鍵屬性：讓捲軸浮在內容之上，不擠壓寬度 */
+  scrollbar-gutter: stable;
+  padding-left: 8px; /* 左邊原本的 Padding */
+
+  transition: var(--transition);
+
+  /* 🚀 2. 捲軸軌道 (Track) */
+  &::-webkit-scrollbar-track {
+    background: transparent; /* 保持透明，不佔視覺空間 */
+  }
+
+  /* 🚀 3. 捲軸滑塊 (Thumb) */
+  &::-webkit-scrollbar-thumb {
+    /* 使用半透明白色，能自動適應各種深色背景 */
+    background: var(--bg-big-light);
+    border-radius: 100px; /* 🚀 極致圓角 */
+    border: 2px solid transparent; /* 技巧：用透明邊框縮小滑塊視覺大小 */
+    background-clip: content-box; /* 配合上面的 border，讓滑塊縮在中間 */
+
+    transition: var(--transition);
+
+    /* 🚀 4. 互動效果：移上去時變亮 */
+    &:hover {
+      background: var(--text-muted);
+    }
+
+    /* 點擊抓取時最亮 */
+    &:active {
+      background: var(--text);
+    }
+  }
+
+  /* 🚀 5. Firefox 相容性設定 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.add-block-btn-s {
+  display: flex;
+  height: 5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 0rem auto 0 auto;
+
+  border: none;
+}
+
+.add-block-btn {
+  width: 15rem;
+  height: 3.5rem;
+  font-size: 1rem;
+}
+
+.input-card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  height: 3rem;
+}
+
+.input-title {
+  margin-right: auto;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.delete-btn {
+  cursor: pointer;
+  margin-left: auto;
+  display: flex; /* 讓按鈕內部的 SVG 也置中 */
+  align-items: center;
+
+  background: transparent;
+  border: none;
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+
+    background: transparent;
+    color: var(--text-muted);
+    transition: var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.input-text-area {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.5rem 1rem 1rem 1rem; /* 內距讓文字不會貼邊，增加可讀性 */
+  display: block; /* 確保它獨佔一行 */
+
+  font-size: 1.1rem; /* 內文稍微大一點才好讀 */
+  line-height: 1.6; /* 🚀 設定行高，讓文字不再擠在一起 */
+  font-family: inherit; /* 跟隨全站字體 */
+
+  // 2026 必備特效
+  field-sizing: content; /* 🚀 自動長高功能：文字打到哪，框框就長到哪 */
+
+  /* 🚀 2. 關鍵：禁止內部捲動（這是解決文字跑上去的唯一招） */
+  overflow: hidden !important; /* 🚀 最關鍵：禁止內部捲動。沒了捲軸，它為了顯示文字就必須變長 */
+  height: auto !important; /* 確保沒有任何東西鎖死它的高度 */
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------
+//----------------- 樣式 ------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------
+
+.add-article-btn {
+  border-radius: 50%;
+  background-color: var(--primary);
+  cursor: pointer;
+  opacity: 0.6; /* 🚀 你要的透明感 */
+  transition: var(--transition);
+  box-shadow: var(--shadow-s);
+
+  &:hover {
+    opacity: 1; /* 滑鼠移上去變不透明 */
+    box-shadow: var(--shadow-l); /* 加強陰影 */
+  }
+
+  &:active {
+    transform: scale(0.85); /* 點擊時稍微縮小 */
+    box-shadow: var(--shadow-m); /* 中等陰影 */
+  }
+  i svg {
+    color: var(--border);
+  }
+}
+
+.add-article-page {
+  background: var(--bg-light); /* 配合你的深色主題 */
+  border-radius: var(--radius-l);
+  border: 1px solid var(--border);
+
+  /* 🚀 進場動畫：稍微縮小並往下沉一點 */
+  transform: scale(0.9);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.page-header {
+  background: var(--bg-light); /* 配合你的深色主題 */
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-s);
+  transition: var(--transition);
+
+  svg {
+    color: var(--text-muted);
+    transition: var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.post-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-s);
+  transition: var(--transition);
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.input-article-content {
+  color: var(--bg-light);
+  border: none;
+  border-radius: var(--radius-l);
+}
+
+.input-hint {
+  color: var(--text-muted);
+}
+
+.add-block-btn {
+  background: var(--bg-big-light);
+  color: var(--text-muted);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-m);
+  cursor: pointer;
+  transition: var(--transition);
+
+  /* 只有在電腦版（有滑鼠）才觸發 */
+  @media (hover: hover) {
+    // 這裡用 & 代替原本的類別名稱
+    &:hover {
+      box-shadow: var(--shadow-l);
+      color: var(--text);
+    }
+  }
+}
+
+.input-card-header {
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg);
+}
+
+.input-text-area {
+  background: transparent; /* 既然在卡片裡，背景就全透明 */
+  border: none; /* 🚀 拿掉預設醜邊框，精品感來源 */
+  outline: none; /* 點擊時不要出現藍色外框 */
+  resize: none; /* 🚫 禁用右下角手動調整大小，避免破壞排版 */
+  transition: var(--transition);
+
+  // 文字樣式
+  color: var(--text); /* 使用你主色調的變數 */
+
+  // 預設提示字 (Placeholder) 顏色
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+
+@media (max-width: 667px) {
+  .add-article-page {
+    padding: 1rem 0.5rem 0.5rem 0.5rem; /* 🚀 內距，讓內容不會貼邊 */
+  }
+
+  .page-header {
+    height: 3.25rem;
+  }
+
+  .page-title {
+    margin: auto;
+    font-size: 1.25rem;
+  }
+
+  .back-btn {
+    /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+    position: absolute;
+    left: 0; /* 貼齊左邊 */
+    padding: 5px 15px;
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .post-btn {
+    /* 🚀 3. 絕對定位：把它釘在左邊，不佔據空間，才不會推到標題 */
+    position: absolute;
+    right: 0; /* 貼齊左邊 */
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .input-article-content {
+    /* 🚀 1. 開啟 Flex 佈局 */
+    display: flex;
+    flex-direction: column; /* 讓卡片由上往下排 */
+    align-items: center;
+    padding-bottom: 0.875rem;
+    width: 100%; /* 手機版寬度撐滿 */
+
+    padding-left: 0rem;
+
+    flex: 1; /* 🚀 自動吃掉剩下的空間 */
+    overflow-y: auto; /* 🚀 重點：內容滿出來時自動出現捲軸 */
+    /* 🚀 1. 關鍵屬性：讓捲軸浮在內容之上，不擠壓寬度 */
+    scrollbar-gutter: stable;
+
+    transition: var(--transition);
+
+    /* 🚀 2. 捲軸軌道 (Track) */
+    &::-webkit-scrollbar-track {
+      background: transparent; /* 保持透明，不佔視覺空間 */
+    }
+
+    /* 🚀 3. 捲軸滑塊 (Thumb) */
+    &::-webkit-scrollbar-thumb {
+      /* 使用半透明白色，能自動適應各種深色背景 */
+      background: var(--bg-big-light);
+      border-radius: 100px; /* 🚀 極致圓角 */
+      border: 2px solid transparent; /* 技巧：用透明邊框縮小滑塊視覺大小 */
+      background-clip: content-box; /* 配合上面的 border，讓滑塊縮在中間 */
+
+      transition: var(--transition);
+
+      /* 🚀 4. 互動效果：移上去時變亮 */
+      &:hover {
+        background: var(--text-muted);
+      }
+
+      /* 點擊抓取時最亮 */
+      &:active {
+        background: var(--text);
+      }
+    }
+
+    /* 🚀 5. Firefox 相容性設定 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+
+  .add-block-btn-s {
+    width: 90%;
+    display: flex;
+    height: 4rem;
+    gap: 0.5rem;
+    margin: 0.875rem auto 0 auto;
+    border: none;
+  }
+
+  .add-block-btn {
+    width: 50%;
+    height: 3rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 667px) {
+  .input-area-card {
+    display: block; /* 視窗不用 flex，裡面裝火車就好 */
+    margin: 0.75rem 0;
+    width: 90%;
+  }
+}

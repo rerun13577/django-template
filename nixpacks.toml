@@ -1,0 +1,8 @@
+# nixpacks.toml
+[phases.setup]
+# 🚀 這裡不能寫 '...'，要寫具體的套件名稱
+nixPkgs = ['python311', 'libwebp']
+
+[phases.install]
+# 這裡確保你的套件能正確安裝
+cmds = ['pip install -r requirements.txt']

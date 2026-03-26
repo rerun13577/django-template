@@ -1,0 +1,123 @@
+{% load static %}
+{% comment %} 讓你的 HTML 能夠看懂並找到存放在 static 資料夾裡的 CSS、JS 或圖片 {% endcomment %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FisshShop | 水族交易平台</title>
+    <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <div class="hero">
+      <div>
+        <h1 class="hero-title">打造你的夢幻水族</h1>
+      </div>
+      <a href="{% url 'account_login' %}" class="hero-btn">點我登入</a>
+    </div>
+    <div class="slogan-container">
+      <div class="slogan">
+        <span class="slogan-en">fissh</span><span class="slogan-ch">一手包辦</span>
+      </div>
+      <div class="slogan-qa-s">
+        <div class="slogan-qa-card">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="24"
+               height="24"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               class="lucide lucide-fish-icon lucide-fish icon">
+            <path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" />
+            <path d="M18 12v.5" />
+            <path d="M16 17.93a9.77 9.77 0 0 1 0-11.86" />
+            <path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33" />
+            <path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4" />
+            <path d="m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98" />
+          </svg>
+          <h3 class="slogan-qu">想養魚？</h3>
+          <p class="slogan-ans">你準備魚缸，我們負責填滿</p>
+        </div>
+        <div class="slogan-qa-card">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="24"
+               height="24"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               class="lucide lucide-message-circle-question-mark-icon lucide-message-circle-question-mark icon">
+            <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <path d="M12 17h.01" />
+          </svg>
+          <h3 class="slogan-qu">想問魚？</h3>
+          <p class="slogan-ans">你準備問題，社群為你解答</p>
+        </div>
+        <div class="slogan-qa-card">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="24"
+               height="24"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               class="lucide lucide-images-icon lucide-images icon">
+            <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" />
+            <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" />
+            <circle cx="13" cy="7" r="1" fill="currentColor" />
+            <rect x="8" y="2" width="14" height="14" rx="2" />
+          </svg>
+          <h3 class="slogan-qu">想炫耀？</h3>
+          <p class="slogan-ans">你負責造景，我們負責學習</p>
+        </div>
+      </div>
+    </div>
+    <div class="section-s">
+      <a class="section" href="{% url 'blog' %}">
+        <h2 class="section-title">近期最熱門的魚友</h2>
+        <p class="section-subtitle">看看那些令人驚嘆的水族造景...</p>
+        <div class="hot-article-s">
+          <div class="hot-article" href="/">
+            <img src="https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-ben-phillips-3129726-4781925.webp"
+                 alt="hot-article-1" />
+            <h3 class="hot-article-title">？？？買了條金魚來了條鯨魚</h3>
+            <p class="hot-article-subtitle">原來你點進來了阿？ 那留個言吧</p>
+          </div>
+        </div>
+      </a>
+      <div class="section">
+        <h2 class="section-title">為魚缸增加點色彩</h2>
+        <p class="section-subtitle">下面是我們的超級賣場</p>
+        <div class="hot-creature-s">
+          {% for item in items %}
+            <a class="hot-creature" href="/">
+              {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+              {% else %}
+                <div style="width: 100%;
+                            height: 200px;
+                            background-color: var(--bg-light);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--text-muted)">尚無圖片</div>
+              {% endif %}
+              <h3 class="hot-creature-title">{{ item.name }}</h3>
+              <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+              <span class="hot-creature-city">{{ item.get_city_display }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
