@@ -12,9 +12,15 @@
     {% include 'header.html' %}
     <div class="hero">
       <div>
-        <h1 class="hero-title">打造你的夢幻水族</h1>
+        <h1 class="hero-title">
+          <span class="title-part">打造你的</span><span class="title-part">夢幻水族</span>
+        </h1>
       </div>
-      <a href="{% url 'account_login' %}" class="hero-btn">點我登入</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'blog' %}" class="hero-btn">看看部落格</a>
+      {% else %}
+        <a href="{% url 'account_login' %}" class="hero-btn">點我登入</a>
+      {% endif %}
     </div>
     <div class="slogan-container">
       <div class="slogan">

@@ -5,7 +5,6 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 .hero {
   width: 100%;
   background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-ben-phillips-3129726-4781925.webp");
@@ -27,6 +26,10 @@
 
 .hero-title {
   font-size: 3.75rem;
+}
+
+.title-part {
+  display: inline; /* 寬螢幕時水平排列 */
 }
 
 .hero-btn {
@@ -159,7 +162,7 @@
   flex: 0 0 350px; // 電腦版寬度，不准縮小
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
-      scroll-snap-align: center;
+  scroll-snap-align: center;
 }
 
 /* _index.scss */
@@ -210,8 +213,8 @@
   flex: 0 0 350px; // 電腦版寬度，不准縮小
   border: 1px solid; /* 關鍵設定：最小高度 */
   min-height: 450px;
-  
-    scroll-snap-align: center;
+
+  scroll-snap-align: center;
 }
 
 .hot-creature {
@@ -259,7 +262,6 @@
   align-items: center;
   margin-right: 1rem;
   margin-top: 3.5rem;
-
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -313,9 +315,7 @@ p {
   border-radius: var(--radius-l);
   box-shadow: var(--shadow-l);
   border-color: var(--border-muted);
-  transition: var(
-    --transition
-  ); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
+  transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
   &:hover {
     background-color: var(--bg-light);
@@ -345,9 +345,7 @@ p {
   box-shadow: var(--shadow-l);
   border-color: var(--border-muted);
   overflow: hidden;
-  transition: var(
-    --transition
-  ); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
+  transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
   &:hover {
     background-color: var(--bg-light);
@@ -361,15 +359,13 @@ p {
   box-shadow: var(--shadow-l);
   border-color: var(--border-muted);
   overflow: hidden;
-  transition: var(
-    --transition
-  ); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
+  transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
   &:hover {
     background-color: var(--bg-light);
     border-color: var(--border);
     transition: var(--transition);
-      box-shadow: var(--shadow-l);
+    box-shadow: var(--shadow-l);
 
     .hot-creature-subtitle {
       color: var(--secondary);
@@ -378,8 +374,8 @@ p {
     // 城市發亮
     .hot-creature-city {
       transition: var(--transition);
-        box-shadow: var(--shadow-l);
-        border-top: white;
+      box-shadow: var(--shadow-l);
+      border-top: white;
     }
   }
 }
@@ -394,7 +390,6 @@ p {
 .hot-creature-city {
   border-radius: var(--radius-m);
   color: var(--text);
-
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -403,8 +398,6 @@ p {
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 @media screen and (max-width: 785px) {
   .hero {
     background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-chevanon-325044%20-%20%E8%A4%87%E8%A3%BD.webp");
@@ -412,6 +405,9 @@ p {
     background-size: contain;
     /* 4. 不重複 */
     background-repeat: no-repeat;
+  }
+  .title-part {
+    display: block; /* 空間不夠時，每個 span 佔滿一行，自動變兩行 */
   }
 }
 

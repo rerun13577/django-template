@@ -372,6 +372,10 @@ p {
   font-size: 3.75rem;
 }
 
+.title-part {
+  display: inline; /* 寬螢幕時水平排列 */
+}
+
 .hero-btn {
   margin-top: 1.5rem;
   padding: 0.75rem 2rem;
@@ -694,6 +698,9 @@ p {
     background-size: contain;
     /* 4. 不重複 */
     background-repeat: no-repeat;
+  }
+  .title-part {
+    display: block; /* 空間不夠時，每個 span 佔滿一行，自動變兩行 */
   }
 }
 /* 這樣寫才是對的：明確指出是啥要改 */

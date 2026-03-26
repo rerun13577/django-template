@@ -240,6 +240,9 @@ class Post(models.Model):
         return reverse("article", args=[str(self.id)])
 
 
+# @receiver可以監聽訊號
+# post_delete 他監聽的是這個動作
+# sender=Post 我只監聽他的訊號
 @receiver(post_delete, sender=Post)
 def delete_r2_image_on_post_delete(sender, instance, **kwargs):
     """當文章被刪除時，自動去 R2 砍掉對應的圖片檔案"""
