@@ -191,6 +191,12 @@ class AquaticLife(models.Model):
         ("OTHER", "其他"),
     ]
 
+    # 🚀 1. 增加價格狀態開關
+    PRICE_STATUS_CHOICES = [
+        ("NORMAL", "正常顯示價格"),
+        ("NOT_FOR_SALE", "非賣品"),
+    ]
+
     name = models.CharField(max_length=100, verbose_name="品種名稱")
     category = models.CharField(
         max_length=10, choices=CATEGORY_CHOICES, default="SHRIMP", verbose_name="分類"
@@ -199,6 +205,13 @@ class AquaticLife(models.Model):
         max_length=5, choices=CITY_CHOICES, default="NTP", verbose_name="所在地點"
     )
     price = models.IntegerField(default=0, verbose_name="價格")
+    price_status = models.CharField(
+        max_length=20,
+        choices=PRICE_STATUS_CHOICES,
+        default="NORMAL",
+        verbose_name="價格狀態",
+    )
+
     stock = models.IntegerField(default=0, verbose_name="庫存數量")
     description = models.TextField(blank=True, verbose_name="詳細描述")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="上架時間")
@@ -208,6 +221,12 @@ class AquaticLife(models.Model):
         blank=True,
         verbose_name="商品封面圖",
     )
+
+    # 🚀 2. 寫一個小工具讓前端直接叫 (這叫 Model Method)
+    def get_display_price(self):
+        if self.price_status == "NOT_FOR_SALE":
+            return "無價珍寶"
+        return f"NT$ {self.price}"
 
     @property
     def show_cover(self):
