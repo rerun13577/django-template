@@ -3,6 +3,8 @@ import posixpath  # 🚀 關鍵：強迫使用正斜線，不論在 Windows 還�
 from io import BytesIO
 from uuid import uuid4
 
+#
+import requests
 from allauth.account.signals import user_signed_up
 from django.conf import settings
 from django.contrib.auth.models import User  # 引入內建的使用者模型
@@ -19,7 +21,34 @@ from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from PIL import Image
 
-#
+
+# 🚀 1. 建立一個專門清理快取的「對講機」
+def purge_cloudflare_cache(url_list):
+    ZONE_ID = os.getenv("CF_ZONE_ID")
+    # 這裡貼上你剛剛拿到的 Token
+    API_TOKEN = os.getenv("CF_API_TOKEN")
+
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}",
+        "Content-Type": "application/json",
+    }
+
+    # 告訴 Cloudflare：這幾張圖，立刻給我消失在快取裡！
+    data = {"files": url_list}
+
+    try:
+        response = requests.post(
+            f"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/purge_cache",
+            headers=headers,
+            json=data,
+        )
+        res_data = response.json()
+        if res_data.get("success"):
+            print(f"🧹 [快取清理成功] 目標：{url_list}")
+        else:
+            print(f"❌ [快取清理失敗] 原因：{res_data.get('errors')}")
+    except Exception as e:
+        print(f"⚠️ [API 異常]：{e}")
 
 
 def compress_image(uploaded_image, threshold_kb=500):
@@ -220,6 +249,12 @@ class AquaticLife(models.Model):
 
         handle_model_image_upload(self, "image")  # 處理欄位 image
         super().save(*args, **kwargs)
+
+        # 🚀 3. 只要有圖，存完檔立刻去清快取
+        if self.image:
+            # 取得圖片在網站上的完整網址 (Cloudflare 只認完整網址)
+            image_url = self.image.url
+            purge_cloudflare_cache([image_url])
 
     def __str__(self):
         return f"[{self.get_city_display()}] {self.name}"
