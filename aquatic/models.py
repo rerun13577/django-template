@@ -8,11 +8,12 @@ from django.contrib.auth.models import User  # 引入內建的使用者模型
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models.signals import post_delete, post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # 1. 先在檔案最上方加入這個引入
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 from PIL import Image
 
@@ -21,8 +22,8 @@ from PIL import Image
 
 def compress_image(uploaded_image, threshold_kb=500):
     # 🚀 先檢查大小，沒超過門檻就直接回傳，省下處理時間
-    # if uploaded_image.size <= threshold_kb * 1024:
-    #     return uploaded_image
+    if uploaded_image.size <= threshold_kb * 1024:
+        return uploaded_image
 
     # 🚀 加上這一行，這是你的「偵測雷達」
     print("📢 [DEBUG] 轉檔機器正式啟動！正在處理檔案:", uploaded_image.name)
@@ -106,7 +107,35 @@ def handle_model_image_upload(instance, field_name, threshold_kb=500):
 # __str__(self) 幫這筆資料取一個「人類看得懂」的名字 就是你在後台瀏覽小魚他標題名子
 
 
+def get_aquatic_upload_path(instance, filename):
+    # 1. 基礎資訊
+    date_str = now().strftime("%Y/%m/%d")
+
+    # 2. 取得分類與 Token
+    # 如果是 AquaticLife (主圖)
+    if isinstance(instance, AquaticLife):
+        category = instance.category
+        token = instance.folder_uuid
+        sub_folder = "cover"
+    # 如果是 AquaticImage (副圖)
+    else:
+        category = instance.product.category
+        token = instance.product.folder_uuid
+        sub_folder = "gallery"
+
+    # 3. 檔名：主圖叫 main，副圖給隨機碼避免重複
+    if sub_folder == "cover":
+        new_filename = "main.webp"
+    else:
+        new_filename = f"{uuid4().hex[:4]}.webp"
+
+    return os.path.join("aquatic", category, date_str, token, sub_folder, new_filename)
+
+
 class AquaticLife(models.Model):
+    # 門牌號碼：一旦生成就不改，所有照片都住這裡
+    folder_uuid = models.CharField(max_length=8, editable=False, null=True)
+
     CITY_CHOICES = [
         ("KLU", "基隆市"),
         ("TP", "臺北市"),
@@ -150,32 +179,61 @@ class AquaticLife(models.Model):
     stock = models.IntegerField(default=0, verbose_name="庫存數量")
     description = models.TextField(blank=True, verbose_name="詳細描述")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="上架時間")
-    image = models.ImageField(upload_to="aquatic_images/", null=True, blank=True)
+    image = models.ImageField(
+        upload_to=get_aquatic_upload_path,
+        null=True,
+        blank=True,
+        verbose_name="商品封面圖",
+    )
+
+    @property
+    def show_cover(self):
+        if self.image:
+            # mark_safe 告訴 Django 這是安全的 HTML，請直接渲染圖片
+            return mark_safe(
+                f'<img src="{self.image.url}" width="100" style="border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />'
+            )
+        return "無首圖"
 
     def save(self, *args, **kwargs):
-
-        print("======== 📦 開始執行 Save 程序 ========")
-
-        if self.image:
-            # 🚀 2. 關鍵修正：檢查這是不是一個剛上傳的檔案物件
-            # 只要是新上傳的，它一定是 UploadedFile 類型
-            from django.core.files.uploadedfile import UploadedFile
-
-            if isinstance(self.image.file, UploadedFile):
-                print(f"📢 偵測到新上傳檔案: {self.image.name}，準備轉檔...")
-                try:
-                    self.image = compress_image(self.image, threshold_kb=500)
-                    print("✅ 轉檔成功，檔名已更換為 .webp")
-                except Exception as e:
-                    print(f"❌ 轉檔發生錯誤: {e}")
-            else:
-                print("ℹ️ 這是一張舊圖，跳過轉檔程序。")
-
+        handle_model_image_upload(self, "image")  # 處理欄位 image
         super().save(*args, **kwargs)
-        print("======== 🏁 Save 程序執行完畢 ========")
 
     def __str__(self):
         return f"[{self.get_city_display()}] {self.name}"
+
+
+class AquaticImage(models.Model):
+    """
+    這就是副圖模型。老闆在手機上選多張照片時，
+    每一張都會變成這裡的一筆資料。
+    """
+
+    product = models.ForeignKey(
+        AquaticLife,
+        on_delete=models.CASCADE,
+        related_name="images",  # 之後可以用 product.images.all() 抓全部
+    )
+    image = models.ImageField(upload_to=get_aquatic_upload_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # 🚀 技能要包在這裡面！
+    @property
+    def show_gallery_image(self):
+        if self.image:
+            return mark_safe(
+                f'<img src="{self.image.url}" width="100" style="border-radius: 5px;" />'
+            )
+        return "無圖片"
+
+    def save(self, *args, **kwargs):
+        # 附圖也要壓縮，省 R2 空間
+        handle_model_image_upload(self, "image")
+        super().save(*args, **kwargs)
+
+    # 🚀 補上這段，後台查修才不會崩潰
+    def __str__(self):
+        return f"📷 {self.product.name} 的副圖 ({self.id})"
 
 
 # JSONField 就是json 格式
@@ -253,29 +311,6 @@ class Post(models.Model):
 # @receiver可以監聽訊號
 # post_delete 他監聽的是這個動作
 # sender=Post 我只監聽他的訊號
-@receiver(post_delete, sender=Post)
-def delete_r2_image_on_post_delete(sender, instance, **kwargs):
-    """當文章被刪除時，自動去 R2 砍掉對應的圖片檔案"""
-    if instance.image:
-        instance.image.delete(save=False)
-        print(f"🗑️ 已從 R2 刪除文章圖片: {instance.image.name}")
-
-
-@receiver(pre_save, sender=Post)
-def delete_old_r2_image_on_change(sender, instance, **kwargs):
-    """當文章更新圖片時，自動把 R2 上的『舊圖』砍掉，避免浪費空間"""
-    if not instance.pk:  # 如果是新文章，不用處理
-        return
-    try:
-        old_post = Post.objects.get(pk=instance.pk)
-    except Post.DoesNotExist:
-        return
-
-    # 如果舊的有圖，且跟新的不一樣（代表使用者換圖了）
-    if old_post.image and old_post.image != instance.image:
-        old_post.image.delete(save=False)
-        print(f"♻️ 偵測到更換圖片，已清理 R2 舊圖: {old_post.image.name}")
-
 
 # "Post" (連線的對象)
 # 為什麼加引號？ 如果你的 Comment 類別寫在 Post 類別的上面，Python 執行到這行會找不到 Post。
@@ -341,6 +376,11 @@ class Profile(models.Model):
         upload_to="backgrounds/", null=True, blank=True
     )  # 背景
     bio = models.TextField(max_length=500, blank=True)  # 自我介紹
+
+    def save(self, *args, **kwargs):
+        handle_model_image_upload(self, "avatar")  # 處理頭像
+        handle_model_image_upload(self, "background_image")  # 處理背景
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.username} "
