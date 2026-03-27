@@ -119,9 +119,7 @@
               {% endif %}
               <h3 class="hot-creature-title">{{ item.name }}</h3>
               {% if item.price_status == 'NOT_FOR_SALE' %}
-                <p class="hot-creature-subtitle"
-                   style="color: #ff4d4f;
-                          font-weight: bold">非賣品</p>
+                <p class="hot-creature-subtitle non-sale">無價珍寶</p>
               {% else %}
                 <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
               {% endif %}

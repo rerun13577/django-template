@@ -27,7 +27,7 @@ body {
   --border-muted: oklch(0.3 0 128); /*邊框     */
   --primary: oklch(0.76 0.1 128); /*主色調*/
   --secondary: oklch(0.76 0.1 308); /*次色調*/
-  --danger: oklch(0.7 0.05 30);
+  --danger: oklch(0.69 0.11 31.06);
   --warning: oklch(0.7 0.05 100);
   --success: oklch(0.7 0.05 160);
   --info: oklch(0.7 0.05 260);
@@ -689,6 +689,11 @@ p {
 .hot-creature-city {
   border-radius: var(--radius-m);
   color: var(--text);
+}
+
+.non-sale {
+  color: var(--danger);
+  font-weight: bold;
 }
 
 @media screen and (max-width: 785px) {
