@@ -196,6 +196,41 @@ class AquaticLife(models.Model):
         return "無首圖"
 
     def save(self, *args, **kwargs):
+        # 🚀 1. 偵測「分類變更」自動搬家邏輯
+        if self.pk:  # 代表是已經存在的舊魚，才需要檢查
+            try:
+                # 抓出資料庫裡的舊資料來對比
+                old_instance = AquaticLife.objects.get(pk=self.pk)
+
+                # 如果分類變了 (例如 SHRIMP 變 FISH) 且 檔案存在
+                if old_instance.category != self.category and self.image:
+                    old_path = self.image.name
+                    # 透過你寫好的路徑函式計算新家地址
+                    new_path = self.image.field.upload_to(
+                        self, os.path.basename(old_path)
+                    )
+
+                    from django.core.files.storage import default_storage
+
+                    if default_storage.exists(old_path):
+                        # 📦 搬家動作
+                        with default_storage.open(old_path) as f:
+                            # 🚀 關鍵：save 時不只存檔，還能解決預覽問題
+                            # 某些 storage backend 支援在 save 時帶入參數
+                            default_storage.save(new_path, f)
+
+                        # 砍掉舊家的照片
+                        default_storage.delete(old_path)
+
+                        # 把資料庫裡的門牌號碼改掉
+                        self.image.name = new_path
+                        print(
+                            f"🚚 [自動搬家] {self.name} 已從 {old_instance.category} 搬到 {self.category}"
+                        )
+
+            except AquaticLife.DoesNotExist:
+                pass
+
         handle_model_image_upload(self, "image")  # 處理欄位 image
         super().save(*args, **kwargs)
 
@@ -393,6 +428,12 @@ def create_user_profile(sender, instance, created, **kwargs):
         # 當新用戶產生的那一瞬間，自動建立 Profile
         # 並預設把 username 灌進 nickname
         Profile.objects.create(user=instance, nickname=instance.username)
+
+
+# instance：這是「訊號內容」。它帶過來的是剛剛存完檔的那個 User。
+# 如果是 王小明 註冊了，instance 就是王小明。
+# 如果是 陳大華 改密碼了，instance 就是陳大華。
+# self 其實就是 instance 的另一種說法 他可是是人 也可以是物件
 
 
 @receiver(post_save, sender=User)

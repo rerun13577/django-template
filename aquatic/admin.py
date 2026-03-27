@@ -9,7 +9,7 @@ admin.site.register(Comment)
 admin.site.register(Profile)
 
 
-# 🌟 進階技巧：讓副圖可以「內嵌」在商品頁面上傳
+# 讓副圖可以「內嵌」在商品頁面上傳  一定要寫在admin 前面
 class AquaticImageInline(admin.TabularInline):
     model = AquaticImage
     extra = 1  # 預設多出一個空白上傳框
