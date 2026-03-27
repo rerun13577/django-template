@@ -60,6 +60,34 @@ def compress_image(uploaded_image, threshold_kb=500):
     )
 
 
+def handle_model_image_upload(instance, field_name, threshold_kb=500):
+    """
+    通用圖片處理工具：
+    1. 檢查欄位是否有圖
+    2. 檢查是否為新上傳的檔案
+    3. 執行壓縮並回傳結果
+    """
+    image_field = getattr(
+        instance, field_name
+    )  # 動態抓取欄位，例如 'image' 或 'avatar'
+
+    if image_field:
+        from django.core.files.uploadedfile import UploadedFile
+
+        # 核心邏輯：如果是剛從瀏覽器傳上來的檔案物件
+        if hasattr(image_field, "file") and isinstance(image_field.file, UploadedFile):
+            print(
+                f"🚀 [自動化] 偵測到 {instance.__class__.__name__} 的新圖片: {image_field.name}"
+            )
+            try:
+                # 執行你原本寫好的壓縮函式
+                compressed_file = compress_image(image_field, threshold_kb=threshold_kb)
+                setattr(instance, field_name, compressed_file)
+                print("✅ 壓縮與轉檔完成")
+            except Exception as e:
+                print(f"❌ 壓縮失敗: {e}")
+
+
 # --- 資料庫模型放在下面 ---
 
 
@@ -215,26 +243,8 @@ class Post(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # 🚀 1. 加上最顯眼的 Debug 訊息
-        print("======== 📦 開始執行 Save 程序 ========")
-
-        if self.image:
-            # 🚀 2. 關鍵修正：檢查這是不是一個剛上傳的檔案物件
-            # 只要是新上傳的，它一定是 UploadedFile 類型
-            from django.core.files.uploadedfile import UploadedFile
-
-            if isinstance(self.image.file, UploadedFile):
-                print(f"📢 偵測到新上傳檔案: {self.image.name}，準備轉檔...")
-                try:
-                    self.image = compress_image(self.image, threshold_kb=500)
-                    print("✅ 轉檔成功，檔名已更換為 .webp")
-                except Exception as e:
-                    print(f"❌ 轉檔發生錯誤: {e}")
-            else:
-                print("ℹ️ 這是一張舊圖，跳過轉檔程序。")
-
+        handle_model_image_upload(self, "image")  # 處理欄位 image
         super().save(*args, **kwargs)
-        print("======== 🏁 Save 程序執行完畢 ========")
 
     def get_absolute_url(self):
         return reverse("article", args=[str(self.id)])
