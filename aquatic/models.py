@@ -1,10 +1,12 @@
 import os
+import posixpath  # 🚀 關鍵：強迫使用正斜線，不論在 Windows 還是 Linux
 from io import BytesIO
 from uuid import uuid4
 
 from allauth.account.signals import user_signed_up
 from django.conf import settings
 from django.contrib.auth.models import User  # 引入內建的使用者模型
+from django.core.files.storage import default_storage  # 🚀 搬家機器人的主引擎
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import send_mail
 from django.db import models
@@ -108,28 +110,21 @@ def handle_model_image_upload(instance, field_name, threshold_kb=500):
 
 
 def get_aquatic_upload_path(instance, filename):
-    # 1. 基礎資訊
     date_str = now().strftime("%Y/%m/%d")
+    token = instance.folder_uuid if instance.folder_uuid else uuid4().hex[:8]
+    if not instance.folder_uuid:
+        instance.folder_uuid = token
 
-    # 2. 取得分類與 Token
-    # 如果是 AquaticLife (主圖)
-    if isinstance(instance, AquaticLife):
-        category = instance.category
-        token = instance.folder_uuid
-        sub_folder = "cover"
-    # 如果是 AquaticImage (副圖)
-    else:
-        category = instance.product.category
-        token = instance.product.folder_uuid
-        sub_folder = "gallery"
+    sub_folder = "cover" if isinstance(instance, AquaticLife) else "gallery"
+    category = (
+        instance.category
+        if isinstance(instance, AquaticLife)
+        else instance.product.category
+    )
 
-    # 3. 檔名：主圖叫 main，副圖給隨機碼避免重複
-    if sub_folder == "cover":
-        new_filename = "main.webp"
-    else:
-        new_filename = f"{uuid4().hex[:4]}.webp"
-
-    return os.path.join("aquatic", category, date_str, token, sub_folder, new_filename)
+    # 🚀 使用 posixpath 確保路徑永遠是 / 而不是 \
+    path = posixpath.join("aquatic", category, date_str, token, sub_folder, "main.webp")
+    return path
 
 
 class AquaticLife(models.Model):
@@ -196,40 +191,32 @@ class AquaticLife(models.Model):
         return "無首圖"
 
     def save(self, *args, **kwargs):
-        # 🚀 1. 偵測「分類變更」自動搬家邏輯
-        if self.pk:  # 代表是已經存在的舊魚，才需要檢查
-            try:
-                # 抓出資料庫裡的舊資料來對比
-                old_instance = AquaticLife.objects.get(pk=self.pk)
+        # 1. 確保 UUID 存在
+        if not self.folder_uuid:
+            self.folder_uuid = uuid4().hex[:8]
 
-                # 如果分類變了 (例如 SHRIMP 變 FISH) 且 檔案存在
+        # 2. 偵測分類變更並自動搬家
+        if self.pk:
+            try:
+                old_instance = AquaticLife.objects.get(pk=self.pk)
+                # 如果分類變了，且目前有圖，且圖的路徑不包含新分類
                 if old_instance.category != self.category and self.image:
-                    old_path = self.image.name
-                    # 透過你寫好的路徑函式計算新家地址
-                    new_path = self.image.field.upload_to(
-                        self, os.path.basename(old_path)
+                    old_path = self.image.name.replace("\\", "/")  # 強制轉正斜線
+                    new_filename = os.path.basename(old_path)
+                    new_path = get_aquatic_upload_path(self, new_filename).replace(
+                        "\\", "/"
                     )
 
-                    from django.core.files.storage import default_storage
-
-                    if default_storage.exists(old_path):
-                        # 📦 搬家動作
+                    if default_storage.exists(old_path) and old_path != new_path:
                         with default_storage.open(old_path) as f:
-                            # 🚀 關鍵：save 時不只存檔，還能解決預覽問題
-                            # 某些 storage backend 支援在 save 時帶入參數
+                            # 🚀 這裡我們直接存，並跳過後面的壓縮，避免 FileNotFoundError
                             default_storage.save(new_path, f)
 
-                        # 砍掉舊家的照片
                         default_storage.delete(old_path)
-
-                        # 把資料庫裡的門牌號碼改掉
                         self.image.name = new_path
-                        print(
-                            f"🚚 [自動搬家] {self.name} 已從 {old_instance.category} 搬到 {self.category}"
-                        )
-
-            except AquaticLife.DoesNotExist:
-                pass
+                        print(f"🚚 搬家成功: {old_path} -> {new_path}")
+            except Exception as e:
+                print(f"⚠️ 搬家失敗預警: {e}")
 
         handle_model_image_upload(self, "image")  # 處理欄位 image
         super().save(*args, **kwargs)
