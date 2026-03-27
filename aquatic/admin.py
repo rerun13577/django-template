@@ -19,6 +19,8 @@ class AquaticImageInline(admin.TabularInline):
 
 @admin.register(AquaticLife)
 class AquaticLifeAdmin(admin.ModelAdmin):
+    show_full_result_count = False  # 🚀 讓 Django 不要每次都精確計算總數
+
     # 1. 列表頁要顯示哪些欄位 (把 show_cover 放第一格)
     list_display = [
         "show_cover",
@@ -55,6 +57,7 @@ class AquaticImageAdmin(admin.ModelAdmin):
 # 2. 需要「特異功能」的用這個寫法
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    list_select_related = ("author",)  # 🚀 預先抓好作者，不要一筆一筆抓
     # 🚀 這一行是解決轉圈圈的神藥
     raw_id_fields = ("likes", "author")
 
