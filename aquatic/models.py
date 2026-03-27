@@ -3,7 +3,6 @@ import posixpath  # 🚀 關鍵：強迫使用正斜線，不論在 Windows 還�
 from io import BytesIO
 from uuid import uuid4
 
-#
 import requests
 from allauth.account.signals import user_signed_up
 from django.conf import settings
@@ -321,8 +320,8 @@ def get_blog_upload_path(instance, filename):
     if not instance.folder_uuid:
         instance.folder_uuid = token
 
-    date_str = now().strftime("%Y/%m/%d")
-    return os.path.join("blog", date_str, token, "cover", "cover.webp")
+    date_str = now().strftime("%Y/%m/%d")  # ✅ 改成這樣，Blog 封面圖就徹底安全了
+    return posixpath.join("blog", date_str, token, "cover", "cover.webp")
 
 
 # editable=False 不能顯示 也不能更改
@@ -413,10 +412,34 @@ class Comment(models.Model):
         return f"{self.author.username}: {self.content[:20]}"
 
 
+# 下面是分類函式函式
+
+
+def get_profile_upload_path(instance, filename):
+    # 1. 確保有 UUID (跟 AquaticLife 一樣的做法)
+    token = instance.folder_uuid if instance.folder_uuid else uuid4().hex[:8]
+    if not instance.folder_uuid:
+        instance.folder_uuid = token
+
+    # 2. 判斷這張圖是「頭貼」還是「背景」
+    # 我們根據傳進來的原始檔名或是欄位來判斷 (稍後在 save 裡處理)
+    if "avatar" in filename:
+        sub_folder = "avatar"
+    elif "background" in filename:
+        sub_folder = "background"
+    else:
+        sub_folder = "misc"
+
+    # 3. 產出路徑：profiles/UUID/類別/main.webp
+    return posixpath.join("profiles", token, sub_folder, "main.webp")
+
+
 # 個人頁面處理
 # 如何讓他顯示多種的頭貼過濾系統
 # 沒辦法直接定義user 這是功能性的user版本 龍馬
 class Profile(models.Model):
+    # 🚀 每個用戶專屬的資料夾 ID
+    folder_uuid = models.CharField(max_length=8, editable=False, null=True)
     # 🚀 這行是關鍵：把這張表跟內建的 User 「焊」死在一起
     # 一個 User 只會對應到一個 Profile
     # 「連鎖刪除」。如果這顆 User 被拔掉（刪除），那麼對應的 Profile
@@ -427,17 +450,49 @@ class Profile(models.Model):
     # 🚀 補上這一行，讓「焊點」出現
     nickname = models.CharField(max_length=50, blank=True)
 
-    # 🖼️ 這裡定義你想擴充的「新零件」
-    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)  # 頭貼
+    # 🖼️ 這裡要改，不然它不會去跑你的 UUID 邏輯
+    avatar = models.ImageField(
+        upload_to=get_profile_upload_path,  # 🚀 改成這樣
+        null=True,
+        blank=True,
+        verbose_name="大頭貼",
+    )
     background_image = models.ImageField(
-        upload_to="backgrounds/", null=True, blank=True
+        upload_to=get_profile_upload_path,  # 🚀 改成這樣
+        null=True,
+        blank=True,
+        verbose_name="個人頁背景",
     )  # 背景
     bio = models.TextField(max_length=500, blank=True)  # 自我介紹
 
     def save(self, *args, **kwargs):
-        handle_model_image_upload(self, "avatar")  # 處理頭像
-        handle_model_image_upload(self, "background_image")  # 處理背景
+        # 1. 補發身分證 (UUID)
+        if not self.folder_uuid:
+            self.folder_uuid = uuid4().hex[:8]
+
+        # 2. 🚀 手動改名 (為了讓路徑函式 get_profile_upload_path 抓到關鍵字)
+        # 我們在壓縮前，先幫它換個名字標籤
+        if self.avatar and hasattr(self.avatar, "file"):
+            self.avatar.name = "avatar.webp"
+
+        if self.background_image and hasattr(self.background_image, "file"):
+            self.background_image.name = "background_image.webp"
+
+        # 3. 執行你原本的萬用壓縮轉檔
+        handle_model_image_upload(self, "avatar")
+        handle_model_image_upload(self, "background_image")
+
+        # 4. 正式存檔到 R2
         super().save(*args, **kwargs)
+
+        # 5. 清除快取 (這段一定要留，不然會看見鬼影)
+        purge_list = []
+        if self.avatar:
+            purge_list.append(self.avatar.url)
+        if self.background_image:
+            purge_list.append(self.background_image.url)
+        if purge_list:
+            purge_cloudflare_cache(purge_list)
 
     def __str__(self):
         return f"{self.user.username} "
