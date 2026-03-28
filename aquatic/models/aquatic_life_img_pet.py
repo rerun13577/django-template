@@ -41,6 +41,8 @@ class PetFish(BaseModel):
     )
 
     # 🚀 飢餓偵測小工具 (給前端 Template 用的)
+    # 時間是流動的：如果這隻魚 12:00 剛好變餓，但你資料庫存的是「飽」，除非你每秒鐘都跑去更新資料庫，否則資料永遠是舊的。
+    # 動態計算最準：用 @property，只要使用者重新整理網頁，Django 就會拿最新的「現在時間」去算，保證永遠精準。
     @property
     def is_hungry(self):
         if not self.last_feeding_time:

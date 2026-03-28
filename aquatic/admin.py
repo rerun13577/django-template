@@ -56,6 +56,8 @@ class PetFishAdmin(admin.ModelAdmin):
     list_filter = ["created_at"]
     search_fields = ["name", "owner__username"]
     raw_id_fields = ["owner"]  # 避免使用者太多時下拉選單跑不動
+    # 🚀 在編輯頁面（你截圖這頁）顯示唯讀欄位
+    readonly_fields = ["is_hungry"]
 
 
 # 🚀 6. 「店長碎碎念」模板
