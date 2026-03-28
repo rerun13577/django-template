@@ -9,13 +9,15 @@ from django.http import JsonResponse  # 🚀 回傳成功或失敗的訊息給 J
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now  # 🚀 這是用來抓現在時間的機器
 
-from aquatic.models import AquaticLife  # 引入你的模型
-
+# 1. Model 從 models 資料夾抓
 from .models import (  # 記得引入模型
+    AquaticLife,
     Comment,
     Post,
-    compress_image,  # 🚀 確保有引入你的壓縮工具
 )
+
+# 2. 工具從 utils 檔案抓 🚀
+from .utils import compress_image
 
 # url就是跟前端的連結
 # 當你要直接轉換一個網址直接{裡面引用url裡面的name}

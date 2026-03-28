@@ -201,8 +201,6 @@ LOGOUT_REDIRECT_URL = "/"
 # 🚀 修正 3: Allauth 專業設定
 ACCOUNT_LOGOUT_ON_GET = True  # 點擊登出連結直接登出
 SOCIALACCOUNT_LOGIN_ON_GET = True  # 點擊 Google 登入直接跳轉
-ACCOUNT_EMAIL_REQUIRED = False  # 暫時不強迫驗證信
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 
 # 🚀 修正 5: 認證後端 (這塊一定要留著)
 AUTHENTICATION_BACKENDS = [
@@ -210,8 +208,6 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-# 🚀 將信件內容直接顯示在 VS Code 的終端機裡，不用真的寄信
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # 通常是因為郵件模板裡有非 ASCII 字元才會導致編碼。
 # 如果你希望它在終端機顯示純文字，可以試著在 settings.py 加上這行，強迫它用純文字發送：
@@ -242,11 +238,9 @@ DEFAULT_FROM_EMAIL = "FisshShop <evonelin52@gmail.com>"
 # 要不要驗證嗎
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-# 🚀 告訴 IC：我不需要二次確認密碼，一條線（password1）就夠了
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
-# 🚀 確保註冊時一定要填 Email
-ACCOUNT_EMAIL_REQUIRED = True
+# 🚀 舊的 ACCOUNT_AUTHENTICATION_METHOD 等等可以刪掉了，改用這個：
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
 
-# 🚀 使用者名稱是必填的
-ACCOUNT_USERNAME_REQUIRED = True
+# 🚀 統一設定註冊時需要的欄位
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*"]

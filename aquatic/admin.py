@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # aquatic/admin.py
-from .models import AquaticImage, AquaticLife, Comment, Post, Profile
+from aquatic.models import AquaticImage, AquaticLife, Comment, Post, Profile
 
 # 1. 簡單的直接登記
 admin.site.register(Comment)
