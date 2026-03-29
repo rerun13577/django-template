@@ -10,20 +10,57 @@ from django.views.generic import TemplateView
 # 就算你明天把 blog/post/ 改成 shrimp/content/(就是path的第一格)
 # 只要 name 沒改，你的 HTML 完全不用動！
 
+# urlpatterns = [
+#     path("admin/", admin.site.urls),
+#     path("", views.index, name="index"),
+#     path("blog/", views.blog, name="blog"),
+#     path("blog/api/create/", views.create_post_api, name="create_post_api"),
+#     # 網址是 Address，而真正的資料是在 Data Bus 上跑，因為照片那些不可能透過網址傳送
+#     path("blog/post/<int:pk>/", views.article_view, name="article"),
+#     path("post/<int:post_id>/comment/", views.add_comment, name="add_comment"),
+#     path("accounts/", include("allauth.urls")),
+#     path("lab/", TemplateView.as_view(template_name="index.html")),
+#     path("blog/like/<int:post_id>/", views.toggle_like, name="toggle_like"),
+#     path(
+#         "comment/like/<int:comment_id>/", views.toggle_comment_like, name="comment_like"
+#     ),
+# ]
+
+# # 🚀 只有在 DEBUG 模式下才啟用 Toolbar
+# if settings.DEBUG:
+#     import debug_toolbar
+
+#     urlpatterns = [
+#         path("__debug__/", include(debug_toolbar.urls)),
+#     ] + urlpatterns
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.index, name="index"),
-    path("blog/", views.blog, name="blog"),
-    path("blog/api/create/", views.create_post_api, name="create_post_api"),
-    # 網址是 Address，而真正的資料是在 Data Bus 上跑，因為照片那些不可能透過網址傳送
-    path("blog/post/<int:pk>/", views.article_view, name="article"),
-    path("post/<int:post_id>/comment/", views.add_comment, name="add_comment"),
-    path("accounts/", include("allauth.urls")),
-    path("lab/", TemplateView.as_view(template_name="index.html")),
-    path("blog/like/<int:post_id>/", views.toggle_like, name="toggle_like"),
+    # 🏠 首頁與部落格
+    path("", views.IndexView.as_view(), name="index"),
+    path("blog/", views.BlogView.as_view(), name="blog"),
+    path("blog/post/<int:pk>/", views.ArticleDetailView.as_view(), name="article"),
+    # ✍️ 留言與發文
+    path("blog/api/create/", views.CreatePostView.as_view(), name="create_post_api"),
     path(
-        "comment/like/<int:comment_id>/", views.toggle_comment_like, name="comment_like"
+        "post/<int:post_id>/comment/",
+        views.AddCommentView.as_view(),
+        name="add_comment",
     ),
+    # ❤️ 按讚功能 (API)
+    path(
+        "blog/like/<int:post_id>/", views.ToggleLikeView.as_view(), name="toggle_like"
+    ),
+    path(
+        "comment/like/<int:comment_id>/",
+        views.ToggleCommentLikeView.as_view(),
+        name="comment_like",
+    ),
+    # 🔐 帳號系統 (保留 allauth)
+    path("accounts/", include("allauth.urls")),
+    # 🧪 實驗室
+    path("lab/", TemplateView.as_view(template_name="index.html")),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar
@@ -34,7 +71,7 @@ if settings.DEBUG:
         path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
 
-
+# Django 的路由系統（URLconf）底層其實只認識「函式」。當你把 View 寫成「類別」時，它是一個物件，不是函式。
 # path(
 #     "comment/like/<int:comment_id>/", views.toggle_comment_like, name="comment_like"
 # ),
