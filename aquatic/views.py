@@ -239,7 +239,17 @@ class ProfileView(FisshPageBase):
     # 在 ProfileView 裡
     def get(self, request):
         user = request.user
-        user_posts = Post.objects.filter(author=user).annotate(...)  # 貼文
+        user_posts = (
+            Post.objects.filter(author=user)
+            .annotate(
+                is_liked=Exists(
+                    Post.likes.through.objects.filter(
+                        post_id=OuterRef("pk"), user_id=user.id
+                    )
+                )
+            )
+            .order_by("-created_at")
+        )
 
         # 🚀 現在你可以抓到這個人發布的魚了！
         user_aquatics = AquaticLife.objects.filter(owner=user).order_by("-created_at")
