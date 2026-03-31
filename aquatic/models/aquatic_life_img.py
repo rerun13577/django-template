@@ -2,6 +2,7 @@ import os
 import posixpath
 from uuid import uuid4
 
+from django.conf import settings  # 🚀 記得引入 settings
 from django.core.files.storage import default_storage
 from django.db import models
 from django.utils.safestring import mark_safe
@@ -12,23 +13,28 @@ from .base import BaseModel
 
 
 def get_aquatic_upload_path(instance, filename):
-    """🚀 萬用路徑：根據分類、日期、UUID 算出 R2 存放路徑"""
+    """🚀 萬用路徑：現在加入了 User ID 作為第一層目錄"""
     date_str = now().strftime("%Y/%m/%d")
-    # UUID 由 BaseModel 確保，直接拿
+
+    # 1. 取得 owner_id (處理 AquaticLife 或 AquaticImage 兩種情況)
+    if isinstance(instance, AquaticLife):
+        owner_id = instance.owner.id
+        category = instance.category
+        sub_folder = "cover"
+    else:
+        # 這是副圖 AquaticImage，要從 product 往回找 owner
+        owner_id = instance.product.owner.id
+        category = instance.product.category
+        sub_folder = "gallery"
+
     token = (
         instance.folder_uuid if hasattr(instance, "folder_uuid") else uuid4().hex[:8]
     )
 
-    # 判斷是主圖 (cover) 還是副圖 (gallery)
-    sub_folder = "cover" if isinstance(instance, AquaticLife) else "gallery"
-    # 拿到分類標籤 (例如 FISH, SHRIMP)
-    category = (
-        instance.category
-        if isinstance(instance, AquaticLife)
-        else instance.product.category
+    # 🚀 新路徑：aquatic/{user_id}/{category}/{date}/...
+    return posixpath.join(
+        "aquatic", str(owner_id), category, date_str, token, sub_folder, "main.webp"
     )
-
-    return posixpath.join("aquatic", category, date_str, token, sub_folder, "main.webp")
 
 
 class AquaticLife(BaseModel):
@@ -64,6 +70,15 @@ class AquaticLife(BaseModel):
         ("PLANT", "水生植物"),
         ("OTHER", "其他"),
     ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="aquatic_items",
+        verbose_name="發布者",
+        null=True,
+        blank=True,
+    )
     PRICE_STATUS_CHOICES = [("NORMAL", "正常顯示價格"), ("NOT_FOR_SALE", "非賣品")]
 
     # --- 欄位定義 ---

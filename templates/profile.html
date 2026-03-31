@@ -13,7 +13,19 @@
             <section class="profile-hero"
                      id="profile-hero"
                      style="background-image: url('預設背景.jpg')">
-                <div class="edit-icon">{% include "icons/ellipsis-vertical.html" %}</div>
+                <div class="edit-dropdown-container">
+                    <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>
+                    <div class="dropdown-content" id="edit-dropdown">
+                        <a href="/" class="dropdown-item">
+                            {% comment %} {% include "icons/user-edit.html" %} {% endcomment %}
+                            編輯個人檔案
+                        </a>
+                        <a href="/" class="dropdown-item">
+                            {% comment %} {% include "icons/plus-circle.html" %} {% endcomment %}
+                            新增寵物小魚
+                        </a>
+                    </div>
+                </div>
                 <label for="avatar-input" class="avatar-label">
                     {% comment %} 外面用來定位的標籤，裡面放照片，點了會觸發input的file選擇 {% endcomment %}
                     {% include "component/user-photo-outclass.html" with target_user=user custom_class="customer-avatar" %}
@@ -53,7 +65,8 @@
                     <section class="tab-content" id="content-posts">
                         <div class="post-grid">
                             {% for post in posts %}
-                                {% include "component/article-display.html" with post=post %}
+                                {% comment %} {% include "component/article-display.html" with post=post %} {% endcomment %}
+                                {% include "component/article-display.html" with post=post is_liked=post.is_liked_by_viewer %}
                             {% empty %}
                                 <p class="empty-hint">目前還沒有發布貼文喔！</p>
                             {% endfor %}
@@ -87,6 +100,6 @@
             </div>
         </div>
         <script src="{% static 'aquatic/js/profile.js' %}?v=1.0.2"></script>
-        <script src="{% static 'aquatic/js/like-btn.js' %}?v=1.0.2"></script>
+        <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
     </body>
 </html>

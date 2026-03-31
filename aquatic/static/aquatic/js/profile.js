@@ -58,3 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
         syncTab(activeIndex);
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const editBtn = document.getElementById('edit-menu-btn');
+    const dropdown = document.getElementById('edit-dropdown');
+
+    // 1. 切換選單
+    editBtn.addEventListener('click', (e) => {
+        // 因：防止事件冒泡。果：點按鈕時不會觸發下面的「點擊外面關閉」邏輯。
+        e.stopPropagation(); 
+        dropdown.classList.toggle('show');
+    });
+
+    // 2. 點擊外面任何地方關閉
+    document.addEventListener('click', () => {
+        // 因：使用者點擊了非選單區域。果：強制收起選單。
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    });
+});

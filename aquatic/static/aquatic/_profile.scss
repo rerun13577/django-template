@@ -29,7 +29,6 @@
   --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
   --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
 
-  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
   --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 
   /* 也可以順便把字重定義好，開發更爽 */
@@ -69,8 +68,8 @@
   height: 2.25rem;
   width: 2.25rem;
   position: absolute;
-  top: 2rem;
-  right: 2rem;
+  top: 0rem;
+  right: 0rem;
   padding: 0.25rem 0.25rem;
   svg {
     width: 100%;
@@ -357,3 +356,61 @@
 // rwd--------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
+
+.edit-dropdown-container {
+  position: absolute; /* 配合你原本 hero 的佈局 */
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+}
+
+.dropdown-content {
+  /* 1. 定位 */
+  position: absolute;
+  top: 110%; /* 剛好在按鈕下方一點點 */
+  right: 0;
+  width: 12rem;
+
+  /* 2. 裝飾 (毛玻璃質感) */
+  background: var(--bg-light);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m) 1.125rem var(--radius-m) var(--radius-m);
+  box-shadow: var(--shadow-m);
+
+  /* 3. 隱藏狀態 */
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: var(--transition);
+
+  &.show {
+    /* 4. 顯示狀態 */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+  box-shadow: var(--shadow-inset-l);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &:first-child {
+    border-radius: var(--radius-m) var(--radius-m) 0 0;
+  }
+  &:last-child {
+    border-radius: 0 0 var(--radius-m) var(--radius-m);
+  }
+}
