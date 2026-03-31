@@ -2734,7 +2734,7 @@ a {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0px 0;
+  padding: 0;
 }
 
 .post-grid > * {
@@ -2746,7 +2746,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 3rem auto 0 auto;
+  margin: 3rem auto 5rem auto;
   font-size: 1.25rem;
 }
 
@@ -2760,6 +2760,7 @@ a {
 }
 
 .in-profile {
+  border: var(--border-muted) solid 1px;
   border-radius: 3rem;
   overflow: hidden;
 }

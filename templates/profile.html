@@ -16,7 +16,7 @@
                 <div class="edit-icon">{% include "icons/ellipsis-vertical.html" %}</div>
                 <label for="avatar-input" class="avatar-label">
                     {% comment %} 外面用來定位的標籤，裡面放照片，點了會觸發input的file選擇 {% endcomment %}
-                    {% include "component/user-photo-outclass.html" with target_user=post.author custom_class="customer-avatar" %}
+                    {% include "component/user-photo-outclass.html" with target_user=user custom_class="customer-avatar" %}
                 </label>
                 <input type="file" id="avatar-input" accept="image/*" style="display: none;">
             </section>
@@ -86,6 +86,6 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'aquatic/js/profile.js' %}"></script>
+        <script src="{% static 'aquatic/js/profile.js' %}?v=1.0.2"></script>
     </body>
 </html>
