@@ -47,6 +47,7 @@ body {
   --fw-light: 300;
   --article-margin: 2rem;
   --article-margin-mobile: 1.2rem;
+  --profile-width: 41.5rem;
 }
 
 * {
@@ -2568,4 +2569,311 @@ a {
     margin: 0.75rem 0;
     width: 90%;
   }
+}
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.13 31.38);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(to bottom, oklch(0.8199 0.1381 140.2), oklch(0.76 0.1 308));
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+  --article-margin-mobile: 1.2rem;
+  --profile-width: 41.5rem;
+  --profile-margin: 55px;
+}
+
+.in-profile {
+  width: var(--profile-width);
+  margin: 0 auto 2rem auto;
+  height: auto;
+  min-height: 50rem;
+}
+
+.profile-hero {
+  /* 1. 尺寸定義 (你剛才說的 16:9) */
+  width: 41.5rem;
+  aspect-ratio: 16/9;
+  /* 3. 裝飾與佈局 */
+  position: relative; /* 作為裡面大頭貼絕對定位的基準點 */
+}
+
+.edit-icon {
+  height: 2.25rem;
+  width: 2.25rem;
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  padding: 0.25rem 0.25rem;
+}
+.edit-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.customer-avatar {
+  position: absolute; /* 🚀 脫離隊伍，開始漂浮 */
+  width: 10rem; /* 🚀 寬度固定，保證視覺重量一致 */
+  aspect-ratio: 1/1; /* 🚀 強制 1:1，確保永遠是正方形（圓形的地基） */
+  /* --- 調整這裡來控制位置 --- */
+  bottom: -55px; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
+  left: var(--profile-margin); /* 距離左邊 50px */
+  cursor: pointer;
+  z-index: 10; /* 確保它在最前面，不會被背景遮住 */
+}
+.customer-avatar img {
+  width: 100%;
+  height: 100%;
+}
+
+.profile-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 3.75rem var(--profile-margin) 1rem var(--profile-margin);
+  align-items: baseline;
+  padding: 0; /* 確保沒有內邊距撐開高度 */
+}
+
+.info-left {
+  display: flex;
+  align-items: baseline;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.profile-name {
+  font-size: 3.5rem;
+  margin: 0; /* 🚀 因：瀏覽器預設會給 0.67em。果：歸零後，方框會緊貼文字邊界。 */
+  line-height: 1; /* 🚀 因：預設通常是 1.2+。果：設為 1 會讓高度等於字體大小，完全沒廢話。 */
+}
+
+.user-category {
+  display: flex;
+  font-size: 1rem;
+  margin: 0; /* 確保沒有外邊距影響 baseline 對齊 */
+}
+
+.info-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.follower-count {
+  font-size: 1.5rem;
+}
+
+.bio-section {
+  margin: 0 var(--profile-margin) 0 var(--profile-margin);
+}
+
+.profile-bio {
+  margin-top: 1.5rem;
+}
+
+.profile-tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin: 1rem var(--profile-margin) 0 var(--profile-margin);
+}
+
+.tab-item {
+  flex: 1; /* 🚀 因：剩餘空間平分。果：三個按鈕寬度一模一樣。 */
+  padding: 14px 0; /* 上下撐開高度，好點擊 */
+  font-size: 1rem;
+}
+
+.tabs-window {
+  width: 100%; /* 繼承父層的 41.5rem */
+  overflow: hidden; /* 🚀 因：隱藏超出部分。果：當內容切換時，只有當前內容會顯示，其他內容被「藏」起來。 */
+}
+
+.tabs-slider {
+  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
+  flex-direction: row;
+  /* 🚀 關鍵：防止所有車廂被最長的那節撐開，讓它們保持原始高度 */
+  align-items: flex-start;
+  width: 300%; /* 🚀 因：有三個內容。果：每個內容的寬度是視窗的 100%，總寬度是 300%。 */
+  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
+}
+
+.tab-content {
+  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
+  flex-direction: row;
+  flex: 1;
+  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
+}
+
+.post-grid {
+  width: 100%; /* 🚀 強制撐滿 41.5rem */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 0;
+}
+
+.post-grid > * {
+  width: 100%; /* 🚀 因：強制撐開。果：對齊父層的 41.5rem。 */
+  max-width: 41.5rem; /* 確保不會超出你的黃金比例 */
+}
+
+.empty-hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto 0 auto;
+  font-size: 1.25rem;
+}
+
+.grid {
+  width: 100%; /* 🚀 強制撐滿 41.5rem */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.in-profile {
+  border-radius: 3rem;
+  overflow: hidden;
+}
+
+.profile-hero {
+  /* 為了處理照片，這兩行一定要加 */
+  background-size: cover;
+  background-position: center;
+  overflow: visible; /* 🚀 關鍵：讓大頭貼可以「壓」在邊界上而不被切掉 */
+  background-color: #ddd; /* 圖片還沒載入時的墊底色 */
+  /* 2. 圖片顯示邏輯 (最關鍵) */
+  background-size: cover; /* 🚀 因：確保圖片填滿整個框。果：多餘的部分會被裁切，不會留白或變形。 */
+  background-position: center; /* 🚀 因：圖片以中心為準。果：縮放時最重要的中間內容不會被切掉。 */
+  background-repeat: no-repeat; /* 防止圖片太小時重複出現 */
+}
+
+.edit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 1. 基本圓圈定義 */
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  /* 2. 透明背景組合 */
+  /* 🚀 因：rgba 的 0.4 代表 40% 不透明度。果：背景變透明，隱約看得到後面的封面圖。 */
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  /* 3. 進階質感 (毛玻璃) */
+  /* 🚀 因：加上模糊濾鏡。果：透明區域會讓後面的背景模糊，看起來比純透明更高階。 */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); /* 為了相容 Safari */
+  box-shadow: var(--shadow-s); /* 🚀 給頭像一點陰影，增加層次感 */
+  transition: var(--transition);
+  border-radius: 50%;
+}
+.edit-icon svg {
+  color: var(--text);
+}
+@media (hover: hover) {
+  .edit-icon:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: var(--shadow-l); /* 🚀 給頭像一點陰影，增加層次感 */
+  }
+}
+
+.customer-avatar {
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.customer-avatar img {
+  -o-object-fit: cover;
+     object-fit: cover; /* 🚀 確保圖片完全填滿圓形，保持比例，不會變形 */
+  border-radius: 50%; /* 🚀 圓形 */
+  border: 8px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
+  box-shadow: var(--shadow-l); /* 🚀 給頭像一點陰影，增加層次感 */
+}
+
+.profile-name {
+  font-weight: var(--fw-bold);
+  color: var(--text);
+}
+
+.user-category {
+  color: var(--text);
+  border: none;
+  background-color: var(--primary);
+  border-radius: var(--radius-s);
+  padding: 0.25rem 0.75rem;
+}
+
+.follower-count {
+  color: var(--text-muted);
+}
+
+.profile-bio {
+  color: var(--text-muted);
+}
+
+.tab-item {
+  background: none; /* 移除按鈕預設背景 */
+  border: none; /* 移除按鈕預設邊框 */
+  /* 平時是灰色的，代表「未選中」 */
+  color: var(--highlight);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition); /* 🚀 因：轉場效果。果：切換時顏色變化會變得很順。 */
+  /* 預留底部邊框位置，防止 active 時高度抖動 */
+  border-bottom: 2px solid transparent;
+}
+@media (hover: hover) {
+  .tab-item:hover {
+    /* 懸停時稍微亮一點點 */
+    color: var(--text-muted);
+  }
+}
+.tab-item.active {
+  color: var(--text); /* 選中時文字變全白 */
+  border-bottom: 2px solid var(--text); /* 🚀 因：底部加白線。果：視覺上告訴用戶「你在這」。 */
+}
+
+.tabs-window {
+  /* 🚀 關鍵：讓高度變化有平滑動畫 */
+  transition: height 0.4s cubic-bezier(0.3, 0.8, 0.2, 1);
+}
+
+.tabs-slider {
+  transition: transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.1);
+}
+
+.empty-hint {
+  color: var(--text-muted);
+  background-color: var(--bg-light);
+  padding: 2rem;
+  border-radius: var(--radius-m);
 }/*# sourceMappingURL=main.css.map */

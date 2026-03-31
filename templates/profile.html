@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FisshShop | 個人頁面</title>
+        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+    </head>
+    <body>
+        {% include 'header.html' %}
+        <div class="in-profile">
+            <section class="profile-hero"
+                     id="profile-hero"
+                     style="background-image: url('預設背景.jpg')">
+                <div class="edit-icon">{% include "icons/ellipsis-vertical.html" %}</div>
+                <label for="avatar-input" class="avatar-label">
+                    {% comment %} 外面用來定位的標籤，裡面放照片，點了會觸發input的file選擇 {% endcomment %}
+                    {% include "component/user-photo-outclass.html" with target_user=post.author custom_class="customer-avatar" %}
+                </label>
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            </section>
+            <div class="profile-info">
+                <div class="info-left">
+                    <h1 class="profile-name">{{ user.username }}</h1>
+                    <span class="user-category">
+                        {% if post.author.profile.category %}
+                            {{ post.author.profile.get_category_display }}
+                        {% else %}
+                            熱血魚友
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-right">
+                    <span class="follower-count">
+                        <strong>{{ post.author.followers.count|default:"0" }}</strong> 粉絲
+                    </span>
+                </div>
+            </div>
+            <section class="bio-section">
+                <p class="profile-bio">{{ user.profile.bio|default:"這位魚友很神秘，也許他/她知道藍鯨在哪裡..."|linebreaks }}</p>
+            </section>
+            <nav class="profile-tabs">
+                <button class="tab-item active" data-index="0">貼文</button>
+                <button class="tab-item" data-index="1">我的 fissh</button>
+                <button class="tab-item" data-index="2">product</button>
+            </nav>
+            {% comment %} 視窗 {% endcomment %}
+            <div class="tabs-window">
+                {% comment %} 內容 橫向 {% endcomment %}
+                <div class="tabs-slider" id="tabs-slider">
+                    {% comment %} 單個內容 {% endcomment %}
+                    <section class="tab-content" id="content-posts">
+                        <div class="post-grid">
+                            {% for post in posts %}
+                                {% include "component/article-display.html" with post=post %}
+                            {% empty %}
+                                <p class="empty-hint">目前還沒有發布貼文喔！</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    <section class="tab-content" id="content-products">
+                        <div class="grid">
+                            {% for product in products %}
+                                <div class="product-card">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                                    <p>{{ product.name }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="empty-hint">他/她可能只是喜歡看看小魚！</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    <section class="tab-content" id="content-products">
+                        <div class="grid">
+                            {% for product in products %}
+                                <div class="product-card">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                                    <p>{{ product.name }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="empty-hint">目前還沒有上架產品喔！</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'aquatic/js/profile.js' %}"></script>
+    </body>
+</html>

@@ -235,6 +235,22 @@ class CreatePostView(FisshAPIBase):
         )
 
 
+class ProfileView(FisshPageBase):
+    def get(self, request):
+        user = request.user
+
+        # 🚀 補上這兩行，去資料庫撈這個人的東西
+        # 因：根據當前登入者過濾。果：拿到屬於這個人的資料列表。
+        user_posts = Post.objects.filter(author=user).order_by("-created_at")
+
+        context = {
+            "user": user,
+            "posts": user_posts,  # 👈 對應 Template 的 {% for post in posts %}
+        }
+
+        return render(request, "profile.html", context)
+
+
 # -----------------------------------------------------------------------------------------------------
 # def index(request):
 #     # 撈出資料庫裡所有的水生生物

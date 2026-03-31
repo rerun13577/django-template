@@ -23,7 +23,7 @@
         <a href="{% url 'blog' %}">部落格</a>
       </li>
       <li class="navber-list">
-        <a href="/">控制台</a>
+        <a href="{% url 'profile' %}">個人頁面</a>
       </li>
     </ul>
   </div>
@@ -48,7 +48,7 @@
           <a href="{% url 'blog' %}">部落格</a>
         </li>
         <li class="navber-list">
-          <a href="/">控制台</a>
+          <a href="{% url 'profile' %}">個人頁面</a>
         </li>
         <li class="navber-list">
           {% if user.is_authenticated %}

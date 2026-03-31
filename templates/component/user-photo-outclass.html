@@ -3,7 +3,7 @@
 {% static 'image/no-avatar.jpg' as default_avatar_url %}
 {% with social=target_user.socialaccount_set.all.0 %}
     {# 🚀 重點：把 custom_class 放在這裡！ #}
-    <div class="user-photo-wrapper {{ custom_class }}">
+    <div class="{{ custom_class }}">
         {% if social.get_avatar_url %}
             <img src="{{ social.get_avatar_url }}"
                  alt="創作者照片"

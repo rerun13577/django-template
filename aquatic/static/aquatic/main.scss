@@ -68,6 +68,7 @@ body {
 
   --article-margin: 2rem;
   --article-margin-mobile: 1.2rem;
+  --profile-width: 41.5rem;
 }
 
 * {
@@ -110,3 +111,4 @@ a {
 @import "component/comment";
 @import "component/photo-train";
 @import "add-article";
+@import "profile";

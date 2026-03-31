@@ -61,6 +61,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # 🧪 實驗室
     path("lab/", TemplateView.as_view(template_name="index.html")),
+    # 格人頁面系統
+    path("profile/", views.ProfileView.as_view(), name="profile"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar
