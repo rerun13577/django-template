@@ -29,7 +29,8 @@
     <a href="{% url 'user_profile' target_user.username %}"
        class=" user-photo-link "
        style="text-decoration: none;
-              color: inherit display: contents">
+              color: inherit;
+              display: contents">
         <div class="user-photo-wrapper">
             {% if social.get_avatar_url %}
                 <img src="{{ social.get_avatar_url }}"

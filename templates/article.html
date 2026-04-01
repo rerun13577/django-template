@@ -1,5 +1,6 @@
 {% load static %}
 {% load socialaccount %}
+{% static 'image/no-avatar.jpg' as default_avatar_url %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,7 +26,9 @@
         <h1 class="in-article-title">{{ post.title }}</h1>
         <!-- 顯示標題 -->
         <div class="in-article-maker">
-          <a href="{{ post.get_absolute_url }}" class="in-maker-link"></a>
+          {# 改成 post.author，因為在文章頁面，作者資訊藏在 post 物件裡 #}
+          <a href="{% url 'user_profile' post.author.username %}"
+             class="in-maker-link"></a>
           <!-- 連接遮罩 -->
           {% include "component/user-photo-outclass.html" with target_user=post.author custom_class="in-maker-photo" %}
           <span class="in-maker-name">{{ post.author.username }}</span>
