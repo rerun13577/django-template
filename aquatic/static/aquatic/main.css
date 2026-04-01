@@ -3064,7 +3064,7 @@ a {
   gap: 1rem 2.25rem;
 }
 .grid .product-creature {
-  max-width: 272px; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+  width: 272px; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
   min-height: 325px;
   background-color: var(--bg-dark);
   border-radius: var(--radius-l);
