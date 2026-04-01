@@ -124,15 +124,15 @@ a {
 }
 
 .maker-name {
-  // 他這樣不會擋到article的遮罩
-  position: relative;
-  z-index: 2;
   /* 其他你原本的樣式... */
   /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
   display: inline-block;
   font-size: 1rem;
   line-height: 1rem;
   margin: 0.5rem 0rem 0rem 1rem;
+
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 .action-s {
@@ -147,11 +147,10 @@ a {
   position: relative;
 }
 
-/* 這是大頭貼的連結 */
 .user-photo-link {
-  position: relative; /* 👈 改成 relative，讓它留在原地但能設定 z-index */
-  z-index: 10; /* 👈 升到 10 樓，穿透遮罩 */
-  display: inline-block; /* 確保它是一個有質量的容器 */
+  position: relative !important;
+  z-index: 10 !important;
+  display: inline-block; /* 確保它有實體區域可以點擊 */
 }
 
 .article-link {

@@ -27,10 +27,7 @@
 {% with social=target_user.socialaccount_set.all.0 %}
     {# 🚀 這裡加上超連結，連結到該使用者的 user_profile #}
     <a href="{% url 'user_profile' target_user.username %}"
-       class=" user-photo-link "
-       style="text-decoration: none;
-              color: inherit;
-              display: contents">
+       class=" user-photo-link">
         <div class="user-photo-wrapper">
             {% if social.get_avatar_url %}
                 <img src="{{ social.get_avatar_url }}"
