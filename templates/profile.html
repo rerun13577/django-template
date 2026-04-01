@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FisshShop | 個人頁面</title>
-        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}?v=1.0.2">
     </head>
     <body>
         {% include 'header.html' %}
@@ -74,11 +74,8 @@
                     </section>
                     <section class="tab-content" id="content-products">
                         <div class="grid">
-                            {% for product in products %}
-                                <div class="product-card">
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                                    <p>{{ product.name }}</p>
-                                </div>
+                            {% for pet in pets %}
+                                {% include "component/pet-card.html" with item=pet %}
                             {% empty %}
                                 <p class="empty-hint">他/她可能只是喜歡看看小魚！</p>
                             {% endfor %}
@@ -86,11 +83,8 @@
                     </section>
                     <section class="tab-content" id="content-products">
                         <div class="grid">
-                            {% for product in products %}
-                                <div class="product-card">
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                                    <p>{{ product.name }}</p>
-                                </div>
+                            {% for item in items %}
+                                {% include "component/creature-card.html" with item=item %}
                             {% empty %}
                                 <p class="empty-hint">目前還沒有上架產品喔！</p>
                             {% endfor %}
@@ -99,7 +93,7 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'aquatic/js/profile.js' %}?v=1.0.2"></script>
+        <script src="{% static 'aquatic/js/profile.js' %}?v=1.0.5"></script>
         <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
     </body>
 </html>

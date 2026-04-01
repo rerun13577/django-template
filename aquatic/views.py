@@ -14,6 +14,7 @@ from django.views import View
 from .models import (  # 記得引入模型
     AquaticLife,
     Comment,
+    PetFish,
     Post,
 )
 
@@ -253,10 +254,12 @@ class ProfileView(FisshPageBase):
 
         # 🚀 現在你可以抓到這個人發布的魚了！
         user_aquatics = AquaticLife.objects.filter(owner=user).order_by("-created_at")
+        user_pets = PetFish.objects.filter(owner=user).order_by("-created_at")
 
         context = {
             "user": user,
             "posts": user_posts,
-            "aquatics": user_aquatics,  # 👈 傳給 Template
+            "items": user_aquatics,  # 👈 傳給 Template
+            "pets": user_pets,  # 👈 改成 pets
         }
         return render(request, "profile.html", context)
