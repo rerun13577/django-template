@@ -13,28 +13,36 @@
             <section class="profile-hero"
                      id="profile-hero"
                      style="background-image: url('預設背景.jpg')">
-                <div class="edit-dropdown-container">
-                    <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>
-                    <div class="dropdown-content" id="edit-dropdown">
-                        <a href="/" class="dropdown-item">
-                            {% comment %} {% include "icons/user-edit.html" %} {% endcomment %}
-                            編輯個人檔案
-                        </a>
-                        <a href="/" class="dropdown-item">
-                            {% comment %} {% include "icons/plus-circle.html" %} {% endcomment %}
-                            新增寵物小魚
-                        </a>
+                {% if user == target_user %}
+                    <div class="edit-dropdown-container">
+                        <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>
+                        <div class="dropdown-content" id="edit-dropdown">
+                            <a href="/" class="dropdown-item">
+                                {% comment %} {% include "icons/user-edit.html" %} {% endcomment %}
+                                編輯個人檔案
+                            </a>
+                            <a href="/" class="dropdown-item">
+                                {% comment %} {% include "icons/plus-circle.html" %} {% endcomment %}
+                                新增寵物小魚
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <label for="avatar-input" class="avatar-label">
-                    {% comment %} 外面用來定位的標籤，裡面放照片，點了會觸發input的file選擇 {% endcomment %}
-                    {% include "component/user-photo-outclass.html" with target_user=user custom_class="customer-avatar" %}
-                </label>
-                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                {% endif %}
+                {# 🚀 這裡傳入的是 target_user，這樣看別人時才會顯示對方的頭貼 #}
+                {% if user == target_user %}
+                    {# 如果是主人，保留 label 包裹，讓他可以點擊上傳 #}
+                    <label for="avatar-input" class="avatar-label">
+                        {% include "component/user-photo-outclass.html" with target_user=target_user custom_class="customer-avatar" %}
+                    </label>
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                {% else %}
+                    {# 如果是路人，直接顯示頭貼就好，不用 label #}
+                    {% include "component/user-photo-outclass.html" with target_user=target_user custom_class="customer-avatar" %}
+                {% endif %}
             </section>
             <div class="profile-info">
                 <div class="info-left">
-                    <h1 class="profile-name">{{ user.username }}</h1>
+                    <h1 class="profile-name">{{ target_user.username }}</h1>
                     <span class="user-category">
                         {% if post.author.profile.category %}
                             {{ post.author.profile.get_category_display }}
@@ -45,12 +53,14 @@
                 </div>
                 <div class="info-right">
                     <span class="follower-count">
-                        <strong>{{ post.author.followers.count|default:"0" }}</strong> 粉絲
+                        {# 🚀 注意：這裡原本的 post.author.followers 很危險，直接用 target_user 抓 #}
+                        <strong>{{ target_user.followers.count|default:"0" }}</strong> 粉絲
                     </span>
                 </div>
             </div>
             <section class="bio-section">
-                <p class="profile-bio">{{ user.profile.bio|default:"這位魚友很神秘，也許他/她知道藍鯨在哪裡..."|linebreaks }}</p>
+                {# 🚀 改成 target_user #}
+                <p class="profile-bio">{{ target_user.profile.bio|default:"這位魚友很神秘，也許他/她知道藍鯨在哪裡..."|linebreaks }}</p>
             </section>
             <nav class="profile-tabs">
                 <button class="tab-item active" data-index="0">貼文</button>

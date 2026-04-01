@@ -70,6 +70,10 @@
   }
 }
 
+.non-sale {
+  color: var(--danger) !important; /* 分號要在最後面 */
+}
+
 @media screen and (max-width: 768px) {
   .grid {
     width: 100%; /* 🚀 強制撐滿 41.5rem */

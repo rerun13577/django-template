@@ -147,6 +147,13 @@ a {
   position: relative;
 }
 
+/* 這是大頭貼的連結 */
+.user-photo-link {
+  position: relative; /* 👈 改成 relative，讓它留在原地但能設定 z-index */
+  z-index: 10; /* 👈 升到 10 樓，穿透遮罩 */
+  display: inline-block; /* 確保它是一個有質量的容器 */
+}
+
 .article-link {
   position: absolute;
   top: 0;

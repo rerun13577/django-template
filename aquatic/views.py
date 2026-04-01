@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.contrib.auth import authenticate, login  # 補上 authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core.files.storage import default_storage  # 🚀 處理內文照片的儲存
 from django.db.models import Exists, OuterRef, Prefetch
 from django.http import JsonResponse  # 🚀 回傳成功或失敗的訊息給 JS
@@ -236,30 +237,45 @@ class CreatePostView(FisshAPIBase):
         )
 
 
+# 記得匯入你的 Model
+# from .models import Post, AquaticLife, PetFish
+
+
 class ProfileView(FisshPageBase):
-    # 在 ProfileView 裡
-    def get(self, request):
-        user = request.user
+    def get(self, request, username=None):
+        # 1. 決定「這頁是誰的」
+        # 因果：如果有傳 username，就抓該用戶；沒有就抓當前登入者。
+        if username:
+            target_user = get_object_or_404(User, username=username)
+        else:
+            target_user = request.user
+
+        # 2. 抓取該用戶的貼文
+        # 注意：is_liked 依然要用 request.user 判斷，因為是「看的人」有沒有按讚
         user_posts = (
-            Post.objects.filter(author=user)
+            Post.objects.filter(author=target_user)
             .annotate(
                 is_liked=Exists(
                     Post.likes.through.objects.filter(
-                        post_id=OuterRef("pk"), user_id=user.id
+                        post_id=OuterRef("pk"), user_id=request.user.id
                     )
                 )
             )
             .order_by("-created_at")
         )
 
-        # 🚀 現在你可以抓到這個人發布的魚了！
-        user_aquatics = AquaticLife.objects.filter(owner=user).order_by("-created_at")
-        user_pets = PetFish.objects.filter(owner=user).order_by("-created_at")
+        # 3. 抓取該用戶的商品與寵物魚
+        # 因果：使用 target_user 過濾，確保進到別人頁面時看到的是對方的魚
+        user_aquatics = AquaticLife.objects.filter(owner=target_user).order_by(
+            "-created_at"
+        )
+        user_pets = PetFish.objects.filter(owner=target_user).order_by("-created_at")
 
         context = {
-            "user": user,
+            "target_user": target_user,  # 頁面主人
+            "user": request.user,  # 當前訪客
             "posts": user_posts,
-            "items": user_aquatics,  # 👈 傳給 Template
-            "pets": user_pets,  # 👈 改成 pets
+            "items": user_aquatics,
+            "pets": user_pets,
         }
         return render(request, "profile.html", context)

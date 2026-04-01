@@ -868,6 +868,13 @@ a {
   position: relative;
 }
 
+/* 這是大頭貼的連結 */
+.user-photo-link {
+  position: relative; /* 👈 改成 relative，讓它留在原地但能設定 z-index */
+  z-index: 10; /* 👈 升到 10 樓，穿透遮罩 */
+  display: inline-block; /* 確保它是一個有質量的容器 */
+}
+
 .article-link {
   position: absolute;
   top: 0;
@@ -2645,14 +2652,20 @@ a {
   width: 10rem; /* 🚀 寬度固定，保證視覺重量一致 */
   aspect-ratio: 1/1; /* 🚀 強制 1:1，確保永遠是正方形（圓形的地基） */
   /* --- 調整這裡來控制位置 --- */
-  bottom: -55px; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
-  left: var(--profile-margin); /* 距離左邊 50px */
+  bottom: -55px !important; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
+  left: var(--profile-margin) !important; /* 距離左邊 50px */
   cursor: pointer;
   z-index: 10; /* 確保它在最前面，不會被背景遮住 */
 }
 .customer-avatar img {
   width: 100%;
   height: 100%;
+}
+
+/* 🚀 關鍵修正：在 profile-hero 裡的連結要變成「靜態」，讓大頭貼直接去找 hero 定位 */
+.profile-hero .user-photo-link {
+  position: static !important;
+  display: contents; /* 讓 <a> 標籤在佈局上完全透明，不干擾內層定位 */
 }
 
 .profile-info {
@@ -2942,8 +2955,8 @@ a {
     position: absolute; /* 🚀 脫離隊伍，開始漂浮 */
     width: 4rem; /* 🚀 寬度固定，保證視覺重量一致 */
     aspect-ratio: 1/1; /* 🚀 強制 1:1，確保永遠是正方形（圓形的地基） */
-    bottom: -35px; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
-    left: var(--profile-margin-mobile); /* 距離左邊 50px */
+    bottom: -35px !important; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
+    left: var(--profile-margin-mobile) !important; /* 距離左邊 50px */
   }
   .customer-avatar img {
     border: 3px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
@@ -3102,6 +3115,10 @@ a {
     box-shadow: var(--shadow-l);
     border-top: white;
   }
+}
+
+.non-sale {
+  color: var(--danger) !important; /* 分號要在最後面 */
 }
 
 @media screen and (max-width: 768px) {
