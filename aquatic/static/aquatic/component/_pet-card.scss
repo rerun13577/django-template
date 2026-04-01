@@ -149,10 +149,10 @@
     display: flex;
     /* ★ 關鍵：加上這行！ */
     position: absolute;
-    right: 0.5rem;
+    right: 0.625rem;
     bottom: 0.5rem;
     width: fit-content;
-    font-size: 0.5rem;
+    font-size: 0.625rem;
 
     align-items: center;
     background-color: var(--info);
