@@ -3050,7 +3050,7 @@ a {
   padding: 10px 20px 50px 20px;
   gap: 1rem 2.25rem;
 }
-.grid .hot-creature {
+.grid .product-creature {
   max-width: 272px; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
   min-height: 325px;
   background-color: var(--bg-dark);
@@ -3060,7 +3060,26 @@ a {
   overflow: hidden;
   transition: var(--transition);
 }
-.grid .hot-creature img {
+.grid .product-creature .product-creature-title {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0rem 1rem 0.25rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  width: 100%;
+  font-size: 1.5rem;
+}
+.grid .product-creature .product-creature-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 1rem;
+  width: 100%;
+  font-size: 1.25rem;
+}
+.grid .product-creature .product-creature-subtitle {
+  font-weight: var(--fw-bold);
+  color: var(--primary);
+  transition: var(--transition);
+}
+.grid .product-creature img {
   width: 100%;
   height: 200px;
   -o-object-fit: cover;
@@ -3068,17 +3087,17 @@ a {
   margin-bottom: 0.5rem;
 }
 @media (hover: hover) {
-  .grid .hot-creature:hover {
+  .grid .product-creature:hover {
     background-color: var(--bg-light);
     border-color: var(--border);
     transition: var(--transition);
     box-shadow: var(--shadow-l);
   }
-  .grid .hot-creature:hover .hot-creature-subtitle {
+  .grid .product-creature:hover .product-creature-subtitle {
     color: var(--secondary);
     transition: var(--transition);
   }
-  .grid .hot-creature:hover .hot-creature-city {
+  .grid .product-creature:hover .product-creature-city {
     transition: var(--transition);
     box-shadow: var(--shadow-l);
     border-top: white;
@@ -3093,11 +3112,11 @@ a {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    padding: 10px 0px 50px 0px;
-    gap: 0.375rem 0.25rem;
+    padding: 10px 10px 50px 10px;
+    gap: 0.25rem 0.5rem;
   }
-  .grid .hot-creature {
-    width: 49%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+  .grid .product-creature {
+    width: 48%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
     min-height: 12.625rem;
     background-color: var(--bg-dark);
     border-radius: var(--radius-l);
@@ -3106,7 +3125,7 @@ a {
     overflow: hidden;
     transition: var(--transition);
   }
-  .grid .hot-creature img {
+  .grid .product-creature img {
     width: 100%;
     height: 120px;
     -o-object-fit: cover;
@@ -3115,31 +3134,31 @@ a {
   }
 }
 @media screen and (max-width: 768px) and (hover: hover) {
-  .grid .hot-creature:hover {
+  .grid .product-creature:hover {
     background-color: var(--bg-light);
     border-color: var(--border);
     transition: var(--transition);
     box-shadow: var(--shadow-l);
   }
-  .grid .hot-creature:hover .hot-creature-subtitle {
+  .grid .product-creature:hover .product-creature-subtitle {
     color: var(--secondary);
     transition: var(--transition);
   }
-  .grid .hot-creature:hover .hot-creature-city {
+  .grid .product-creature:hover .product-creature-city {
     transition: var(--transition);
     box-shadow: var(--shadow-l);
     border-top: white;
   }
 }
 @media screen and (max-width: 768px) {
-  .grid .hot-creature .hot-creature-title {
+  .grid .product-creature .product-creature-title {
     display: flex;
     flex-wrap: wrap;
     margin: 0rem 1rem 0.375rem var(--card-margin-mobile);
     width: 100%;
     font-size: 1rem;
   }
-  .grid .hot-creature .hot-creature-subtitle {
+  .grid .product-creature .product-creature-subtitle {
     display: flex;
     flex-wrap: wrap;
     margin: 0 0 0 var(--card-margin-mobile);

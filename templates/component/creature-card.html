@@ -1,5 +1,5 @@
 {% load static %}
-<a class="hot-creature" href="/">
+<a class="product-creature" href="/">
     {% if item.image %}
         <img src="{{ item.image.url }}" alt="{{ item.name }}" />
     {% else %}
@@ -11,10 +11,10 @@
                     justify-content: center;
                     color: var(--text-muted)">尚無圖片</div>
     {% endif %}
-    <h3 class="hot-creature-title">{{ item.name }}</h3>
+    <h3 class="product-creature-title">{{ item.name }}</h3>
     {% if item.price_status == 'NOT_FOR_SALE' %}
-        <p class="hot-creature-subtitle non-sale">無價珍寶</p>
+        <p class="product-creature-subtitle non-sale">無價珍寶</p>
     {% else %}
-        <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+        <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
     {% endif %}
 </a>
