@@ -3097,7 +3097,7 @@ a {
     gap: 0.25rem 1.25rem;
   }
   .grid .hot-creature {
-    max-width: 9.625rem; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+    width: 49%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
     min-height: 12.625rem;
     background-color: var(--bg-dark);
     border-radius: var(--radius-l);
@@ -3234,7 +3234,7 @@ a {
 
 @media screen and (max-width: 768px) {
   .pet-creature {
-    max-width: 9.625rem; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+    width: 49%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
     min-height: 12.625rem;
     background-color: var(--bg-dark);
     border-radius: var(--radius-l);
