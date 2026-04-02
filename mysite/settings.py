@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.line",
     "allauth.socialaccount.providers.facebook",
     "storages",
-    "aquatic",
+    "aquatic.apps.AquaticConfig",  # 👈 必須改成這樣，Signals 才會通電！
     "debug_toolbar",
     "django_cleanup.apps.CleanupConfig",  # 🚀 加上這行
 ]

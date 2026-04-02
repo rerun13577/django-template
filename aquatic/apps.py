@@ -17,6 +17,5 @@ class AquaticConfig(AppConfig):
     name = "aquatic"
 
     def ready(self):
-        # 🚀 這一行是啟動「自動焊槍 (Signals)」的關鍵
-        # 讓 Django 在啟動時載入訊號監聽器
+        # 🚀 這是靈魂！這行沒寫，signals.py 就是一張廢紙
         pass

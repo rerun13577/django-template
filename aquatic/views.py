@@ -18,6 +18,7 @@ from .models import (  # 記得引入模型
     PetFish,
     Post,
 )
+from .models.shop_notice import ShopNotice
 
 # 2. 工具從 utils 檔案抓 🚀
 from .utils import compress_image
@@ -245,15 +246,22 @@ class ProfileView(FisshPageBase):
     def get(self, request, username=None):
         # 1. 決定「這頁是誰的」
         # 因果：如果有傳 username，就抓該用戶；沒有就抓當前登入者。
+        user_qs = User.objects.select_related("profile").prefetch_related(
+            "socialaccount_set"
+        )
+
         if username:
-            target_user = get_object_or_404(User, username=username)
+            target_user = get_object_or_404(user_qs, username=username)
         else:
-            target_user = request.user
+            # 如果是自己的頁面，也要從優化過的 QS 裡抓，避免重複查 Auth
+            target_user = get_object_or_404(user_qs, id=request.user.id)
 
         # 2. 抓取該用戶的貼文
         # 注意：is_liked 依然要用 request.user 判斷，因為是「看的人」有沒有按讚
+        # 2. 抓取貼文 (這部分原本的 Exists 寫法是對的)
         user_posts = (
             Post.objects.filter(author=target_user)
+            .select_related("author")  # 🚀 加上這個，如果 Template 有用到 post.author
             .annotate(
                 is_liked=Exists(
                     Post.likes.through.objects.filter(
@@ -266,16 +274,62 @@ class ProfileView(FisshPageBase):
 
         # 3. 抓取該用戶的商品與寵物魚
         # 因果：使用 target_user 過濾，確保進到別人頁面時看到的是對方的魚
+        # 3. 抓取商品與寵物 (如果這些 Model 也有 Image 或相關關聯，也可以加 select_related)
         user_aquatics = AquaticLife.objects.filter(owner=target_user).order_by(
             "-created_at"
         )
         user_pets = PetFish.objects.filter(owner=target_user).order_by("-created_at")
 
+        user_notices = []
+        if request.user == target_user:
+            user_notices = ShopNotice.objects.filter(user=target_user).order_by(
+                "-created_at"
+            )
+
         context = {
-            "target_user": target_user,  # 頁面主人
-            "user": request.user,  # 當前訪客
+            "target_user": target_user,
+            "user": request.user,
             "posts": user_posts,
             "items": user_aquatics,
             "pets": user_pets,
+            "notices": user_notices,  # 🚀 關鍵：把範本傳給前端
         }
         return render(request, "profile.html", context)
+
+
+class SaveTemplateView(FisshAPIBase):
+    """
+    專門處理範本儲存的 API
+    """
+
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            title = data.get("title")
+            content = data.get("content")
+            default_item_name = data.get("default_item_name", "")
+
+            if not title or not content:
+                return JsonResponse(
+                    {"status": "error", "message": "標題與內容不能為空"}, status=400
+                )
+
+            # 存入資料庫
+            notice = ShopNotice.objects.create(
+                user=request.user,
+                title=title,
+                content=content,
+                # 如果 Model 補了欄位，這裡就解開
+                # default_item_name=default_item_name
+            )
+
+            return JsonResponse(
+                {"status": "success", "message": "範本儲存成功", "id": notice.id}
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"status": "error", "message": "無效的 JSON 格式"}, status=400
+            )
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)

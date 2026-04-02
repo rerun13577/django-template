@@ -1,0 +1,32 @@
+{% load static %}
+<div class="add-article-overlay" id="manage-notice-overlay">
+    <div class="add-article-page">
+        <header class="page-header">
+            <button class="action-btn back-btn" onclick="closeNoticeModal()">{% include "icons/back.html" %}</button>
+            <h2 class="page-title">管理範本</h2>
+            <button class="post-btn" id="addNewTempBtn">新增</button>
+        </header>
+        <div class="input-article-content" id="template-list-container">
+            {% for notice in notices %}
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span class="temp-title">{{ notice.title }}</span>
+                        <span class="temp-arrow">{% include "icons/next.html" %}</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-inner">
+                            <p class="default-name-hint">預設名稱：{{ notice.default_item_name|default:"未設定" }}</p>
+                            <div class="temp-content-text">{{ notice.content|linebreaks }}</div>
+                            <div class="temp-actions">
+                                <button class="edit-btn">編輯</button>
+                                <button class="delete-btn">刪除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-hint">目前沒有範本，點擊右上方新增一個吧！</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -66,6 +66,10 @@ urlpatterns = [
     path(
         "profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"
     ),  # 看別人
+    # 🚀 因：SaveTemplateView 是一個類別，果：必須呼叫 .as_view() 才能讓 Django 識別
+    path(
+        "api/template/save/", views.SaveTemplateView.as_view(), name="save_template_api"
+    ),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

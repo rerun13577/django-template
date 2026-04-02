@@ -1,0 +1,24 @@
+/* 外框：定義整行的對齊邏輯 */
+.split-tool {
+  display: flex;
+  justify-content: space-between; /* 兩端對齊 */
+  align-items: center; /* 垂直置中 */
+  gap: 1rem; /* 左右元素間距，因：避免黏在一起。果：視覺清爽 */
+  width: 100%; /* 撐滿父容器 */
+}
+
+/* 左側：負責標題或主要內容 */
+.split-left {
+  flex: 1; /* 🚀 因：設定生長係數為 1。果：佔滿所有剩餘空間，把右邊推過去 */
+  display: flex;
+  align-items: center; /* 確保左邊內部的文字跟圖示也垂直置中 */
+  overflow: hidden; /* 防止長文字爆出去 */
+}
+
+/* 右側：負責箭頭、按鈕或狀態標籤 */
+.split-right {
+  flex-shrink: 0; /* 🚀 因：禁止縮放。果：不管左邊多長，右邊的圖示都不會被壓扁變形 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 內容靠右對齊 */
+}

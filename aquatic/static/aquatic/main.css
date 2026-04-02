@@ -847,14 +847,14 @@ a {
 }
 
 .maker-name {
-  position: relative;
-  z-index: 2;
   /* 其他你原本的樣式... */
   /* 🔥 關鍵：讓它變成「行內塊」元素，for a標籤 這樣它就看得懂 margin-top 了 */
   display: inline-block;
   font-size: 1rem;
   line-height: 1rem;
   margin: 0.5rem 0rem 0rem 1rem;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 .action-s {
@@ -868,11 +868,10 @@ a {
   position: relative;
 }
 
-/* 這是大頭貼的連結 */
 .user-photo-link {
-  position: relative; /* 👈 改成 relative，讓它留在原地但能設定 z-index */
-  z-index: 10; /* 👈 升到 10 樓，穿透遮罩 */
-  display: inline-block; /* 確保它是一個有質量的容器 */
+  position: relative !important;
+  z-index: 10 !important;
+  display: inline-block; /* 確保它有實體區域可以點擊 */
 }
 
 .article-link {
@@ -3133,7 +3132,7 @@ a {
     gap: 0.25rem 0.5rem;
   }
   .grid .product-creature {
-    width: 48%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+    width: 10.625rem; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
     min-height: 12.625rem;
     background-color: var(--bg-dark);
     border-radius: var(--radius-l);
@@ -3337,4 +3336,28 @@ a {
     /* 確保文字垂直置中 (因為你有用 flex) */
     align-items: center;
   }
+}
+/* 外框：定義整行的對齊邏輯 */
+.split-tool {
+  display: flex;
+  justify-content: space-between; /* 兩端對齊 */
+  align-items: center; /* 垂直置中 */
+  gap: 1rem; /* 左右元素間距，因：避免黏在一起。果：視覺清爽 */
+  width: 100%; /* 撐滿父容器 */
+}
+
+/* 左側：負責標題或主要內容 */
+.split-left {
+  flex: 1; /* 🚀 因：設定生長係數為 1。果：佔滿所有剩餘空間，把右邊推過去 */
+  display: flex;
+  align-items: center; /* 確保左邊內部的文字跟圖示也垂直置中 */
+  overflow: hidden; /* 防止長文字爆出去 */
+}
+
+/* 右側：負責箭頭、按鈕或狀態標籤 */
+.split-right {
+  flex-shrink: 0; /* 🚀 因：禁止縮放。果：不管左邊多長，右邊的圖示都不會被壓扁變形 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 內容靠右對齊 */
 }/*# sourceMappingURL=main.css.map */
