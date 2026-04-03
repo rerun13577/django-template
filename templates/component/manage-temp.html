@@ -1,4 +1,5 @@
 {% load static %}
+<!-- 在外框設計一個id讓js去抓取，然後在js裡面寫一個事件監聽器，當點擊這個按鈕的時候就把模態框顯示出來。 -->
 <div class="add-article-overlay" id="manage-notice-overlay">
     <div class="add-article-page">
         <header class="page-header">
@@ -6,20 +7,57 @@
             <h2 class="page-title">管理範本</h2>
             <button class="post-btn" id="addNewTempBtn">新增</button>
         </header>
+        {% comment %} 範本form {% endcomment %}
         <div class="input-article-content" id="template-list-container">
+            <div class="accordion-item create-mode" id="add-template-form">
+                <div class="accordion-header no-cursor">
+                    <input type="text"
+                           class="input-title-field"
+                           id="newNoticeTitle"
+                           placeholder="範本名稱 (例如：黑金剛蝦報價)">
+                </div>
+                <div class="accordion-body is-visible">
+                    <div class="accordion-inner">
+                        <textarea class="input-content-area"
+                                  id="newNoticeContent"
+                                  placeholder="在此輸入範本內容..."></textarea>
+                        <div class="temp-actions">
+                            <div class="split-tool">
+                                <div class="split-left">
+                                    <button class="template-btn  delete-template" onclick="toggleAddForm()">取消</button>
+                                </div>
+                                <div class="split-right">
+                                    <button id="saveNoticeBtn" class="template-btn edit-template">儲存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% for notice in notices %}
                 <div class="accordion-item">
                     <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span class="temp-title">{{ notice.title }}</span>
-                        <span class="temp-arrow">{% include "icons/next.html" %}</span>
+                        <div class="split-tool">
+                            <div class="split-left">
+                                <h3 class="temp-title">{{ notice.title|default:"未命名範本" }}</h3>
+                            </div>
+                            <div class="split-right">
+                                <span class="temp-arrow">{% include "icons/next.html" %}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-inner">
-                            <p class="default-name-hint">預設名稱：{{ notice.default_item_name|default:"未設定" }}</p>
                             <div class="temp-content-text">{{ notice.content|linebreaks }}</div>
                             <div class="temp-actions">
-                                <button class="edit-btn">編輯</button>
-                                <button class="delete-btn">刪除</button>
+                                <div class="split-tool">
+                                    <div class="split-left">
+                                        <button class="template-btn delete-template">刪除</button>
+                                    </div>
+                                    <div class="split-right">
+                                        <button class="template-btn edit-template">編輯</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -30,3 +68,9 @@
         </div>
     </div>
 </div>
+<!-- 
+ 這裡是新增文章的模態框，裡面有兩個template，一個是文字區塊的template，
+一個是圖片區塊的template，這樣在js裡面就可以很方便的去複製這兩個template來新增區塊了。
+-->
+<!-- 導入邏輯 -->
+<script src="{% static 'aquatic/js/manage-temp.js' %}"></script>

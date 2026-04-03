@@ -86,7 +86,7 @@
     gap: 0.25rem 0.5rem;
 
     .product-creature {
-      width: 10.625rem; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
+      width: 48%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
       min-height: 12.625rem;
 
       background-color: var(--bg-dark);
@@ -97,10 +97,18 @@
       transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
       img {
-        width: 100%; // 寬度跟隨卡片
-        height: 120px; // 固定一個高度
-        object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
-        margin-bottom: 0.5rem;
+        width: 100%;
+        /* 🚀 1. 把高度交給比例計算，不要鎖死在 200px */
+        height: auto !important;
+
+        /* 🚀 2. 橫向比例建議：
+       - 1.618 / 1 (黃金比例，會非常扁)
+       - 3 / 2     (經典相機比例，很平衡)
+       - 4 / 3     (傳統螢幕比例，最推薦) */
+        aspect-ratio: 4 / 3;
+
+        object-fit: cover;
+        display: block;
       }
 
       @include hover-device {

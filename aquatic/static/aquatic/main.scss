@@ -58,7 +58,6 @@ body {
   --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
   --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
 
-  /* 英文 Inter 在前，中文 Noto Sans TC 在後 */
   --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 
   /* 也可以順便把字重定義好，開發更爽 */
@@ -68,7 +67,12 @@ body {
 
   --article-margin: 2rem;
   --article-margin-mobile: 1.2rem;
-  --profile-width: 41.5rem;
+  --profile-width: 90%;
+
+  --profile-margin: 55px;
+  --profile-margin-mobile: 25px;
+
+  --card-margin-mobile: 0.5rem;
 }
 
 * {
@@ -115,3 +119,4 @@ a {
 @import "component/creature-card";
 @import "component/pet-card";
 @import "component/split-row";
+@import "component/manage-temp";

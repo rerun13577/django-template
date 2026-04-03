@@ -62,14 +62,14 @@ urlpatterns = [
     # 🧪 實驗室
     path("lab/", TemplateView.as_view(template_name="index.html")),
     # 格人頁面系統
+    # 🚀 方案：兩條路徑都找同一個 View，邏輯交給 View 裡面的 if not username 處理
     path("profile/", views.ProfileView.as_view(), name="profile"),
-    path(
-        "profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"
-    ),  # 看別人
-    # 🚀 因：SaveTemplateView 是一個類別，果：必須呼叫 .as_view() 才能讓 Django 識別
+    path("profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"),
+    # 🚀 下面這個「api/template/save/」維持不動
     path(
         "api/template/save/", views.SaveTemplateView.as_view(), name="save_template_api"
     ),
+    path("api/save-template/", views.SaveTemplateView.as_view(), name="save_template"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

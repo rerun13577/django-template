@@ -1,4 +1,8 @@
-<div class="split-tool {{ custom_class }}">
-    <div class="split-left">{{ left_content|safe }}</div>
-    <div class="split-right">{{ right_content|safe }}</div>
+<div class="split-tool ">
+    <div class="split-left">
+        {% block left_slot %}{% endblock %}
+    </div>
+    <div class="split-right">
+        {% block right_slot %}{% endblock %}
+    </div>
 </div>
