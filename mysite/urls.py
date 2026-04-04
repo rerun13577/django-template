@@ -66,10 +66,14 @@ urlpatterns = [
     path("profile/", views.ProfileView.as_view(), name="profile"),
     path("profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"),
     # 🚀 下面這個「api/template/save/」維持不動
+    # urls.py
+    # 🚀 只需要這一個入口，以後 JS 全部打這條路徑
+    # 🚀 這裡要改成你現在 View 真正的名字
     path(
-        "api/template/save/", views.SaveTemplateView.as_view(), name="save_template_api"
+        "api/manage-template/",
+        views.ManageTemplateView.as_view(),
+        name="manage_template_api",
     ),
-    path("api/save-template/", views.SaveTemplateView.as_view(), name="save_template"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

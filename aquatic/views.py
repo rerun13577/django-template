@@ -300,37 +300,77 @@ class ProfileView(FisshPageBase):
         return render(request, "profile.html", context)
 
 
-class SaveTemplateView(FisshAPIBase):
+class ManageTemplateView(FisshAPIBase):
     """
-    專門處理範本儲存的 API (僅限名稱與內容)
+    整合型 API：處理範本的 新增、修改、刪除
+    URL: /api/manage-template/
     """
 
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
+            temp_id = data.get("id")
             title = data.get("title")
             content = data.get("content")
+            action = data.get("action")  # 🚀 增加一個動作標記
 
-            # 因：檢查必要欄位
-            # 果：若缺少則回傳 400 錯誤
+            # -------------------------------------------------------
+            # 🚀 動作 1：刪除 (如果前端傳了 action: 'delete')
+            # -------------------------------------------------------
+            if action == "delete":
+                if not temp_id:
+                    return JsonResponse(
+                        {"status": "error", "message": "刪除失敗：缺少 ID"}, status=400
+                    )
+
+                # 確保只能刪除「自己的」範本
+                deleted_count, _ = ShopNotice.objects.filter(
+                    id=temp_id, user=request.user
+                ).delete()
+
+                if deleted_count > 0:
+                    return JsonResponse({"status": "success", "message": "範本已刪除"})
+                return JsonResponse(
+                    {"status": "error", "message": "找不到該範本"}, status=404
+                )
+
+            # -------------------------------------------------------
+            # 🚀 動作 2：新增 或 修改 (共用邏輯)
+            # -------------------------------------------------------
             if not title or not content:
                 return JsonResponse(
                     {"status": "error", "message": "標題與內容不能為空"}, status=400
                 )
 
-            # 因：依照你的 Model 建立資料
-            # 果：成功存入資料庫並回傳成功訊息
-            notice = ShopNotice.objects.create(
-                user=request.user, title=title, content=content
-            )
+            if temp_id:
+                # 👉 修改模式 (因：前端有傳 ID)
+                notice = ShopNotice.objects.filter(
+                    id=temp_id, user=request.user
+                ).first()
+                if not notice:
+                    return JsonResponse(
+                        {"status": "error", "message": "權限不足或範本不存在"},
+                        status=404,
+                    )
+
+                notice.title = title
+                notice.content = content
+                notice.save()
+                msg = "範本修改成功"
+            else:
+                # 👉 新增模式 (因：前端沒傳 ID)
+                notice = ShopNotice.objects.create(
+                    user=request.user, title=title, content=content
+                )
+                msg = "範本儲存成功"
 
             return JsonResponse(
-                {"status": "success", "message": "範本儲存成功", "id": notice.id}
+                {
+                    "status": "success",
+                    "message": msg,
+                    "id": notice.id,  # 把 ID 丟回去讓前端更新按鈕
+                }
             )
 
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"status": "error", "message": "無效的 JSON 格式"}, status=400
-            )
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)

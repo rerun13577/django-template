@@ -3489,6 +3489,9 @@ a {
 
 .temp-content-text {
   color: var(--text-muted);
+  display: flex;
+  /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
+  overflow-wrap: anywhere;
 }
 
 .input-content-area {
@@ -3518,4 +3521,36 @@ a {
   /* 🚀 2. 關鍵：禁止內部捲動（這是解決文字跑上去的唯一招） */
   overflow: hidden !important; /* 🚀 最關鍵：禁止內部捲動。沒了捲軸，它為了顯示文字就必須變長 */
   height: auto !important; /* 確保沒有任何東西鎖死它的高度 */
+}
+
+@media screen and (max-width: 768px) {
+  .temp-title {
+    font-size: 1.25em; /* 手機版標題稍微縮小 */
+  }
+  .temp-content-text {
+    display: flex;
+    font-size: 1rem; /* 手機版內文稍微縮小 */
+    /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
+    overflow-wrap: anywhere;
+  }
+  .template-btn {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.625rem;
+  }
+  .accordion-item.is-open .accordion-body {
+    max-height: 1000px;
+    opacity: 1;
+    padding-bottom: 0.25rem;
+  }
+  .temp-actions {
+    margin: 1rem 0.5rem 0rem 0.5rem;
+  }
+  .accordion-item {
+    width: 92%;
+    margin: 1rem 0 0.25rem 0;
+    display: block;
+    background: var(--bg-light);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-m);
+  }
 }/*# sourceMappingURL=main.css.map */

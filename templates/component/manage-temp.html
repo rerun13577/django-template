@@ -9,12 +9,16 @@
         </header>
         {% comment %} 範本form {% endcomment %}
         <div class="input-article-content" id="template-list-container">
-            <div class="accordion-item create-mode" id="add-template-form">
+            <div class="accordion-item create-mode"
+                 id="add-template-form"
+                 style="display: none">
+                <input type="hidden" id="editTempId" value="">
                 <div class="accordion-header no-cursor">
                     <input type="text"
                            class="input-title-field"
                            id="newNoticeTitle"
-                           placeholder="範本名稱 (例如：黑金剛蝦報價)">
+                           maxlength="200"
+                           placeholder="範本名稱">
                 </div>
                 <div class="accordion-body is-visible">
                     <div class="accordion-inner">
@@ -52,10 +56,14 @@
                             <div class="temp-actions">
                                 <div class="split-tool">
                                     <div class="split-left">
-                                        <button class="template-btn delete-template">刪除</button>
+                                        <button class="template-btn delete-template"
+                                                onclick="deleteTemplate('{{ notice.id }}', this)">刪除</button>
                                     </div>
                                     <div class="split-right">
-                                        <button class="template-btn edit-template">編輯</button>
+                                        <button class="template-btn edit-template"
+                                                onclick="openEditForm('{{ notice.id }}', '{{ notice.title|escapejs }}', '{{ notice.content|escapejs }}', this)">
+                                            編輯
+                                        </button>
                                     </div>
                                 </div>
                             </div>
