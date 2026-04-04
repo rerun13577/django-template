@@ -3487,6 +3487,10 @@ a {
   opacity: 1 !important;
 }
 
+.temp-content-text {
+  color: var(--text-muted);
+}
+
 .input-content-area {
   background: transparent; /* 既然在卡片裡，背景就全透明 */
   border: none; /* 🚀 拿掉預設醜邊框，精品感來源 */

@@ -244,14 +244,22 @@ class CreatePostView(FisshAPIBase):
 
 class ProfileView(FisshPageBase):
     def get(self, request, username=None):
-        # 🚀 第一關：沒名字就補名字（重定向）
+        # 🚀 第一關：沒名字的情況
         if not username:
-            return redirect("user_profile", username=request.user.username)
+            if request.user.is_authenticated:
+                # 有登入：帶他去 /profile/你的名字/ (這樣連結就帶名字了)
+                return redirect("user_profile", username=request.user.username)
+            else:
+                # 沒登入：直接踢去登入頁面
+                return redirect("account_login")
 
-        # 🚀 第二關：既然程式能跑來到這裡，username 絕對有值
+        # 🚀 第二關：有名字（不管是自己的還是別人的）
         user_qs = User.objects.select_related("profile").prefetch_related(
             "socialaccount_set"
         )
+
+        # 抓取目標使用者，不存在就噴 404
+        target_user = get_object_or_404(user_qs, username=username)
 
         # 直接抓人，不用再 if/else 判斷了
         target_user = get_object_or_404(user_qs, username=username)
