@@ -100,7 +100,7 @@
 
 /* 啟動狀態：當父層有 .is-open 時 */
 .accordion-item.is-open .accordion-body {
-  max-height: 1000px; /* 給它足夠的空間長出來 */
+  max-height: 1000000px; /* 給它足夠的空間長出來 */
   opacity: 1;
   padding-bottom: 1rem;
   visibility: visible; /* 確保它是可見的 */
@@ -176,7 +176,7 @@
 
 .temp-content-text {
   color: var(--text-muted);
-  display: flex;
+  display: block;
   /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
   overflow-wrap: anywhere;
 }
@@ -226,7 +226,7 @@
     font-size: 1.25em; /* 手機版標題稍微縮小 */
   }
   .temp-content-text {
-    display: flex;
+    display: block; /* 手機版內文改成獨占一行，避免太擠 */
     font-size: 1rem; /* 手機版內文稍微縮小 */
     /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
     overflow-wrap: anywhere;
@@ -238,7 +238,7 @@
   }
 
   .accordion-item.is-open .accordion-body {
-    max-height: 1000px;
+    max-height: 10000px;
     opacity: 1;
     padding-bottom: 0.25rem;
   }

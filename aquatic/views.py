@@ -11,6 +11,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now  # 🚀 這是用來抓現在時間的機器
 from django.views import View
 
+from .constants import FISH_SPECS_LABELS
+
 # 1. Model 從 models 資料夾抓
 from .models import (  # 記得引入模型
     AquaticLife,
@@ -19,6 +21,7 @@ from .models import (  # 記得引入模型
     Post,
 )
 from .models.shop_notice import ShopNotice
+from .models.specification import SpecTemplate
 
 # 2. 工具從 utils 檔案抓 🚀
 from .utils import compress_image
@@ -300,77 +303,86 @@ class ProfileView(FisshPageBase):
         return render(request, "profile.html", context)
 
 
+# 1. 購物須知 API (負責 存/改/刪)
 class ManageTemplateView(FisshAPIBase):
-    """
-    整合型 API：處理範本的 新增、修改、刪除
-    URL: /api/manage-template/
-    """
-
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
             temp_id = data.get("id")
             title = data.get("title")
             content = data.get("content")
-            action = data.get("action")  # 🚀 增加一個動作標記
+            action = data.get("action")
 
-            # -------------------------------------------------------
-            # 🚀 動作 1：刪除 (如果前端傳了 action: 'delete')
-            # -------------------------------------------------------
             if action == "delete":
-                if not temp_id:
-                    return JsonResponse(
-                        {"status": "error", "message": "刪除失敗：缺少 ID"}, status=400
-                    )
-
-                # 確保只能刪除「自己的」範本
                 deleted_count, _ = ShopNotice.objects.filter(
                     id=temp_id, user=request.user
                 ).delete()
+                return JsonResponse({"status": "success", "message": "須知已刪除"})
 
-                if deleted_count > 0:
-                    return JsonResponse({"status": "success", "message": "範本已刪除"})
-                return JsonResponse(
-                    {"status": "error", "message": "找不到該範本"}, status=404
-                )
-
-            # -------------------------------------------------------
-            # 🚀 動作 2：新增 或 修改 (共用邏輯)
-            # -------------------------------------------------------
             if not title or not content:
                 return JsonResponse(
                     {"status": "error", "message": "標題與內容不能為空"}, status=400
                 )
 
-            if temp_id:
-                # 👉 修改模式 (因：前端有傳 ID)
-                notice = ShopNotice.objects.filter(
-                    id=temp_id, user=request.user
-                ).first()
-                if not notice:
-                    return JsonResponse(
-                        {"status": "error", "message": "權限不足或範本不存在"},
-                        status=404,
-                    )
-
-                notice.title = title
-                notice.content = content
-                notice.save()
-                msg = "範本修改成功"
-            else:
-                # 👉 新增模式 (因：前端沒傳 ID)
-                notice = ShopNotice.objects.create(
-                    user=request.user, title=title, content=content
-                )
-                msg = "範本儲存成功"
-
-            return JsonResponse(
-                {
-                    "status": "success",
-                    "message": msg,
-                    "id": notice.id,  # 把 ID 丟回去讓前端更新按鈕
-                }
+            obj, created = ShopNotice.objects.update_or_create(
+                id=temp_id,
+                user=request.user,
+                defaults={"title": title, "content": content},
             )
-
+            return JsonResponse(
+                {"status": "success", "message": "須知儲存成功", "id": obj.id}
+            )
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+# 2. 規格範本 API (負責 存/改/刪)
+class ManageSpecAPIView(FisshAPIBase):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            temp_id = data.get("id")
+            name = data.get("name")
+            spec_data = data.get("data")  # 這裡存的是你過濾後的 JSON
+            action = data.get("action")
+
+            if action == "delete":
+                SpecTemplate.objects.filter(id=temp_id, user=request.user).delete()
+                return JsonResponse({"status": "success", "message": "規格已刪除"})
+
+            if not name or not spec_data:
+                return JsonResponse(
+                    {"status": "error", "message": "名稱與內容不能為空"}, status=400
+                )
+
+            obj, created = SpecTemplate.objects.update_or_create(
+                id=temp_id,
+                user=request.user,
+                defaults={"name": name, "data": spec_data},
+            )
+            return JsonResponse(
+                {"status": "success", "message": "規格儲存成功", "id": obj.id}
+            )
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+# 3. 頁面大總管 (負責 GET 顯示 HTML)
+class ManageDashboardView(FisshPageBase):
+    """
+    一次抓好所有資料，渲染 manage_temp.html
+    """
+
+    def get(self, request):
+        user = request.user
+        context = {
+            "notices": ShopNotice.objects.filter(user=user).order_by("-created_at"),
+            "spec_templates": SpecTemplate.objects.filter(user=user).order_by("-id"),
+            "aquatics": AquaticLife.objects.filter(owner=user).order_by("-created_at"),
+            "master_labels": FISH_SPECS_LABELS,  # 給前端長 20 個格子用的
+        }
+        return render(request, "manage_temp.html", context)
+
+
+# 注意：manage_spec_template 已經被上面這個整合了，可以直接刪除，
+# 只要把 URL 指向 ManageDashboardView 即可。

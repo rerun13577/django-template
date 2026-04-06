@@ -69,11 +69,15 @@ urlpatterns = [
     # urls.py
     # 🚀 只需要這一個入口，以後 JS 全部打這條路徑
     # 🚀 這裡要改成你現在 View 真正的名字
+    # 唯一的頁面入口
+    path("manage/", views.ManageDashboardView.as_view(), name="manage_dashboard"),
+    # 兩個寫入用的 API 接口
     path(
         "api/manage-template/",
         views.ManageTemplateView.as_view(),
-        name="manage_template_api",
+        name="api_manage_template",
     ),
+    path("api/manage-spec/", views.ManageSpecAPIView.as_view(), name="api_manage_spec"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

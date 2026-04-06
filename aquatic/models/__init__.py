@@ -15,3 +15,4 @@ from .profile import Profile, get_profile_upload_path
 from .shop_notice import ShopNotice
 
 # models 資料夾的入口只能放「模型（Class）」，不能放「工具（函式）」
+from .specification import SpecTemplate

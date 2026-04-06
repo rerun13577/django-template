@@ -1,0 +1,36 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FisshShop | 水族交易平台</title>
+        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    </head>
+    <body>
+        {% include 'header.html' %}
+        <div class="in-manage-temp">
+            <nav class="profile-tabs">
+                <button class="tab-item active"
+                        hx-get="/manage/notices-partial/"
+                        hx-target="#manage-content">範本</button>
+                <button class="tab-item"
+                        hx-get="/manage/specs-partial/"
+                        hx-target="#manage-content">規格</button>
+                <button class="tab-item"
+                        hx-get="/manage/products-partial/"
+                        hx-target="#manage-content">商品</button>
+            </nav>
+            <hr />
+            <div id="manage-content"></div>
+        </div>
+        <script>
+            document.body.addEventListener('htmx:configRequest', (event) => {
+                // 自動幫每次 HTMX 請求蓋上 Django 的防偽印章
+                event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+            });
+        </script>
+    </body>
+</html>
