@@ -17,5 +17,5 @@ class AquaticConfig(AppConfig):
     name = "aquatic"
 
     def ready(self):
-        # 🚀 這是靈魂！這行沒寫，signals.py 就是一張廢紙
-        pass
+        # 🚀 必須要在這裡手動 import，監聽器才會在 Django 啟動時生效
+        import aquatic.signals  # noqa

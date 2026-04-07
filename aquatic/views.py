@@ -381,7 +381,7 @@ class ManageDashboardView(FisshPageBase):
             "aquatics": AquaticLife.objects.filter(owner=user).order_by("-created_at"),
             "master_labels": FISH_SPECS_LABELS,  # 給前端長 20 個格子用的
         }
-        return render(request, "manage_temp.html", context)
+        return render(request, "manage.html", context)
 
 
 # 注意：manage_spec_template 已經被上面這個整合了，可以直接刪除，
