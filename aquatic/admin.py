@@ -8,6 +8,7 @@ from .models import (
     Post,
     Profile,
     ShopNotice,
+    SpecTemplate,
 )
 
 # 🚀 1. 簡單登記 (留言)
@@ -74,3 +75,10 @@ class PostAdmin(admin.ModelAdmin):
     list_select_related = ("author",)
     raw_id_fields = ("likes", "author")
     list_display = ("title", "author", "comment_count", "like_count", "created_at")
+
+
+# --- 或者你想讓後台看起來更專業 (推薦) ---
+@admin.register(SpecTemplate)
+class SpecTemplateAdmin(admin.ModelAdmin):
+    list_display = ("name", "user")  # 在清單頁面顯示範本名稱與所屬老闆
+    search_fields = ("name",)  # 讓你可以搜尋範本名稱
