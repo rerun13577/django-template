@@ -6,12 +6,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage  # 🚀 處理內文照片的儲存
 from django.db.models import Exists, OuterRef, Prefetch
-from django.http import JsonResponse  # 🚀 回傳成功或失敗的訊息給 JS
+from django.http import (
+    HttpResponse,
+    JsonResponse,  # 🚀 回傳成功或失敗的訊息給 JS
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now  # 🚀 這是用來抓現在時間的機器
 from django.views import View
 
-from .constants import FISH_SPECS_LABELS
+from .constants import CORE_SPECS, EXTRA_SPECS, FISH_SPECS_LABELS
 
 # 1. Model 從 models 資料夾抓
 from .models import (  # 記得引入模型
@@ -304,36 +307,73 @@ class ProfileView(FisshPageBase):
 
 
 # 1. 購物須知 API (負責 存/改/刪)
+# class ManageTemplateView(FisshAPIBase):
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             data = json.loads(request.body)
+#             temp_id = data.get("id")
+#             title = data.get("title")
+#             content = data.get("content")
+#             action = data.get("action")
+
+#             if action == "delete":
+#                 deleted_count, _ = ShopNotice.objects.filter(
+#                     id=temp_id, user=request.user
+#                 ).delete()
+#                 return JsonResponse({"status": "success", "message": "須知已刪除"})
+
+#             if not title or not content:
+#                 return JsonResponse(
+#                     {"status": "error", "message": "標題與內容不能為空"}, status=400
+#                 )
+
+#             obj, created = ShopNotice.objects.update_or_create(
+#                 id=temp_id,
+#                 user=request.user,
+#                 defaults={"title": title, "content": content},
+#             )
+#             return JsonResponse(
+#                 {"status": "success", "message": "須知儲存成功", "id": obj.id}
+#             )
+#         except Exception as e:
+#             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
 class ManageTemplateView(FisshAPIBase):
+    # 🚀 GET 負責「變身」
+    def get(self, request, pk=None, *args, **kwargs):
+        if pk:
+            notice = ShopNotice.objects.get(id=pk, user=request.user)
+            # 這裡回傳你那個有 <input> 的編輯零件
+            return render(request, "partials/notice_edit_form.html", {"n": notice})
+        return HttpResponse("沒有提供 ID", status=400)
+
+    # 🚀 POST 負責「動作」
     def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-            temp_id = data.get("id")
-            title = data.get("title")
-            content = data.get("content")
-            action = data.get("action")
+        temp_id = request.POST.get("id")
+        action = request.POST.get("action")
 
-            if action == "delete":
-                deleted_count, _ = ShopNotice.objects.filter(
-                    id=temp_id, user=request.user
-                ).delete()
-                return JsonResponse({"status": "success", "message": "須知已刪除"})
+        # --- 刪除邏輯 ---
+        if action == "delete":
+            ShopNotice.objects.filter(id=temp_id, user=request.user).delete()
+            return HttpResponse("")  # 刪除成功回傳空，HTMX 會移除該元素
 
-            if not title or not content:
-                return JsonResponse(
-                    {"status": "error", "message": "標題與內容不能為空"}, status=400
-                )
+        # --- 儲存邏輯 ---
+        title = request.POST.get("title")
+        content = request.POST.get("content")
 
-            obj, created = ShopNotice.objects.update_or_create(
-                id=temp_id,
-                user=request.user,
-                defaults={"title": title, "content": content},
-            )
-            return JsonResponse(
-                {"status": "success", "message": "須知儲存成功", "id": obj.id}
-            )
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        # 執行更新或新增
+        ShopNotice.objects.update_or_create(
+            id=temp_id if temp_id else None,
+            user=request.user,
+            defaults={"title": title, "content": content},
+        )
+
+        # 🚀 關鍵改動：不要只回傳一小塊，要重新抓取所有範本，回傳整排清單
+        notices = ShopNotice.objects.filter(user=request.user).order_by("-created_at")
+
+        # 🚀 這裡要對應你截圖中的那個檔案路徑
+        return render(request, "component/notice_list_items.html", {"notices": notices})
 
 
 # 2. 規格範本 API (負責 存/改/刪)
@@ -343,7 +383,9 @@ class ManageSpecAPIView(FisshAPIBase):
             data = json.loads(request.body)
             temp_id = data.get("id")
             name = data.get("name")
-            spec_data = data.get("data")  # 這裡存的是你過濾後的 JSON
+            spec_data = data.get(
+                "data"
+            )  # 格式範例: {"pH值": "7.0", "適宜溫度": "26", ...}
             action = data.get("action")
 
             if action == "delete":
@@ -355,10 +397,15 @@ class ManageSpecAPIView(FisshAPIBase):
                     {"status": "error", "message": "名稱與內容不能為空"}, status=400
                 )
 
+            # 🚀 這裡可以加一個簡單的過濾，確保只存 FISH_SPECS_LABELS 裡有的 Key
+            cleaned_data = {
+                k: v for k, v in spec_data.items() if k in FISH_SPECS_LABELS
+            }
+
             obj, created = SpecTemplate.objects.update_or_create(
-                id=temp_id,
+                id=temp_id if temp_id else None,  # 修正: 沒 ID 時要傳 None
                 user=request.user,
-                defaults={"name": name, "data": spec_data},
+                defaults={"name": name, "data": cleaned_data},
             )
             return JsonResponse(
                 {"status": "success", "message": "規格儲存成功", "id": obj.id}
@@ -369,17 +416,16 @@ class ManageSpecAPIView(FisshAPIBase):
 
 # 3. 頁面大總管 (負責 GET 顯示 HTML)
 class ManageDashboardView(FisshPageBase):
-    """
-    一次抓好所有資料，渲染 manage_temp.html
-    """
-
     def get(self, request):
         user = request.user
         context = {
             "notices": ShopNotice.objects.filter(user=user).order_by("-created_at"),
             "spec_templates": SpecTemplate.objects.filter(user=user).order_by("-id"),
             "aquatics": AquaticLife.objects.filter(owner=user).order_by("-created_at"),
-            "master_labels": FISH_SPECS_LABELS,  # 給前端長 20 個格子用的
+            # 🚀 改成傳送這兩個，前端長格子時可以分組
+            "core_labels": CORE_SPECS,
+            "extra_labels": EXTRA_SPECS,
+            "master_labels": FISH_SPECS_LABELS,
         }
         return render(request, "manage.html", context)
 

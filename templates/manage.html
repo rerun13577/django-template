@@ -1,6 +1,7 @@
 {% load static %}
 {% load socialaccount %}
 <!DOCTYPE html>
+{% comment %} 這是管理總頁面 {% endcomment %}
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -20,31 +21,52 @@
             </nav>
             <div id="manage-content">
                 <div id="tab-notices" class="tab-section">
-                    <h2 class="tab-title">你的購物須知</h2>
-                    {% for n in notices %}
-                        <div class="notice-card" id="notice-{{ n.id }}">
-                            <h3>{{ n.title }}</h3>
-                            <p>{{ n.content }}</p>
-                            <div class="temp-actions">
-                                <div class="split-tool">
-                                    <div class="split-left">
-                                        <button class="template-btn delete-template"
-                                                hx-post="/api/manage-template/"
-                                                hx-vals='{"id": "{{ n.id }}", "action": "delete"}'
-                                                hx-target="#notice-{{ n.id }}"
-                                                hx-swap="outerHTML"
-                                                hx-confirm="老闆，確定要刪除這條範本嗎？">刪除範本</button>
-                                    </div>
-                                    <div class="split-right">
-                                        <button class="template-btn edit-template"
-                                                onclick="openEditForm('{{ n.id }}')">編輯內容</button>
+                    <div class="split-tool">
+                        <div class="split-left">
+                            <h2 class="tab-title">購物須知管理</h2>
+                        </div>
+                        <div class="split-right">
+                            <button class="add-template" onclick="toggleAddForm()">{% include 'icons/add.html' %}</button>
+                        </div>
+                    </div>
+                    <div class="accordion-item create-mode"
+                         id="add-template-form"
+                         style="display: none">
+                        <form hx-post="{% url 'manage-template' %}"
+                              hx-target="#template-list-container"
+                              hx-swap="innerHTML"
+                              hx-on::after-request="toggleAddForm();">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" id="editTempId" value="">
+                            <input type="hidden" name="action" value="save">
+                            <div class="accordion-header no-cursor">
+                                <input type="text"
+                                       name="title"
+                                       id="newNoticeTitle"
+                                       class="input-title-field"
+                                       placeholder="範本名稱">
+                            </div>
+                            <div class="accordion-body is-visible" style="display: block;">
+                                <div class="accordion-inner">
+                                    <textarea name="content"
+                                              id="newNoticeContent"
+                                              class="input-content-area"
+                                              placeholder="輸入內容..."></textarea>
+                                    <div class="temp-actions">
+                                        <div class="split-tool">
+                                            <div class="split-left">
+                                                <button type="button" class="template-btn" onclick="toggleAddForm()">取消</button>
+                                            </div>
+                                            <div class="split-right">
+                                                <button type="submit" class="template-btn edit-template">儲存範本</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% empty %}
-                        <p>目前還沒有建立須知喔！</p>
-                    {% endfor %}
+                        </form>
+                    </div>
+                    <div id="template-list-container">{% include 'component/notice_list_items.html' %}</div>
                 </div>
                 <div id="tab-specs" class="tab-section" style="display: none;">
                     <h2 class="tab-title">你的規格範本</h2>

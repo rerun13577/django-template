@@ -88,7 +88,7 @@
 }
 
 .accordion-item.active .accordion-body {
-  max-height: 1000px; /* 給大一點沒關係，只要動畫對就好 */
+  max-height: 100000px; /* 給大一點沒關係，只要動畫對就好 */
   opacity: 1;
 }
 
@@ -177,8 +177,16 @@
 .temp-content-text {
   color: var(--text-muted);
   display: block;
-  /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
-  overflow-wrap: anywhere;
+
+  /* 🚀 關鍵 A：pre-line 會保留換行(Enter)，但會把多餘的空格縮成一個。 */
+  /* 這樣老闆用空格對齊的壞習慣就不會毀掉版面。 */
+  white-space: pre-line;
+
+  /* 🚀 關鍵 B：只在單字太長塞不下時才斷行，且盡量不拆散網址。 */
+  overflow-wrap: break-word;
+
+  /* 🚀 關鍵 C：嘉義老闆字太多，一定要給行高，不然會看到眼睛脫窗。 */
+  line-height: 1.6;
 }
 
 .input-content-area {

@@ -75,9 +75,16 @@ urlpatterns = [
     path(
         "api/manage-template/",
         views.ManageTemplateView.as_view(),
-        name="api_manage_template",
+        name="manage-template",  # 🚀 把 api_ 拿掉，對齊你的 HTML
+    ),
+    # 🚀 為了讓 HTMX 能拿「編輯表單」，你還需要補這條帶 ID 的路徑
+    path(
+        "api/manage-template/<int:pk>/",
+        views.ManageTemplateView.as_view(),
+        name="manage-template-detail",
     ),
     path("api/manage-spec/", views.ManageSpecAPIView.as_view(), name="api_manage_spec"),
+    # 🚀 這一行就是你在 Template 裡 {% url 'manage-template' %} 找的東西
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

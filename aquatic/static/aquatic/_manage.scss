@@ -99,6 +99,95 @@
   opacity: 0.5;
   transition: opacity 0.2s;
 }
+
+/* 預設隱藏內容 */
+.notice-card .card-body {
+  display: none;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+/* 讓標籤層看起來可以點擊 */
+.card-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 讓標籤跟原本的樣式稍微分開 */
+.notice-summary-title {
+  margin: 0 !important;
+  font-size: 1.1rem;
+}
+
+/* 預設狀態：箭頭向右 (0度) */
+.toggle-arrow {
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+/* 修正：預設隱藏內容 */
+.accordion-item .accordion-body {
+  display: none; /* 原本是 .notice-card .card-body */
+  padding-top: 15px;
+}
+
+/* 修正：當有 active 類別時才顯示 (JS 切換的是 active) */
+.accordion-item.active .accordion-body {
+  display: block;
+}
+
+/* 修正：旋轉箭頭 */
+.accordion-item.active .temp-arrow {
+  transform: rotate(90deg);
+}
+
+/* 當這張卡片正在被刪除時（HTMX 處理中） */
+.accordion-item.htmx-swapping {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.3s ease;
+}
+
+/* 🚀 新增按鈕：對齊你的 Fissh 品牌色 */
+.add-template {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 16px;
+
+  /* 因：使用主色調亮綠色。果：在深色背景中極度顯眼，一眼看到功能。 */
+  background: var(--primary);
+  color: var(--text); /* 因：亮底配深字。果：字體清晰不刺眼。 */
+
+  border: none;
+  border-radius: var(--radius-s); /* 因：對齊系統小圓角。 */
+  font-weight: var(--fw-bold);
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  /* 因：使用你定義好的 transition。果：動作絲滑不生硬。 */
+  transition: var(--transition);
+  box-shadow: var(--shadow-s);
+}
+
+/* 🚀 懸浮效果：讓老闆知道這可以按 */
+.add-template:hover {
+  box-shadow: var(--shadow-m);
+
+  filter: brightness(1.1); /* 果：顏色微微變亮，視覺反饋。 */
+}
+
+/* 🚀 點擊效果：物理按壓感 */
+.add-template:active {
+  transform: translateY(0) scale(0.95); /* 果：點下去會縮小，模擬實體按鈕手感。 */
+}
+
+/* 調整一下它在 split-tool 裡的位置 */
+.split-right .add-template {
+  margin-right: 2rem;
+}
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
 // rwd-----------------------------------------------------------------------------------------------------------------------

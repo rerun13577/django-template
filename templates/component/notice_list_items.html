@@ -1,0 +1,40 @@
+{% comment %} 這是管理範本頁面 {% endcomment %}
+{% for notice in notices %}
+    <div class="accordion-item" id="notice-item-{{ notice.id }}">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="split-tool">
+                <div class="split-left">
+                    <h3 class="temp-title">{{ notice.title }}</h3>
+                </div>
+                <div class="split-right">
+                    <span class="temp-arrow">{% include "icons/next.html" %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-body">
+            <div class="accordion-inner">
+                <div class="temp-content-text">{{ notice.content }}</div>
+                <div class="temp-actions">
+                    <div class="split-tool">
+                        <div class="split-left">
+                            <button class="template-btn delete-template"
+                                    hx-post="{% url 'manage-template' %}"
+                                    hx-vals='{"id": "{{ notice.id }}", "action": "delete"}'
+                                    hx-target="#notice-item-{{ notice.id }}"
+                                    hx-swap="outerHTML swap:300ms"
+                                    hx-confirm="確定要刪除嗎？">刪除</button>
+                        </div>
+                        <div class="split-right">
+                            <button class="template-btn edit-template"
+                                    onclick="openEditForm('{{ notice.id }}', '{{ notice.title|escapejs }}', '{{ notice.content|escapejs }}', this)">
+                                編輯
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p class="empty-hint">目前沒有範本，點擊右上方新增一個吧！</p>
+{% endfor %}

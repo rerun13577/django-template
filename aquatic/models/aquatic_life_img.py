@@ -96,6 +96,40 @@ class AquaticLife(BaseModel):
         default="NORMAL",
         verbose_name="價格狀態",
     )
+
+    # 🚀 核心 5 數據 (固定欄位，純數字)
+    # 1. pH值 (存範圍，搜尋更準)
+    ph_min = models.FloatField(null=True, blank=True, verbose_name="最小pH值")
+    ph_max = models.FloatField(null=True, blank=True, verbose_name="最大pH值")
+
+    # 2. 適宜溫度
+    temp_min = models.IntegerField(null=True, blank=True, verbose_name="最小溫度")
+    temp_max = models.IntegerField(null=True, blank=True, verbose_name="最大溫度")
+
+    # 3. 成魚體長 (cm)
+    adult_length = models.FloatField(null=True, blank=True, verbose_name="成魚體長(cm)")
+
+    # 4. 難易度 (1-5星)
+    difficulty = models.IntegerField(default=1, verbose_name="養殖難易度")
+
+    # 5. 建議缸徑 (cm)
+    min_tank_size = models.IntegerField(
+        null=True, blank=True, verbose_name="建議缸徑(cm)"
+    )
+
+    # 🚀 剩下的 15 個雜項規格 (存 JSON)
+    specs_json = models.JSONField(default=dict, blank=True, verbose_name="其他詳細規格")
+
+    # 🚀 購物須知連結 (這就是你說的：改了全站都要變的東西)
+    notice_template = models.ForeignKey(
+        "ShopNotice",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+        verbose_name="套用的購物須知",
+    )
+
     stock = models.IntegerField(default=0, verbose_name="庫存數量")
     description = models.TextField(blank=True, verbose_name="詳細描述")
     image = models.ImageField(
