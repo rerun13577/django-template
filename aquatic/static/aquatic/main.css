@@ -3410,11 +3410,6 @@ a {
   opacity: 0;
 }
 
-.accordion-item.active .accordion-body {
-  max-height: 100000px; /* 給大一點沒關係，只要動畫對就好 */
-  opacity: 1;
-}
-
 .accordion-inner {
   width: 100%;
   height: auto;
@@ -3423,10 +3418,9 @@ a {
 
 /* 啟動狀態：當父層有 .is-open 時 */
 .accordion-item.is-open .accordion-body {
-  max-height: 1000000px; /* 給它足夠的空間長出來 */
+  display: block;
   opacity: 1;
-  padding-bottom: 1rem;
-  visibility: visible; /* 確保它是可見的 */
+  visibility: visible;
 }
 
 /* 🚀 額外加成：箭頭轉向也要改名字 */
@@ -3544,7 +3538,6 @@ a {
     padding: 0.25rem 0.625rem;
   }
   .accordion-item.is-open .accordion-body {
-    max-height: 10000px;
     opacity: 1;
     padding-bottom: 0.25rem;
   }
@@ -3734,4 +3727,232 @@ a {
 /* 調整一下它在 split-tool 裡的位置 */
 .split-right .add-template {
   margin-right: 2rem;
+}
+
+/* 🚀 刪除動畫：卡片向右滑出並變透明 (對齊你 HTML 的 swap:300ms) */
+.accordion-item.htmx-swapping {
+  opacity: 0 !important;
+  transform: translateX(30px);
+  max-height: 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s ease;
+}
+
+/* 🚀 新增/刷新動畫：淡入效果 */
+.accordion-item {
+  transition: all 0.4s var(--transition);
+}
+
+.accordion-item.htmx-added {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.no-template-hint {
+  display: none;
+  color: var(--text-muted);
+  background-color: var(--bg-light);
+  padding: 2rem;
+  border-radius: var(--radius-m);
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto 5rem auto;
+  font-size: 1.25rem;
+}
+
+#template-list-container:not(:has(.accordion-item)) .no-template-hint,
+#spec-list-container:not(:has(.accordion-item)) .no-template-hint {
+  display: flex !important;
+}
+
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.13 31.38);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+  --green-gradient: linear-gradient(to bottom, oklch(0.8199 0.1381 140.2), oklch(0.76 0.1 308));
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+  --article-margin: 2rem;
+  --article-margin-mobile: 1.2rem;
+  --profile-width: 90%;
+  --profile-margin: 55px;
+  --profile-margin-mobile: 25px;
+  --card-margin-mobile: 0.5rem;
+  --width: 41.5rem;
+}
+
+/* 規格內部的 Grid 佈局 */
+.spec-grid-container {
+  padding: 0rem 0rem 1rem 0rem; /* 上右下左 */
+}
+
+.spec-group {
+  margin-bottom: 20px;
+}
+
+.group-header {
+  font-size: 1rem;
+  color: var(--text); /* 建議用你的主色調 */
+  border-left: 3px solid var(--primary-color);
+  padding-left: 0px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 🚀 雙排佈局 */
+  gap: 12px 20px;
+  color: var(--text-muted); /* 建議用你的主色調 */
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text-muted); /* 建議用你的主色調 */
+}
+
+.spec-item label {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.spec-input-field {
+  width: 100%;
+  background: var(--bg-dark);
+  color: var(--text);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition);
+}
+@media (hover: hover) {
+  .spec-input-field:hover {
+    background: var(--bg-light);
+    border-color: var(--border-muted);
+    cursor: pointer;
+  }
+}
+.spec-input-field:focus {
+  background: var(--bg-light);
+  border-color: var(--border);
+}
+.spec-input-field::-moz-placeholder {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+.spec-input-field::placeholder {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.range-inputs span {
+  color: var(--text-muted);
+  font-weight: bold;
+  font-family: var(--ff-primary);
+}
+.range-inputs .spec-input-field {
+  flex: 1; /* 🚀 讓兩個框框平分寬度 */
+  text-align: center;
+  min-width: 0;
+}
+
+.spec-item.range-group {
+  grid-column: span 1;
+}
+
+/* 1. 刪除動畫：當 HTMX 正在移除元素時 */
+.accordion-item.htmx-swapping {
+  opacity: 0;
+  transform: translateX(30px) scale(0.95);
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: all 0.4s var(--transition); /* 套用你的貝茲曲線 */
+  overflow: hidden;
+}
+
+/* 2. 新增動畫：當 HTMX 剛把新元素塞進去時 */
+.accordion-item.htmx-added {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.accordion-item {
+  /* 確保所有變動都有過度 */
+  transition: all 0.4s var(--transition), opacity 0.3s ease;
+}
+
+/* 專屬於預覽模式的網格樣式 */
+.spec-grid.preview-mode {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+}
+.spec-grid.preview-mode .spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  /* 移除原本 input 的外框，改用純文字排版 */
+}
+.spec-grid.preview-mode .spec-item .preview-label {
+  font-size: 1rem;
+  color: var(--text-muted); /* 讓標籤稍微淡一點 */
+}
+.spec-grid.preview-mode .spec-item .preview-value {
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.spec-grid.preview-mode .spec-item {
+  /* 針對「無」這個字的特殊樣式，讓它不那麼刺眼 */
+}
+.spec-grid.preview-mode .spec-item .empty-value {
+  color: var(--text-muted);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.spec-input-field:invalid {
+  color: var(--danger); /* 數值不合理時變紅色 */
+}
+
+/* 📱 手機版自動變單排 */
+@media (max-width: 600px) {
+  .spec-grid {
+    grid-template-columns: 1fr;
+  }
 }/*# sourceMappingURL=main.css.map */

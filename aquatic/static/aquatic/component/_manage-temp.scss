@@ -63,7 +63,7 @@
 }
 
 .temp-title {
-  font-size: 1.25em; /* 稍微縮小一點點，手機版比較好看 */
+  font-size: 1.25rem; /* 稍微縮小一點點，手機版比較好看 */
   font-weight: var(--fw-bold);
   margin: 0; /* 🚀 關鍵：消除 h3 預設的邊距，避免歪掉 */
 }
@@ -87,11 +87,6 @@
   opacity: 0;
 }
 
-.accordion-item.active .accordion-body {
-  max-height: 100000px; /* 給大一點沒關係，只要動畫對就好 */
-  opacity: 1;
-}
-
 .accordion-inner {
   width: 100%;
   height: auto;
@@ -100,10 +95,9 @@
 
 /* 啟動狀態：當父層有 .is-open 時 */
 .accordion-item.is-open .accordion-body {
-  max-height: 1000000px; /* 給它足夠的空間長出來 */
+  display: block;
   opacity: 1;
-  padding-bottom: 1rem;
-  visibility: visible; /* 確保它是可見的 */
+  visibility: visible;
 }
 
 /* 🚀 額外加成：箭頭轉向也要改名字 */
@@ -246,7 +240,6 @@
   }
 
   .accordion-item.is-open .accordion-body {
-    max-height: 10000px;
     opacity: 1;
     padding-bottom: 0.25rem;
   }

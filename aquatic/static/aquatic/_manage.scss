@@ -188,6 +188,48 @@
 .split-right .add-template {
   margin-right: 2rem;
 }
+
+/* 🚀 刪除動畫：卡片向右滑出並變透明 (對齊你 HTML 的 swap:300ms) */
+.accordion-item.htmx-swapping {
+  opacity: 0 !important;
+  transform: translateX(30px);
+  max-height: 0 !important;
+  margin: 0 !important;
+  transition: all 0.3s ease;
+}
+
+/* 🚀 新增/刷新動畫：淡入效果 */
+.accordion-item {
+  transition: all 0.4s var(--transition);
+}
+
+.accordion-item.htmx-added {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+// 1. 基礎樣式：定義提示長什麼樣子 (預設隱藏)
+.no-template-hint {
+  display: none; // 🚀 預設先藏起來
+  color: var(--text-muted);
+  background-color: var(--bg-light);
+  padding: 2rem;
+  border-radius: var(--radius-m);
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto 5rem auto;
+  font-size: 1.25rem;
+}
+
+// 2. 🚀 核心監視邏輯：分開寫，不要巢狀(nesting)才不會亂掉
+// 因：當「購物須知」或「規格」容器內沒有卡片時
+#template-list-container:not(:has(.accordion-item)),
+#spec-list-container:not(:has(.accordion-item)) {
+  // 果：讓底下的提示現身
+  .no-template-hint {
+    display: flex !important;
+  }
+}
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
 // rwd-----------------------------------------------------------------------------------------------------------------------

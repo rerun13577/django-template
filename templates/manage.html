@@ -9,7 +9,11 @@
         <title>FisshShop | 賣家管理中心</title>
         <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        {% comment %} 範本管理 {% endcomment %}
         <script src="{% static 'aquatic/js/manage.js' %}" defer></script>
+        <script src="{% static 'aquatic/js/add-product-spec.js' %}" defer></script>
+        {% comment %} 其他功能腳本 {% endcomment %}
+        <script src="{% static 'aquatic/js/add-product-template.js' %}" defer></script>
     </head>
     <body>
         {% include 'header.html' %}
@@ -26,57 +30,21 @@
                             <h2 class="tab-title">購物須知管理</h2>
                         </div>
                         <div class="split-right">
-                            <button class="add-template" onclick="toggleAddForm()">{% include 'icons/add.html' %}</button>
+                            <button class="add-template" onclick="toggleForm('add-notice-form')">{% include 'icons/add.html' %}</button>
                         </div>
                     </div>
-                    <div class="accordion-item create-mode"
-                         id="add-template-form"
-                         style="display: none">
-                        <form hx-post="{% url 'manage-template' %}"
-                              hx-target="#template-list-container"
-                              hx-swap="innerHTML"
-                              hx-on::after-request="toggleAddForm();">
-                            {% csrf_token %}
-                            <input type="hidden" name="id" id="editTempId" value="">
-                            <input type="hidden" name="action" value="save">
-                            <div class="accordion-header no-cursor">
-                                <input type="text"
-                                       name="title"
-                                       id="newNoticeTitle"
-                                       class="input-title-field"
-                                       placeholder="範本名稱">
-                            </div>
-                            <div class="accordion-body is-visible" style="display: block;">
-                                <div class="accordion-inner">
-                                    <textarea name="content"
-                                              id="newNoticeContent"
-                                              class="input-content-area"
-                                              placeholder="輸入內容..."></textarea>
-                                    <div class="temp-actions">
-                                        <div class="split-tool">
-                                            <div class="split-left">
-                                                <button type="button" class="template-btn" onclick="toggleAddForm()">取消</button>
-                                            </div>
-                                            <div class="split-right">
-                                                <button type="submit" class="template-btn edit-template">儲存範本</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div id="template-list-container">{% include 'component/notice_list_items.html' %}</div>
+                    {% include 'component/notice_list_items.html' %}
                 </div>
                 <div id="tab-specs" class="tab-section" style="display: none;">
-                    <h2 class="tab-title">你的規格範本</h2>
-                    {% for s in spec_templates %}
-                        <div class="spec-card">
-                            <h3>{{ s.name }}</h3>
+                    <div class="split-tool">
+                        <div class="split-left">
+                            <h2 class="tab-title">你的規格範本</h2>
                         </div>
-                    {% empty %}
-                        <p>目前還沒有規格範本喔！</p>
-                    {% endfor %}
+                        <div class="split-right">
+                            <button class="add-template" onclick="toggleForm('add-spec-form')">{% include 'icons/add.html' %}</button>
+                        </div>
+                    </div>
+                    {% include 'component/spec_list_items.html' %}
                 </div>
                 <div id="tab-products" class="tab-section" style="display: none;">
                     <h2 class="tab-title">批次上架小魚</h2>
