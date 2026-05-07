@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login  # 補上 authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage  # 🚀 處理內文照片的儲存
+from django.db import transaction
 from django.db.models import Exists, OuterRef, Prefetch
 from django.http import (
     HttpResponse,
@@ -434,3 +435,92 @@ class ManageDashboardView(FisshPageBase):
 
 # 注意：manage_spec_template 已經被上面這個整合了，可以直接刪除，
 # 只要把 URL 指向 ManageDashboardView 即可。
+
+# 🚀 記得引入你的 Model (假設 SpecTemplate 是你存規格範本的名字)
+
+
+# aquatic/views.py
+
+
+class AddProductBatchView(FisshPageBase, View):
+    """批量新增生物的類別視圖"""
+
+    def post(self, request, *args, **kwargs):
+        # 1. 取得全域設定
+        global_price = request.POST.get("global_price", 0)
+        spec_template_id = request.POST.get("global_spec")
+        notice_id = request.POST.get("global_notice")
+
+        # 2. 取得名單與圖片清單
+        fish_names = request.POST.getlist("fish_name[]")
+        fish_images = request.FILES.getlist("fish_image[]")
+
+        # 3. 準備範本數據
+        spec_template = SpecTemplate.objects.filter(id=spec_template_id).first()
+        notice_instance = ShopNotice.objects.filter(id=notice_id).first()
+
+        # 對齊最新的生物種類代碼
+        category_map = {
+            "魚類": "FISH",
+            "蝦類": "SHRIMP",
+            "水草類": "PLANT",
+            "螺蚌類": "SHELLFISH",
+            "其他": "OTHER",
+        }
+
+        try:
+            with transaction.atomic():
+                for i, name in enumerate(fish_names):
+                    if not name.strip():
+                        continue
+
+                    # 建立物件並填入基礎資料
+                    new_fish = AquaticLife(
+                        owner=request.user,
+                        name=name,
+                        price=int(global_price) if global_price else 0,
+                        notice_template=notice_instance,
+                    )
+
+                    # 🚀 套用規格範本數據
+                    if spec_template:
+                        data = spec_template.data
+
+                        # 核心 5 數據映射 (對齊你最新的配置)
+                        raw_cat = data.get("生物種類", "其他")
+                        new_fish.category = category_map.get(raw_cat, "OTHER")
+
+                        new_fish.ph_min = data.get("pH值_min")
+                        new_fish.ph_max = data.get("pH值_max")
+                        new_fish.temp_min = data.get("適宜溫度_min")
+                        new_fish.temp_max = data.get("適宜溫度_max")
+                        new_fish.adult_length = data.get("體長(cm)")
+                        new_fish.min_tank_size = data.get("建議水量(L)")  # 🚀 建議水量
+
+                        # 雜項規格塞入 JSON
+                        extra_keys = [
+                            "GH硬度",
+                            "KH硬度",
+                            "性情",
+                            "食性",
+                            "比重",
+                            "水流強度",
+                            "光照需求",
+                        ]
+                        new_fish.specs_json = {
+                            k: data[k] for k in extra_keys if k in data
+                        }
+
+                    # 🚀 處理圖片
+                    if i < len(fish_images):
+                        new_fish.image = fish_images[i]
+
+                    # 儲存 (觸發 Model 內建的轉檔與搬家邏輯)
+                    new_fish.save()
+
+            return HttpResponse(
+                '<script>alert("批量上傳成功！"); location.reload();</script>'
+            )
+
+        except Exception as e:
+            return HttpResponse(f"儲存失敗：{str(e)}", status=500)

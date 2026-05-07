@@ -17,7 +17,7 @@ CORE_SPECS_CONFIG = [
     {"label": "適宜溫度", "key": "temp", "type": "range"},
     {"label": "pH值", "key": "ph", "type": "range"},
     {"label": "體長(cm)", "key": "adult_length", "type": "single"},
-    {"label": "建議大小(cm)", "key": "min_tank_size", "type": "single"},
+    {"label": "建議水量(L)", "key": "min_tank_size", "type": "single"},
 ]
 
 # 重新挑選後的次要規格

@@ -65,9 +65,10 @@ class AquaticLife(BaseModel):
     ]
 
     CATEGORY_CHOICES = [
-        ("SHRIMP", "米蝦/螯蝦"),
-        ("FISH", "觀賞魚"),
+        ("FISH", "魚類"),
+        ("SHRIMP", "蝦類"),
         ("PLANT", "水生植物"),
+        ("SHELLFISH", "螺蚌類"),
         ("OTHER", "其他"),
     ]
 
@@ -84,7 +85,10 @@ class AquaticLife(BaseModel):
     # --- 欄位定義 ---
     name = models.CharField(max_length=100, verbose_name="品種名稱")
     category = models.CharField(
-        max_length=10, choices=CATEGORY_CHOICES, default="SHRIMP", verbose_name="分類"
+        max_length=10,
+        choices=CATEGORY_CHOICES,
+        default="SHRIMP",
+        verbose_name="產品種類",
     )
     city = models.CharField(
         max_length=5, choices=CITY_CHOICES, default="NTP", verbose_name="所在地點"
@@ -109,12 +113,9 @@ class AquaticLife(BaseModel):
     # 3. 成魚體長 (cm)
     adult_length = models.FloatField(null=True, blank=True, verbose_name="成魚體長(cm)")
 
-    # 4. 難易度 (1-5星)
-    difficulty = models.IntegerField(default=1, verbose_name="養殖難易度")
-
-    # 5. 建議缸徑 (cm)
+    # 4. 建議水量 (l)
     min_tank_size = models.IntegerField(
-        null=True, blank=True, verbose_name="建議缸徑(cm)"
+        null=True, blank=True, verbose_name="建議水量(L)"
     )
 
     # 🚀 剩下的 15 個雜項規格 (存 JSON)

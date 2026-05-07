@@ -1,0 +1,64 @@
+<div class="manage-layout" id="manageLayout">
+    <!-- 左側/上方：批量新增區 -->
+    <aside class="batch-grid-wrapper" id="batchSection">
+        <div class="batch-header">
+            <h3>批量新增模式</h3>
+            <!-- 🚀 全域設定區：這裡填一次，下面所有小魚直接套用 -->
+            <div class="global-config-card">
+                <div class="config-title">全域套用設定</div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>批量數量</label>
+                        <input type="number"
+                               id="batchCount"
+                               value="5"
+                               min="1"
+                               max="20"
+                               onchange="generateBatchSlots()">
+                    </div>
+                    <div class="config-item">
+                        <label>統一價格</label>
+                        <input type="number" name="global_price" placeholder="例如：100">
+                    </div>
+                    <div class="config-item">
+                        <label>規格範本</label>
+                        <select name="global_spec">
+                            <option value="">選擇範本...</option>
+                            {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>商家提醒</label>
+                        <select name="global_notice">
+                            <option value="">選擇範本...</option>
+                            <!-- 你的商家提醒 loop -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 🚀 批量小格子區 -->
+        <div class="batch-slots" id="batchSlotsContainer">
+            <!-- JS 動態生成：照片 + 名字 -->
+        </div>
+        <div class="batch-footer">
+            <button class="save-all-btn"
+                    hx-post="{% url 'add-product' %}"
+                    hx-encoding="multipart/form-data"
+                    hx-include="#batchSection input, #batchSection select">一次全部上傳</button>
+        </div>
+    </aside>
+    <!-- 右側/下方：原本的小魚列表 -->
+    <main class="existing-grid-wrapper">
+        <div class="header-tool">
+            <h2>我的小魚清單</h2>
+            <button class="toggle-batch-btn" onclick="toggleBatchMode()">
+                <span id="btnText">開啟批量新增</span>
+            </button>
+        </div>
+        <div class="fish-grid">
+            <!-- 原本的資料 -->
+            <div class="fish-card">原本的小魚 A</div>
+        </div>
+    </main>
+</div>

@@ -14,6 +14,8 @@
         <script src="{% static 'aquatic/js/add-product-spec.js' %}" defer></script>
         {% comment %} 其他功能腳本 {% endcomment %}
         <script src="{% static 'aquatic/js/add-product-template.js' %}" defer></script>
+        <script src="{% static 'aquatic/js/add-product.js' %}" defer></script>
+        {% comment %} 生物上傳 {% endcomment %}
     </head>
     <body>
         {% include 'header.html' %}
@@ -47,7 +49,18 @@
                     {% include 'component/spec_list_items.html' %}
                 </div>
                 <div id="tab-products" class="tab-section" style="display: none;">
-                    <h2 class="tab-title">批次上架小魚</h2>
+                    <div class="split-tool">
+                        <div class="split-left">
+                            <h2 class="tab-title">你的產品</h2>
+                        </div>
+                        <div class="split-right">
+                            <!-- 單獨：原本的新增表單邏輯 -->
+                            <button class="add-prod" type="button" onclick="toggleForm('add-spec-form')">單獨</button>
+                            <!-- 批量：觸發左側/上方面板移動出來 -->
+                            <button class="add-prod" type="button" onclick="toggleBatchMode()">批量</button>
+                        </div>
+                    </div>
+                    {% include 'component/add-product.html' %}
                     <p>一物一拍批次上架功能開發中...</p>
                 </div>
             </div>
