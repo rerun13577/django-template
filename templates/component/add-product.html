@@ -1,64 +1,111 @@
 <div class="manage-layout" id="manageLayout">
-    <!-- 左側/上方：批量新增區 -->
-    <aside class="batch-grid-wrapper" id="batchSection">
-        <div class="batch-header">
-            <h3>批量新增模式</h3>
-            <!-- 🚀 全域設定區：這裡填一次，下面所有小魚直接套用 -->
-            <div class="global-config-card">
-                <div class="config-title">全域套用設定</div>
-                <div class="config-grid">
-                    <div class="config-item">
-                        <label>批量數量</label>
-                        <input type="number"
-                               id="batchCount"
-                               value="5"
-                               min="1"
-                               max="20"
-                               onchange="generateBatchSlots()">
-                    </div>
-                    <div class="config-item">
-                        <label>統一價格</label>
-                        <input type="number" name="global_price" placeholder="例如：100">
-                    </div>
-                    <div class="config-item">
-                        <label>規格範本</label>
-                        <select name="global_spec">
-                            <option value="">選擇範本...</option>
-                            {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
-                        </select>
-                    </div>
-                    <div class="config-item">
-                        <label>商家提醒</label>
-                        <select name="global_notice">
-                            <option value="">選擇範本...</option>
-                            <!-- 你的商家提醒 loop -->
-                        </select>
-                    </div>
-                </div>
+    <div id="setupSection" class="split-tool setup-banner">
+        <div class="split-left">
+            <h1 class="add-title">輸入格數</h1>
+        </div>
+        <div class="split-right">
+            <div class="setup-controls">
+                <input type="number"
+                       id="batchCountInput"
+                       value="5"
+                       min="1"
+                       max="20"
+                       class="batch-num-input">
+                <button type="button"
+                        class="confirm-batch-btn"
+                        onclick="handleBatchConfirm()">生成</button>
             </div>
         </div>
-        <!-- 🚀 批量小格子區 -->
-        <div class="batch-slots" id="batchSlotsContainer">
-            <!-- JS 動態生成：照片 + 名字 -->
+    </div>
+    {% comment %} 這個輸入完我會讓他消失 {% endcomment %}
+    <div class="show-pre-add" id="batchSlotsContainer">
+        <div class="slot-item">
+            <div class="split-tool ">
+                <div class="split-left">
+                    <div class="slot-header">第 ${i} 隻生物</div>
+                </div>
+                <div class="split-right">
+                    <button type="button"
+                            class="remove-slot-btn"
+                            onclick="this.closest('.slot-item').remove(); updateSlotNumbers();"
+                            title="移除此格">X</button>
+                </div>
+            </div>
+            <div class="slot-field">
+                <label class="custom-upload-box">
+                    <input type="file"
+                           name="fish_image[]"
+                           accept="image/*"
+                           onchange="handlePreview(this)"
+                           style="display: none">
+                    <div class="upload-placeholder">
+                        <span>+ 上傳照片</span>
+                    </div>
+                    <img class="preview-img" src="" style="display: none;">
+                </label>
+            </div>
+            <div class="slot-field">
+                <input type="text" name="fish_name[]" placeholder="輸入名稱 (如：極火蝦)">
+            </div>
+            <div class="slot-field field-with-btn">
+                <input type="number" name="fish_price[]" placeholder="單價">
+                <button type="button"
+                        class="apply-all-btn"
+                        onclick="syncAll('fish_price[]', this)"
+                        title="將此價格套用到所有格子">套用全部</button>
+            </div>
+            <div class="slot-field field-with-btn">
+                <select name="fish_spec[]">
+                    <option value="">選擇規格範本...</option>
+                    {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                </select>
+                <button type="button"
+                        class="apply-all-btn"
+                        onclick="syncAll('fish_spec[]', this)"
+                        title="將此規格套用到所有格子">套用</button>
+            </div>
+            <div class="slot-field field-with-btn">
+                <select name="fish_notice[]">
+                    <option value="">選擇提醒範本...</option>
+                    {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
+                </select>
+                <button type="button"
+                        class="apply-all-btn"
+                        onclick="syncAll('fish_notice[]', this)"
+                        title="將此提醒套用到所有格子">套用</button>
+            </div>
         </div>
-        <div class="batch-footer">
-            <button class="save-all-btn"
-                    hx-post="{% url 'add-product' %}"
-                    hx-encoding="multipart/form-data"
-                    hx-include="#batchSection input, #batchSection select">一次全部上傳</button>
-        </div>
-    </aside>
-    <!-- 右側/下方：原本的小魚列表 -->
-    <main class="existing-grid-wrapper">
-        <div class="header-tool">
-            <h2>我的小魚清單</h2>
-            <button class="toggle-batch-btn" onclick="toggleBatchMode()">
-                <span id="btnText">開啟批量新增</span>
-            </button>
-        </div>
-        <div class="fish-grid">
-            <!-- 原本的資料 -->
-            <div class="fish-card">原本的小魚 A</div>
-        </div>
-    </main>
+    </div>
 </div>
+{% comment %} 你必須寫在script裡面，
+因為這樣才能在 JS 裡面使用這兩個變數（GLOBAL_SPEC_OPTIONS 和 GLOBAL_NOTICE_OPTIONS）來生成下拉選單的內容。這樣做的好處是，你只需要在 HTML 模板裡面定義一次選項，然後在 JS 裡面就可以重複使用，避免了重複的 HTML 代碼，也讓你的 JS 更加靈活和易於維護。 {% endcomment %}
+<script>
+const GLOBAL_SPEC_OPTIONS = `
+    <option value="">選擇規格範本...</option>
+    {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+`;
+
+const GLOBAL_NOTICE_OPTIONS = `
+    <option value="">選擇提醒範本...</option>
+    {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
+`;
+
+const ICON_X = `
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+`;
+
+const ICON_UPLOAD = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M12 3v12" /><path d="m17 8-5-5-5 5" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg>
+`;
+
+const ICON_CHECK = `
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check">
+    <path d="M20 6 9 17l-5-5" />
+</svg>`;
+
+const ICON_PLUS = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
+  <path d="M5 12h14" />
+  <path d="M12 5v14" />
+</svg>`;
+</script>

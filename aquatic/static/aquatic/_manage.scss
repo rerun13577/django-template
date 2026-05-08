@@ -230,6 +230,41 @@
     display: flex !important;
   }
 }
+
+.mode-toggle-wrapper {
+  position: relative; /* 🚀 絕對重要：讓 active 背景定位 */
+  display: inline-flex;
+  background: var(--bg-dark);
+  border-radius: var(--radius-m);
+  margin-bottom: 20px;
+}
+
+.mode-tab-active {
+  position: absolute;
+  background: var(--bg-light);
+  border-radius: var(--radius-s);
+  transition: var(--transition); /* 這裡控制滑動的速度感 */
+  z-index: 0;
+  box-shadow: var(--shadow-s);
+  pointer-events: none; /* 🚀 加上這行：防止小框框擋住滑鼠點擊文字 */
+}
+
+.mode-tab {
+  position: relative;
+  z-index: 1; /* 字在背景上方 */
+  padding: 8px 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: all 0.25s ease-out;
+
+  &.active {
+    color: var(--primary); /* 選中後的字色 */
+  }
+}
 // -----------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------
 // rwd-----------------------------------------------------------------------------------------------------------------------

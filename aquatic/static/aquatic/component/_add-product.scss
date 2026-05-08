@@ -1,98 +1,346 @@
-/* manage.css */
-.manage-layout {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-  transition: all 0.4s ease-in-out;
-  gap: 0;
+:root {
+  --bg-dark: oklch(0.1 0 128); /*背景*/
+  --bg: oklch(0.15 0 128); /*卡片*/
+  --bg-light: oklch(0.2 0 128); /*卡片hover顏色  btn背景*/
+  --bg-big-light: oklch(0.252 0 0);
+  --text: oklch(0.96 0 128); /*標題*/
+  --text-muted: oklch(0.76 0 128); /*備註*/
+  --highlight: oklch(0.5 0 128); /*top邊框  */
+  --border: oklch(0.4 0 128); /*邊框     */
+  --border-muted: oklch(0.3 0 128); /*邊框     */
+  --primary: oklch(0.76 0.1 128); /*主色調*/
+  --secondary: oklch(0.76 0.1 308); /*次色調*/
+  --danger: oklch(0.7 0.13 31.38);
+  --warning: oklch(0.7 0.05 100);
+  --success: oklch(0.7 0.05 160);
+  --info: oklch(0.7 0.05 260);
+
+  --green-gradient: linear-gradient(to bottom, oklch(0.8199 0.1381 140.2), oklch(0.76 0.1 308));
+
+  --radius-l: 1.5rem;
+  --radius-m: 1rem;
+  --radius-s: 0.5rem;
+
+  --transition: all 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.3);
+
+  --shadow-s: inset 0 1px 2px #ffffff30, /*上面的高光*/ 0 1px 2px #00000030, /*影子*/ 0 2px 4px #00000015; /*柔影子*/
+  --shadow-m: inset 0 1px 2px #ffffff50, /*上面的高光*/ 0 2px 4px #00000030, /*影子*/ 0 4px 8px #00000015; /*柔影子*/
+  --shadow-l: inset 0 1px 2px #ffffff70, /*上面的高光*/ 0 4px 6px #00000030, /*影子*/ 0 6px 10px #00000015; /*柔影子*/
+
+  --ff-primary: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+  /* 也可以順便把字重定義好，開發更爽 */
+  --fw-bold: 900;
+  --fw-regular: 400;
+  --fw-light: 300;
+
+  --article-margin: 2rem;
+  --article-margin-mobile: 1.2rem;
+  --profile-width: 90%;
+
+  --profile-margin: 55px;
+  --profile-margin-mobile: 25px;
+
+  --card-margin-mobile: 0.5rem;
+  --width: 41.5rem;
 }
-
-/* 預設狀態：批量區寬度為 0 且隱藏 */
-.batch-grid-wrapper {
-  width: 0;
-  opacity: 0;
-  overflow: hidden;
-  background: #1a1a1a;
-  border-right: 1px solid #333;
-  transition: all 0.4s ease-in-out;
-}
-
-.existing-grid-wrapper {
-  flex: 1; /* 佔滿剩餘空間 */
-  padding: 20px;
-  transition: all 0.4s ease-in-out;
-}
-
-/* 🚀 批量模式啟動時的樣式 */
-.manage-layout.is-batch-mode .batch-grid-wrapper {
-  width: 400px; /* 電腦版寬度 */
-  opacity: 1;
-  padding: 20px;
-}
-
-/* 📱 手機版排版 */
-@media (max-width: 768px) {
-  .manage-layout {
-    flex-direction: column; /* 改為上下排 */
-  }
-
-  .manage-layout.is-batch-mode .batch-grid-wrapper {
-    width: 100%;
-    height: 60vh; /* 手機版開啟後佔據上方 60% 高度 */
-    border-right: none;
-    border-bottom: 1px solid #333;
-  }
-
-  /* 讓手機版新增區出現在上面，原本列表在下面滑動 */
-  .batch-grid-wrapper {
-    order: -1;
-  }
-}
-
-/* 格子樣式 */
-.batch-slots {
+/* 批量新增容器 */
+#batchSlotsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 15px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  padding: 1rem;
+  font-family: var(--ff-primary);
+
+  @media (max-width: 764px) {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* 單個生物格子卡片 */
 .slot-item {
-  background: #2a2a2a;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px dashed #555;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1.2rem;
+  background: var(--bg);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s);
+  transition: var(--transition);
+
+  @include hover-device {
+    border-color: var(--border);
+    box-shadow: var(--shadow-m);
+  }
 }
 
-.add-prod {
-  display: inline-flex;
-  align-items: center;
-  gap: 0px;
-  padding: 4px 16px;
-  background: var(--primary);
+/* 標題樣式 */
+.slot-header {
   color: var(--text);
-  border: none;
+  font-weight: var(--fw-bold);
+  font-size: 1.1rem;
+}
+
+/* 輸入框與下拉選單基礎樣式 */
+.slot-field {
+  // 🚀 第一步：設定「所有」輸入框與選單的共同外觀
+  input,
+  select {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--bg-dark);
+    color: var(--text);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-s);
+    font-family: var(--ff-primary);
+    transition: var(--transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px oklch(from var(--primary) l c h / 0.2);
+    }
+  }
+
+  // 🚀 第二步：唯獨針對「數字框」殺掉那個醜箭頭
+  input[type="number"] {
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    appearance: textfield;
+  }
+}
+
+/* 照片上傳方框 */
+.custom-upload-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-dark);
+  border: 2px dashed var(--border-muted);
   border-radius: var(--radius-s);
-  font-weight: 400;
-  font-size: 0.9rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+
+  @include hover-device {
+    border-color: var(--primary);
+    background: var(--bg-light);
+  }
+
+  .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+
+    svg {
+      width: 4rem;
+      height: 4rem;
+      color: var(--border);
+      margin-bottom: 0.5rem;
+      transition: var(--transition);
+    }
+  }
+
+  .preview-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 5;
+  }
+}
+
+/* 帶有按鈕的欄位組合 (價格、範本) */
+.field-with-btn {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  input,
+  select {
+    flex: 1;
+  }
+}
+
+/* 同步/套用按鈕 */
+.apply-all-btn {
+  display: inline-flex; /* 🚀 因：建立彈性盒子。果：內部物件可自由對齊。 */
+  align-items: center; /* 🚀 因：垂直置中。果：解決 SVG 偏上的問題。 */
+  justify-content: center; /* 🚀 因：水平置中。 */
+
+  /* 🚀 關鍵：鎖定寬度 */
+  min-width: 4.5rem; /* 🚀 因：給按鈕一個保底寬度。果：內容變少時按鈕不會縮水。 */
+  height: 2.2rem; /* 🚀 同時建議鎖定高度，避免抖動 */
+
+  padding: 0.5rem 0.8rem;
+  background: var(--bg-light);
+  color: var(--primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  font-size: 0.8rem;
+  white-space: nowrap;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: var(--shadow-s);
+
+  @include hover-device {
+    color: var(--secondary);
+
+    background: var(--bg-big-light);
+  }
+
+  /* 確保按鈕內的 SVG 也要歸位 */
+  svg {
+    display: block; /* 消除 inline 元素的底部間隙 */
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+/* 頂部工具列 (標題與刪除鈕) */
+.split-tool {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
-/* 🚀 懸浮效果：讓老闆知道這可以按 */
-.add-prod:hover {
+/* 移除按鈕 (叉叉) */
+.remove-slot-btn {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  padding: 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+
+  /* 🚀 1. 把 border 拔掉，就不會有框了 */
+  border: none;
+
+  /* 🚀 2. 避免點擊時出現瀏覽器預設的藍色或白色外框 */
+  outline: none;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    stroke-width: 2.5px;
+  }
+
+  @include hover-device {
+    border-color: var(--danger);
+  }
+}
+.add-slot-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  /* 🚀 關鍵：設定最小高度。這個數值要跟你的生物卡片差不多高。 */
+  /* 從你的截圖看，大約在 450px ~ 500px 左右 */
+  min-height: 480px;
+
+  background: transparent !important;
+  border: 2px dashed var(--border-muted) !important;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition);
+
+  .plus-icon svg {
+    width: 3.5rem;
+    height: 3.5rem;
+    color: var(--border);
+  }
+
+  @include hover-device {
+    border-color: var(--primary) !important;
+    background: oklch(from var(--primary) l c h / 0.05) !important;
+    .plus-icon svg {
+      color: var(--primary);
+    }
+    span {
+      color: var(--primary);
+    }
+  }
+}
+
+.setup-banner {
+  font-size: 1rem;
+  margin: 0.5rem 1rem;
+}
+
+.add-title {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.setup-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 數字輸入框 */
+.batch-num-input {
+  width: 80px;
+  padding: 0.6rem;
+  background: var(--bg-dark);
+  color: var(--text);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  text-align: center;
+  font-family: var(--ff-primary);
+
+  /* 隱藏上下箭頭 */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  appearance: textfield;
+
+  &:focus {
+    outline: none;
+    border-color: var(--secondary);
+  }
+}
+
+/* 確定生成按鈕 */
+.confirm-batch-btn {
+  padding: 0.55rem 1rem;
+  background: var(--primary); /* 主色調 */
+  color: var(--text); /* 深色背景上的亮色字 */
+  border: none;
+  border-radius: var(--radius-s);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: var(--transition);
   box-shadow: var(--shadow-m);
 
-  filter: brightness(1.1); /* 果：顏色微微變亮，視覺反饋。 */
-}
+  @include hover-device {
+    background: var(--secondary);
+    box-shadow: var(--shadow-l);
+  }
 
-/* 🚀 點擊效果：物理按壓感 */
-.add-prod:active {
-  transform: translateY(0) scale(0.95); /* 果：點下去會縮小，模擬實體按鈕手感。 */
-}
-
-/* 調整一下它在 split-tool 裡的位置 */
-.split-right .add-prod {
-  margin-right: 1.5rem;
+  &:active {
+    box-shadow: var(--shadow-s);
+  }
 }

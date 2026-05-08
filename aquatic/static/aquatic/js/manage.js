@@ -196,3 +196,73 @@ function getCookie(name) {
 document.addEventListener("htmx:configRequest", (event) => {
   event.detail.headers["X-CSRFToken"] = getCookie("csrftoken");
 });
+// -------------------------------------------------------------------------------------------------------------
+// 🚀 初始化：網頁一開，背景自動對準「關閉」
+// 🚀 1. 核心搬移函數：負責計算位置並讓方塊滑過去
+function moveActiveTab(target) {
+  const activeBg = document.querySelector(".mode-tab-active");
+  if (!target || !activeBg) return;
+
+  const { clientHeight, clientWidth, offsetLeft, offsetTop } = target;
+
+  activeBg.style.left = `${offsetLeft}px`;
+  activeBg.style.top = `${offsetTop}px`;
+  activeBg.style.width = `${clientWidth}px`;
+  activeBg.style.height = `${clientHeight}px`;
+}
+
+// 🚀 2. 初始化與事件監聽
+window.addEventListener("DOMContentLoaded", () => {
+  const wrapper = document.querySelector(".mode-toggle-wrapper");
+  const tabs = document.querySelectorAll(".mode-tab");
+  const defaultTab = document.querySelector(".mode-tab.active");
+
+  // 初始定位：進頁面時，方塊自動對準預設標籤 (例如「關閉」)
+  if (defaultTab) moveActiveTab(defaultTab);
+
+  // 監聽每個標籤的滑鼠移入 (Hover 效果)
+  tabs.forEach((tab) => {
+    tab.addEventListener("mouseenter", (e) => {
+      // 因：滑鼠只是經過。果：方塊跟著滑鼠預覽，但不改變真正的模式。
+      moveActiveTab(e.target);
+    });
+  });
+
+  // 監聽整個容器的滑鼠移出 (歸位效果)
+  wrapper.addEventListener("mouseleave", () => {
+    // 因：滑鼠離開。果：方塊彈回目前真正處於 active 狀態的標籤。
+    const currentActive = document.querySelector(".mode-tab.active");
+    if (currentActive) moveActiveTab(currentActive);
+  });
+});
+
+// 🚀 3. 正式點擊切換功能 (對應你 HTML 裡的 onclick)
+function switchMode(element, mode) {
+  // 1. 切換 active 樣式 (決定了滑鼠離開後會「彈回」哪一格)
+  document.querySelectorAll(".mode-tab").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+  element.classList.add("active");
+
+  // 2. 搬移背景 (點擊的瞬間立刻鎖定位置)
+  moveActiveTab(element);
+
+  // 3. 業務邏輯開關
+  const setupSection = document.getElementById("setupSection");
+  const batchContainer = document.getElementById("batchSlotsContainer");
+
+  if (mode === "off") {
+    // 切換到關閉：全藏
+    if (setupSection) setupSection.style.display = "none";
+    if (batchContainer) batchContainer.style.display = "none";
+  } else if (mode === "single") {
+    // 切換到單獨：藏批量，開單獨表單
+    if (setupSection) setupSection.style.display = "none";
+    if (batchContainer) batchContainer.style.display = "none";
+    if (typeof toggleForm === "function") toggleForm("add-spec-form");
+  } else if (mode === "batch") {
+    // 切換到批量：開設定橫條與預覽格子
+    if (setupSection) setupSection.style.display = "flex";
+    if (batchContainer) batchContainer.style.display = "grid";
+  }
+}
