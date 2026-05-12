@@ -16,6 +16,7 @@
         <script src="{% static 'aquatic/js/add-product-template.js' %}" defer></script>
         <script src="{% static 'aquatic/js/add-product.js' %}" defer></script>
         {% comment %} 生物上傳 {% endcomment %}
+        <script src="{% static 'aquatic/js/htmx.js' %}" defer></script>
     </head>
     <body>
         {% include 'header.html' %}
@@ -65,7 +66,6 @@
                         </div>
                     </div>
                     {% include 'component/add-product.html' %}
-                    <p>一物一拍批次上架功能開發中...</p>
                 </div>
             </div>
         </div>

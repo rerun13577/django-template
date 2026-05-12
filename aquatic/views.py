@@ -329,9 +329,12 @@ class ManageTemplateView(FisshAPIBase):
             return HttpResponse("")  # 刪除成功回傳空，HTMX 會移除該元素
 
         # --- 儲存邏輯 ---
-        title = request.POST.get("title")
-        content = request.POST.get("content")
+        title = request.POST.get("title", "").strip()
+        content = request.POST.get("content", "").strip()
 
+        if not title or not content:
+            # 這裡可以回傳一個錯誤訊息，或是直接回傳 400
+            return HttpResponse("內容不可為空", status=400)
         # 執行更新或新增
         ShopNotice.objects.update_or_create(
             id=temp_id if temp_id else None,
@@ -443,23 +446,8 @@ class ManageDashboardView(FisshPageBase):
 
 
 class AddProductBatchView(FisshPageBase, View):
-    """批量新增生物的類別視圖"""
-
     def post(self, request, *args, **kwargs):
-        # 1. 取得全域設定
-        global_price = request.POST.get("global_price", 0)
-        spec_template_id = request.POST.get("global_spec")
-        notice_id = request.POST.get("global_notice")
-
-        # 2. 取得名單與圖片清單
-        fish_names = request.POST.getlist("fish_name[]")
-        fish_images = request.FILES.getlist("fish_image[]")
-
-        # 3. 準備範本數據
-        spec_template = SpecTemplate.objects.filter(id=spec_template_id).first()
-        notice_instance = ShopNotice.objects.filter(id=notice_id).first()
-
-        # 對齊最新的生物種類代碼
+        # --- 1. 定義對照表 (你截圖裡漏掉這段，所以下面會紅) ---
         category_map = {
             "魚類": "FISH",
             "蝦類": "SHRIMP",
@@ -468,26 +456,39 @@ class AddProductBatchView(FisshPageBase, View):
             "其他": "OTHER",
         }
 
+        # --- 2. 取得全域設定 ---
+        global_price = request.POST.get("global_price")
+        spec_template_id = request.POST.get("global_spec")
+        notice_id = request.POST.get("global_notice")
+
+        fish_names = request.POST.getlist("fish_name[]")
+        fish_images = request.FILES.getlist("fish_image[]")
+
+        # 取得實例
+        spec_template = SpecTemplate.objects.filter(id=spec_template_id).first()
+        notice_instance = ShopNotice.objects.filter(id=notice_id).first()
+
+        # 預先處理範本數據，避免在迴圈內重複檢查
+        data = spec_template.data if spec_template else {}
+
         try:
             with transaction.atomic():
                 for i, name in enumerate(fish_names):
                     if not name.strip():
                         continue
 
-                    # 建立物件並填入基礎資料
+                    # --- 核心維修點：確認 notice_template 是否與 Model 欄位名一致 ---
                     new_fish = AquaticLife(
                         owner=request.user,
                         name=name,
                         price=int(global_price) if global_price else 0,
+                        # ⚠️ 如果你 model 寫 notice = ForeignKey... 這裡就要改成 notice=notice_instance
                         notice_template=notice_instance,
                     )
 
-                    # 🚀 套用規格範本數據
-                    if spec_template:
-                        data = spec_template.data
-
-                        # 核心 5 數據映射 (對齊你最新的配置)
+                    if data:
                         raw_cat = data.get("生物種類", "其他")
+                        # 🚀 現在 category_map 有定義了，這裡就不會亮紅燈
                         new_fish.category = category_map.get(raw_cat, "OTHER")
 
                         new_fish.ph_min = data.get("pH值_min")
@@ -495,9 +496,8 @@ class AddProductBatchView(FisshPageBase, View):
                         new_fish.temp_min = data.get("適宜溫度_min")
                         new_fish.temp_max = data.get("適宜溫度_max")
                         new_fish.adult_length = data.get("體長(cm)")
-                        new_fish.min_tank_size = data.get("建議水量(L)")  # 🚀 建議水量
+                        new_fish.min_tank_size = data.get("建議水量(L)")
 
-                        # 雜項規格塞入 JSON
                         extra_keys = [
                             "GH硬度",
                             "KH硬度",
@@ -511,11 +511,9 @@ class AddProductBatchView(FisshPageBase, View):
                             k: data[k] for k in extra_keys if k in data
                         }
 
-                    # 🚀 處理圖片
                     if i < len(fish_images):
                         new_fish.image = fish_images[i]
 
-                    # 儲存 (觸發 Model 內建的轉檔與搬家邏輯)
                     new_fish.save()
 
             return HttpResponse(
@@ -524,3 +522,17 @@ class AddProductBatchView(FisshPageBase, View):
 
         except Exception as e:
             return HttpResponse(f"儲存失敗：{str(e)}", status=500)
+
+
+class ShowProductView(FisshPageBase):
+
+    # 💡 在類別視圖中，處理 GET 請求的方法必須叫 get
+    def get(self, request, *args, **kwargs):
+
+        # 因：從資料庫撈出屬於該登入者的生物
+        products = AquaticLife.objects.filter(owner=request.user).order_by(
+            "-created_at"
+        )
+
+        # 果：把資料塞進 items 變數並渲染網頁
+        return render(request, "component/add-product.html", {"items": products})

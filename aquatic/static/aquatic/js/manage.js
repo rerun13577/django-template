@@ -212,25 +212,41 @@ function moveActiveTab(target) {
 }
 
 // 🚀 2. 初始化與事件監聽
+// 🚀 2. 初始化：網頁載入完成後的「對齊」與「隱藏」
 window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.querySelector(".mode-toggle-wrapper");
   const tabs = document.querySelectorAll(".mode-tab");
   const defaultTab = document.querySelector(".mode-tab.active");
 
-  // 初始定位：進頁面時，方塊自動對準預設標籤 (例如「關閉」)
+  // 視覺對齊
   if (defaultTab) moveActiveTab(defaultTab);
 
-  // 監聽每個標籤的滑鼠移入 (Hover 效果)
-  tabs.forEach((tab) => {
-    tab.addEventListener("mouseenter", (e) => {
-      // 因：滑鼠只是經過。果：方塊跟著滑鼠預覽，但不改變真正的模式。
-      moveActiveTab(e.target);
-    });
-  });
+  // 抓取所有區塊
+  const setupSection = document.getElementById("setupSection");
+  const batchContainer = document.getElementById("batchSlotsContainer");
+  const singleContainer = document.getElementById("singleUploadContainer"); // 🚀 補上這行
 
-  // 監聽整個容器的滑鼠移出 (歸位效果)
+  if (defaultTab) {
+    const isBatch = defaultTab.innerText.includes("批量");
+    const isSingle = defaultTab.innerText.includes("單獨"); // 🚀 增加單獨的判斷
+
+    // 🚀 因果邏輯：不是批量就藏批量
+    if (!isBatch) {
+      if (setupSection) setupSection.style.display = "none";
+      if (batchContainer) batchContainer.style.display = "none";
+    }
+
+    // 🚀 因果邏輯：不是單獨就藏單獨（解決你的問題）
+    if (!isSingle) {
+      if (singleContainer) singleContainer.style.display = "none";
+    }
+  }
+
+  // 監聽 Hover 與 歸位 (維持不變)
+  tabs.forEach((tab) => {
+    tab.addEventListener("mouseenter", (e) => moveActiveTab(e.target));
+  });
   wrapper.addEventListener("mouseleave", () => {
-    // 因：滑鼠離開。果：方塊彈回目前真正處於 active 狀態的標籤。
     const currentActive = document.querySelector(".mode-tab.active");
     if (currentActive) moveActiveTab(currentActive);
   });
@@ -238,31 +254,31 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // 🚀 3. 正式點擊切換功能 (對應你 HTML 裡的 onclick)
 function switchMode(element, mode) {
-  // 1. 切換 active 樣式 (決定了滑鼠離開後會「彈回」哪一格)
-  document.querySelectorAll(".mode-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
+  // 1. 樣式與框框移動 (維持你原本的)
+  document.querySelectorAll(".mode-tab").forEach((tab) => tab.classList.remove("active"));
   element.classList.add("active");
-
-  // 2. 搬移背景 (點擊的瞬間立刻鎖定位置)
   moveActiveTab(element);
 
-  // 3. 業務邏輯開關
-  const setupSection = document.getElementById("setupSection");
-  const batchContainer = document.getElementById("batchSlotsContainer");
+  // 2. 抓取所有區塊
+  const setupSection = document.getElementById("setupSection"); // 批量設定條
+  const batchContainer = document.getElementById("batchSlotsContainer"); // 批量格子區
+  const singleContainer = document.getElementById("singleUploadContainer"); // 單獨大卡片
 
+  // 🚀 核心因果：根據 mode 決定誰消失、誰出現
   if (mode === "off") {
-    // 切換到關閉：全藏
-    if (setupSection) setupSection.style.display = "none";
-    if (batchContainer) batchContainer.style.display = "none";
+    // 模式：關閉 -> 全部藏起來
+    setupSection.style.display = "none";
+    batchContainer.style.display = "none";
+    singleContainer.style.display = "none";
   } else if (mode === "single") {
-    // 切換到單獨：藏批量，開單獨表單
-    if (setupSection) setupSection.style.display = "none";
-    if (batchContainer) batchContainer.style.display = "none";
-    if (typeof toggleForm === "function") toggleForm("add-spec-form");
+    // 模式：單獨 -> 藏批量，開單獨
+    setupSection.style.display = "none";
+    batchContainer.style.display = "none";
+    singleContainer.style.display = "block"; // 💡 顯示大卡片
   } else if (mode === "batch") {
-    // 切換到批量：開設定橫條與預覽格子
-    if (setupSection) setupSection.style.display = "flex";
-    if (batchContainer) batchContainer.style.display = "grid";
+    // 模式：批量 -> 藏單獨，開批量
+    singleContainer.style.display = "none";
+    setupSection.style.display = "grid"; // 💡 顯示批量設定條
+    batchContainer.style.display = "grid"; // 💡 顯示批量格子
   }
 }

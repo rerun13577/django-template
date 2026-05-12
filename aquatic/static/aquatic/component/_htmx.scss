@@ -1,0 +1,79 @@
+/* 🚀 全域 HTMX 轉場動畫：讓刪除或新增不再「閃現」 */
+.htmx-swapping {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.htmx-added {
+  opacity: 0;
+  animation: fadeIn 400ms forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🚀 提醒範本卡片優化 */
+.notice-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-strong); /* 💡 因：加厚邊框。果：產生科技感與力量感 */
+  border-radius: var(--radius-m);
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0px var(--primary-muted); /* 💡 仿 Casetify 的偏移陰影 */
+  }
+
+  .temp-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 0;
+  }
+
+  .temp-content-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 1rem 0;
+    white-space: pre-wrap; /* 💡 確保換行能顯示 */
+  }
+}
+
+// 提醒的外套
+
+/* 🚀 自定義提示框樣式 */
+.custom-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--danger); /* 警告紅 */
+  color: var(--text); /* 亮色字 */
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-l);
+  z-index: 10000;
+  font-weight: bold;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

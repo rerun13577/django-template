@@ -13,7 +13,8 @@
                    id="new-spec-name"
                    name="name"
                    class="input-title-field"
-                   placeholder="規格範本名稱 (例如：泰國鬥魚)">
+                   placeholder="規格範本名稱 (例如：泰國鬥魚)"
+                   required>
         </div>
         <div class="accordion-body is-visible" style="display: block;">
             <div class="accordion-inner">
@@ -31,20 +32,24 @@
                                                    class="spec-input-field"
                                                    name="{{ item.label }}_min"
                                                    data-label="{{ item.label }}_min"
-                                                   placeholder="最小">
+                                                   placeholder="最小"
+                                                   required>
                                             <span>-</span>
                                             <input type="text"
                                                    class="spec-input-field"
                                                    name="{{ item.label }}_max"
                                                    data-label="{{ item.label }}_max"
-                                                   placeholder="最大">
+                                                   placeholder="最大"
+                                                   required>
                                         </div>
                                     </div>
                                 {% elif item.type == "select" %}
                                     <!-- 🚀 這裡會處理：生物種類 (你現在放在第一項) -->
                                     <div class="spec-item">
                                         <label>{{ item.label }}</label>
-                                        <select name="{{ item.label }}" class="spec-input-field select-field">
+                                        <select name="{{ item.label }}"
+                                                class="spec-input-field select-field"
+                                                required>
                                             <option value="">請選擇</option>
                                             {% for opt in item.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
                                         </select>
@@ -57,7 +62,8 @@
                                                class="spec-input-field"
                                                name="{{ item.label }}"
                                                data-label="{{ item.label }}"
-                                               placeholder="填寫數值">
+                                               placeholder="填寫數值"
+                                               required>
                                     </div>
                                 {% endif %}
                             {% endfor %}
@@ -88,15 +94,6 @@
                             <!-- 2. 改回最簡單的 submit，拿掉那些跑不動的 JS 和觸發器 -->
                             <button type="submit" class="template-btn edit-template">儲存規格</button>
                         </div>
-                        {% comment %} </div>
-                <div class="split-tool">
-                    <div class="split-left">
-                        <button type="button" class="template-btn" onclick="uiReset()">取消</button>
-                    </div>
-                    <div class="split-right">
-                        <button type="button" class="template-btn edit-template" hx-post="{% url 'api_manage_spec' %}" hx-trigger="confirmed" hx-include="#add-spec-form input" hx-vals='{"action": "save"}' hx-target="#spec-list-container" hx-swap="innerHTML settle:200ms" hx-select="#spec-list-container > *" hx-on:htmx:after-request="if(event.detail.successful) uiReset();" onclick="saveSpecTemplate(this)">儲存印章</button>
-                    </div>
-                        </div> {% endcomment %}
                     </div>
                 </div>
             </div>

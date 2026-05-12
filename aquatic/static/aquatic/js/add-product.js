@@ -43,7 +43,8 @@ function generateBatchSlots(count) {
                            name="fish_image[]"
                            accept="image/*"
                            onchange="handlePreview(this)"
-                           style="display: none">
+                           style="display: none"
+                           requested>
                     <div class="upload-placeholder">
                         ${ICON_UPLOAD}
                     </div>
@@ -194,6 +195,7 @@ function getSingleSlotHTML(index) {
         </div>
     </div>`;
 }
+
 function addSingleSlot() {
   const container = document.getElementById("batchSlotsContainer");
   const addBtn = document.getElementById("addSlotBtn");
@@ -242,3 +244,76 @@ function generateBatchSlots(count) {
     `;
   container.innerHTML = html;
 }
+
+// 🚀 處理單獨上架的「引用開關」
+// 🚀 1. 搬移與狀態切換函數
+function toggleTemplate(btn, state, fieldName) {
+  const parent = btn.closest(".template-group");
+  const selectField = parent.querySelector("select");
+  const manualArea = parent.querySelector(".accordion-body");
+  const wrapper = btn.closest(".mini-toggle-wrapper");
+  const activeBg = wrapper.querySelector(".mini-tab-active");
+
+  if (!activeBg || !selectField) return;
+
+  // 1. 移動藥丸背景 (你的原設計)
+  activeBg.style.left = `${btn.offsetLeft}px`;
+  activeBg.style.width = `${btn.clientWidth}px`;
+  activeBg.style.height = `${btn.clientHeight}px`;
+
+  wrapper.querySelectorAll(".mini-tab").forEach((t) => t.classList.remove("active"));
+  btn.classList.add("active");
+
+  // 2. 🚀 空間切換與驗證邏輯 (因果修正)
+  if (state === "off") {
+    // 【手動輸入模式】
+    selectField.style.display = "none"; // 隱藏選單
+    selectField.required = false; // 💡 因：欄位不見了。果：取消必填，否則送不出表單。
+
+    if (manualArea) {
+      manualArea.style.display = "block"; // 顯示手動格子
+
+      // 🚀 將手動區裡原本就該必填的 input 設為 required
+      // 註：這裡建議只針對 class 包含 spec-input-field 的，避免誤殺
+      manualArea.querySelectorAll(".spec-input-field").forEach((input) => {
+        // 只針對原本在 HTML 裡有寫 placeholder="最小/最大/填寫數值" 的設定必填
+        // 排除掉那些「選填」的次要數據
+        if (input.placeholder !== "選填") {
+          input.required = true;
+        }
+      });
+    }
+  } else {
+    // 【引用範本模式】
+    selectField.style.display = "block"; // 顯示選單
+    selectField.required = true; // 💡 因：回到引用模式。果：選單變回必填。
+
+    if (manualArea) {
+      manualArea.style.display = "none"; // 隱藏手動格子
+
+      // 🚀 因：手動區藏起來了。果：裡面的 input 全部取消必填，防止後台攔截。
+      manualArea.querySelectorAll("input, select").forEach((el) => (el.required = false));
+    }
+  }
+}
+
+// 🚀 2. 初始化與視窗縮放處理 這是處理他要不要自定義
+const initAllMiniToggles = () => {
+  document.querySelectorAll(".mini-tab.active").forEach((tab) => {
+    // 取得當前狀態 (是 'on' 還是 'off')
+    // 這裡建議在 HTML 加上 onclick 的時候傳參數，或者從文字判斷
+    const isOff = tab.innerText.includes("關閉");
+    toggleTemplate(tab, isOff ? "off" : "on");
+  });
+};
+
+// 網頁載入時執行
+window.addEventListener("load", initAllMiniToggles);
+
+// 🚀 補上這個：防止視窗縮放時，因為絕對定位導致藥丸跟丟按鈕
+window.addEventListener("resize", initAllMiniToggles);
+
+// 🚀 讓 HTMX 每次發請求都自動帶上 CSRF Token
+document.body.addEventListener("htmx:configRequest", (event) => {
+  event.detail.headers["X-CSRFToken"] = "{{ csrf_token }}";
+});

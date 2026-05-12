@@ -77,15 +77,30 @@
 
 /* 標題樣式 */
 .slot-header {
-  color: var(--text);
+  margin: 0rem 0 0.5rem 0;
+
+  color: var(--text-muted);
   font-weight: var(--fw-bold);
   font-size: 1.1rem;
 }
 
-/* 輸入框與下拉選單基礎樣式 */
 .slot-field {
   // 🚀 第一步：設定「所有」輸入框與選單的共同外觀
-  input,
+  input {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--bg-dark);
+    color: var(--text);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-s);
+    font-family: var(--ff-primary);
+    transition: var(--transition);
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px oklch(from var(--primary) l c h / 0.2);
+    }
+  }
   select {
     width: 100%;
     padding: 0.6rem;
@@ -95,6 +110,23 @@
     border-radius: var(--radius-s);
     font-family: var(--ff-primary);
     transition: var(--transition);
+
+    /* 🚀 1. 殺掉原生箭頭 */
+    appearance: none;
+    -webkit-appearance: none;
+
+    /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
+    /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+
+    /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
+    background-position: right 0.5rem center;
+    background-size: 1.1rem;
+
+    /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
+    padding-right: 1rem !important;
 
     &:focus {
       outline: none;
@@ -122,7 +154,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 272/200;
   background: var(--bg-dark);
   border: 2px dashed var(--border-muted);
   border-radius: var(--radius-s);
@@ -208,19 +240,11 @@
     height: 1.2rem;
   }
 }
-/* 頂部工具列 (標題與刪除鈕) */
-.split-tool {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
 
 /* 移除按鈕 (叉叉) */
 .remove-slot-btn {
   background: transparent;
   color: var(--danger);
-  border: 1px solid transparent;
   border-radius: var(--radius-s);
   padding: 0.4rem;
   cursor: pointer;
@@ -282,8 +306,13 @@
 }
 
 .setup-banner {
-  font-size: 1rem;
-  margin: 0.5rem 1rem;
+  gap: 1.2rem; /* 🚀 設定兩行之間的垂直間距 */
+
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-muted);
+  box-sizing: border-box; /* 🚀 必加，防止 padding 撐破容器 */
 }
 
 .add-title {
@@ -325,7 +354,7 @@
 
 /* 確定生成按鈕 */
 .confirm-batch-btn {
-  padding: 0.55rem 1rem;
+  padding: 0.4rem 1rem;
   background: var(--primary); /* 主色調 */
   color: var(--text); /* 深色背景上的亮色字 */
   border: none;
@@ -342,5 +371,203 @@
 
   &:active {
     box-shadow: var(--shadow-s);
+  }
+}
+
+#setupSection {
+  display: none; /* 🚀 預設不顯示，等點擊「批量」後再由 JS 改為 flex */
+}
+
+// 單獨的css
+/* 🚀 單獨上架容器 (大球球卡片) */
+/* 🚀 讓單獨卡片大一點，但樣式跟批量一致 */
+
+.single-card-sizing {
+  display: flex;
+  width: 37.5rem;
+  max-width: 95vw;
+  margin: 0 auto;
+  flex-direction: column;
+  padding: 1.2rem;
+  gap: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s);
+  transition: var(--transition);
+
+  @include hover-device {
+    border-color: var(--border);
+    box-shadow: var(--shadow-m);
+  }
+}
+
+/* 🚀 鎖定 272:325 比例，寬度對齊外框 */
+.single-photo-ratio {
+  width: 100% !important;
+  aspect-ratio: 272 / 200;
+  background: var(--bg-dark) !important;
+
+  img.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 確保照片填滿比例 */
+  }
+}
+
+/* 🚀 迷你開關 (你的藥丸原型) */
+.mini-toggle-wrapper {
+  margin: 0rem 0 0.5rem 0; /* 與標題之間的距離 */
+  position: relative;
+  display: inline-flex;
+  background: var(--bg-dark);
+  padding: 2px;
+  border-radius: var(--radius-s); /* 統一用原本的圓角 */
+  border: 1px solid var(--border-muted);
+}
+.mini-tab-active {
+  position: absolute;
+  background: var(--bg-light);
+  border-radius: var(--radius-s);
+  transition: var(--transition);
+  z-index: 0;
+}
+.mini-tab {
+  position: relative;
+  z-index: 1;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  &.active {
+    color: var(--primary);
+  }
+}
+
+.slot-field1 {
+  // 🚀 第一步：設定「所有」輸入框與選單的共同外觀
+  input {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--bg-dark);
+    color: var(--text);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-s);
+    font-family: var(--ff-primary);
+    transition: var(--transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px oklch(from var(--primary) l c h / 0.2);
+    }
+  }
+  select {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--bg-dark);
+    color: var(--text);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-s);
+    font-family: var(--ff-primary);
+    transition: var(--transition);
+
+    /* 🚀 1. 殺掉原生箭頭 */
+    appearance: none;
+    -webkit-appearance: none;
+
+    /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
+    /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+
+    /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
+    background-position: right 0.5rem center;
+    background-size: 1.1rem;
+
+    /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
+    padding-right: 1rem !important;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px oklch(from var(--primary) l c h / 0.2);
+    }
+  }
+
+  // 🚀 第二步：唯獨針對「數字框」殺掉那個醜箭頭
+  input[type="number"] {
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    appearance: textfield;
+  }
+}
+
+.expand-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // 🚀 因：要求並排。果：左右對稱。
+  gap: 1.5rem; // 🚀 兩區塊間的距離
+  width: 100%;
+
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr; // 🚀 手機版：寬度不夠時自動變回上下排
+  }
+}
+
+// 我要定義我的規格只能在一格裡面顯示，這樣就不會亂掉了
+
+.spec-grid1 {
+  display: grid;
+  grid-template-columns: 1fr; /* 🚀 核心：強行定義為一欄 */
+  gap: 1rem; /* 上下輸入框的間距 */
+  width: 100%;
+
+  color: var(--text-muted);
+}
+
+.spec-inner {
+  width: 100%;
+  height: auto;
+  padding: 1rem 0.75rem 0rem 0.75rem; /* 🚀 在這裡定義展開後的內部間距 */
+}
+.e-spec-input-field {
+  // 🚀 基礎樣式：對齊你的設計系統
+  width: 100%;
+  background: var(--bg-dark);
+  color: var(--text);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  padding: 0.2rem 0.5rem;
+  font-size: 1rem;
+  outline: none;
+
+  // 🚀 過度動畫：直接套用你的 0.5s 彈跳曲線
+  transition: var(--transition);
+
+  // 💻 使用你的自定義 Mixin 處理電腦端 Hover
+  @include hover-device {
+    background-color: var(--bg-light);
+    border-color: var(--border-muted);
+    cursor: pointer;
+  }
+
+  // 🚀 點擊/聚焦 (Focus) 的過度動畫
+  &:focus {
+    /* 🚀 關鍵修正：只動顏色，不要動到 background 的其他屬性 */
+    background-color: var(--bg-light);
+    border-color: var(--border); // 變成主色調
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
   }
 }

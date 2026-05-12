@@ -1,6 +1,6 @@
 /* 規格內部的 Grid 佈局 */
 .spec-grid-container {
-  padding: 0rem 0rem 1rem 0rem; /* 上右下左 */
+  padding: 0rem 0rem 0.5rem 0rem; /* 上右下左 */
 }
 
 .spec-group {
@@ -53,14 +53,15 @@
 
   // 💻 使用你的自定義 Mixin 處理電腦端 Hover
   @include hover-device {
-    background: var(--bg-light);
+    background-color: var(--bg-light);
     border-color: var(--border-muted);
     cursor: pointer;
   }
 
   // 🚀 點擊/聚焦 (Focus) 的過度動畫
   &:focus {
-    background: var(--bg-light);
+    /* 🚀 關鍵修正：只動顏色，不要動到 background 的其他屬性 */
+    background-color: var(--bg-light);
     border-color: var(--border); // 變成主色調
   }
 
@@ -68,6 +69,25 @@
     color: var(--text-muted);
     opacity: 0.5;
   }
+}
+
+.select-field {
+  /* 🚀 1. 殺掉原生箭頭 */
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
+  /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+
+  /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
+  background-position: right 0.5rem center;
+  background-size: 1.1rem;
+
+  /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
+  padding-right: 0.875rem !important;
 }
 
 .range-inputs {

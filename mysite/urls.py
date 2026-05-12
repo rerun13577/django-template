@@ -86,6 +86,7 @@ urlpatterns = [
     path("api/manage-spec/", views.ManageSpecAPIView.as_view(), name="api_manage_spec"),
     # 🚀 這一行就是你在 Template 裡 {% url 'manage-template' %} 找的東西
     path("api/add-product/", views.AddProductBatchView.as_view(), name="add-product"),
+    path("products/", views.ShowProductView.as_view(), name="product-list"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar
