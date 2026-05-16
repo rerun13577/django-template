@@ -1,156 +1,171 @@
 <div class="manage-layout" id="manageLayout">
-    <div id= "singleUploadContainer">
-        <div class="single-card-sizing">
-            <div class="slot-field1">
-                <label class="custom-upload-box single-photo-ratio">
-                    <input type="file"
-                           name="fish_image"
-                           accept="image/*"
-                           onchange="handlePreview(this)"
-                           style="display: none">
-                    <div class="upload-placeholder">{% include 'icons/upload.html' %}</div>
-                    <img class="preview-img" src="" style="display: none;">
-                </label>
-            </div>
-            <div class="slot-field1">
-                <input type="text" name="fish_name[]" placeholder="品種名稱 (如：極火蝦)">
-            </div>
-            <div class="slot-field1">
-                <input type="number" name="global_price" placeholder="單價">
-            </div>
-            <!-- 🚀 建立並排容器 -->
-            <div class="expand-grid-layout">
-                <div class="slot-field1 template-group">
-                    <div class="split-tool">
-                        <div class="split-left">
-                            <span class="slot-header" style="font-size: 0.9rem;">規格範本</span>
-                        </div>
-                        <div class="split-right">
-                            <div class="mini-toggle-wrapper">
-                                <div class="mini-tab-active"></div>
-                                <button type="button"
-                                        class="mini-tab"
-                                        onclick="toggleTemplate(this, 'off', 'fish_spec')">關閉</button>
-                                <button type="button"
-                                        class="mini-tab active"
-                                        onclick="toggleTemplate(this, 'on', 'fish_spec')">引用</button>
+    <form hx-post="{% url 'add-product' %}"
+          hx-target="#response-area"
+          id="singleUploadForm"
+          enctype="multipart/form-data"
+          style="display: block">
+        {% csrf_token %}
+        <div id="singleUploadContainer">
+            <div class="single-card-sizing">
+                <div class="slot-field1">
+                    <label class="custom-upload-box single-photo-ratio">
+                        <input type="file"
+                               name="fish_image[]"
+                               accept="image/*"
+                               onchange="handlePreview(this)"
+                               style="display: none"
+                               data-label="生物照片"
+                               required>
+                        <div class="upload-placeholder">{% include 'icons/upload.html' %}</div>
+                        <img class="preview-img" src="" style="display: none;">
+                    </label>
+                </div>
+                <div class="slot-field1">
+                    <input type="text"
+                           name="fish_name[]"
+                           placeholder="品種名稱 (如：極火蝦)"
+                           data-label="品種名稱"
+                           required>
+                </div>
+                <div class="slot-field1">
+                    <input type="number"
+                           name="fish_price[]"
+                           placeholder="單價"
+                           data-label="單價"
+                           required>
+                </div>
+                <div class="expand-grid-layout">
+                    <div class="slot-field1 template-group">
+                        <div class="split-tool">
+                            <div class="split-left">
+                                <span class="slot-header" style="font-size: 0.9rem;">規格範本</span>
+                            </div>
+                            <div class="split-right">
+                                <div class="mini-toggle-wrapper">
+                                    <div class="mini-tab-active"></div>
+                                    <button type="button"
+                                            class="mini-tab"
+                                            onclick="toggleTemplate(this, 'off', 'fish_spec')">關閉</button>
+                                    <button type="button"
+                                            class="mini-tab active"
+                                            onclick="toggleTemplate(this, 'on', 'fish_spec')">引用</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <select name="global_spec">
-                        <option value="">選擇規格範本...</option>
-                        {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
-                    </select>
-                    <div class="accordion-body is-visible" style="display: block;">
-                        <div class="spec-inner">
-                            <div class="spec-grid-container">
-                                <div class="spec-group">
-                                    <div class="group-header">核心規格數據</div>
-                                    <div class="spec-grid1">
-                                        {% for item in core_config %}
-                                            {% if item.type == "range" %}
-                                                <!-- 🚀 這裡會處理：適宜溫度、pH值 -->
-                                                <div class="spec-item range-group">
-                                                    <label>{{ item.label }} (範圍)</label>
-                                                    <div class="range-inputs">
+                        <select name="fish_spec[]" data-label="規格範本">
+                            <option value="">選擇規格範本...</option>
+                            {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                        </select>
+                        <div class="accordion-body is-visible" style="display: block;">
+                            <div class="spec-inner">
+                                <div class="spec-grid-container">
+                                    <div class="spec-group">
+                                        <div class="group-header">核心規格數據</div>
+                                        <div class="spec-grid1">
+                                            {% for item in core_config %}
+                                                {% if item.type == "range" %}
+                                                    <div class="spec-item range-group">
+                                                        <label>{{ item.label }} (範圍)</label>
+                                                        <div class="range-inputs">
+                                                            <input type="text"
+                                                                   class="e-spec-input-field"
+                                                                   name="{{ item.label }}_min"
+                                                                   placeholder="最小"
+                                                                   required>
+                                                            <span>-</span>
+                                                            <input type="text"
+                                                                   class="e-spec-input-field"
+                                                                   name="{{ item.label }}_max"
+                                                                   placeholder="最大"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                {% elif item.type == "select" %}
+                                                    <div class="spec-item">
+                                                        <label>{{ item.label }}</label>
+                                                        <select name="{{ item.label }}"
+                                                                class="e-spec-input-field select-field"
+                                                                required>
+                                                            <option value="">請選擇</option>
+                                                            {% for opt in item.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                                                        </select>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="spec-item">
+                                                        <label>{{ item.label }}</label>
                                                         <input type="text"
                                                                class="e-spec-input-field"
-                                                               name="{{ item.label }}_min"
-                                                               data-label="{{ item.label }}_min"
-                                                               placeholder="最小"
-                                                               required>
-                                                        <span>-</span>
-                                                        <input type="text"
-                                                               class="e-spec-input-field"
-                                                               name="{{ item.label }}_max"
-                                                               data-label="{{ item.label }}_max"
-                                                               placeholder="最大"
+                                                               name="{{ item.label }}"
+                                                               placeholder="填寫數值"
                                                                required>
                                                     </div>
-                                                </div>
-                                            {% elif item.type == "select" %}
-                                                <!-- 🚀 這裡會處理：生物種類 (你現在放在第一項) -->
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="spec-group">
+                                        <div class="group-header">次要規格數據</div>
+                                        <div class="spec-grid1">
+                                            {% for label in extra_labels %}
                                                 <div class="spec-item">
-                                                    <label>{{ item.label }}</label>
-                                                    <select name="{{ item.label }}"
-                                                            class="e-spec-input-field select-field"
-                                                            required>
-                                                        <option value="">請選擇</option>
-                                                        {% for opt in item.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
-                                                    </select>
-                                                </div>
-                                            {% else %}
-                                                <!-- 🚀 這裡會處理：成魚體長、建議缸徑 -->
-                                                <div class="spec-item">
-                                                    <label>{{ item.label }}</label>
+                                                    <label>{{ label }}</label>
                                                     <input type="text"
                                                            class="e-spec-input-field"
-                                                           name="{{ item.label }}"
-                                                           data-label="{{ item.label }}"
-                                                           placeholder="填寫數值"
-                                                           required>
+                                                           name="{{ label }}"
+                                                           placeholder="選填">
                                                 </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="spec-group">
-                                    <div class="group-header">次要規格數據</div>
-                                    <div class="spec-grid1">
-                                        {% for label in extra_labels %}
-                                            <div class="spec-item">
-                                                <label>{{ label }}</label>
-                                                <input type="text"
-                                                       class="e-spec-input-field"
-                                                       name="{{ label }}"
-                                                       data-label="{{ label }}"
-                                                       placeholder="選填">
-                                            </div>
-                                        {% endfor %}
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="slot-field1 template-group">
+                        <div class="split-tool">
+                            <div class="split-left">
+                                <span class="slot-header" style="font-size: 0.9rem;">提醒範本</span>
+                            </div>
+                            <div class="split-right">
+                                <div class="mini-toggle-wrapper">
+                                    <div class="mini-tab-active"></div>
+                                    <button type="button"
+                                            class="mini-tab"
+                                            onclick="toggleTemplate(this, 'off', 'fish_notice')">關閉</button>
+                                    <button type="button"
+                                            class="mini-tab active"
+                                            onclick="toggleTemplate(this, 'on', 'fish_notice')">引用</button>
+                                </div>
+                            </div>
+                        </div>
+                        <select name="global_notice" data-label="提醒範本">
+                            <option value="">選擇提醒範本...</option>
+                            {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
+                        </select>
+                        <div class="accordion-body is-visible" style="display: block;">
+                            <div class="spec-inner">
+                                <textarea name="content"
+                                          id="newNoticeContent"
+                                          class="input-content-area"
+                                          placeholder="輸入內容..."
+                                          required></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="slot-field1 template-group">
+                <div class="batch-actions">
                     <div class="split-tool">
-                        <div class="split-left">
-                            <span class="slot-header" style="font-size: 0.9rem;">提醒範本</span>
-                        </div>
+                        <div class="split-left"></div>
                         <div class="split-right">
-                            <div class="mini-toggle-wrapper">
-                                <div class="mini-tab-active"></div>
-                                <button type="button"
-                                        class="mini-tab"
-                                        onclick="toggleTemplate(this, 'off', 'fish_notice')">關閉</button>
-                                <button type="button"
-                                        class="mini-tab active"
-                                        onclick="toggleTemplate(this, 'on', 'fish_notice')">引用</button>
-                            </div>
-                        </div>
-                    </div>
-                    <select name="global_notice">
-                        <option value="">選擇提醒範本...</option>
-                        {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
-                    </select>
-                    <div class="accordion-body is-visible" style="display: block;">
-                        <div class="spec-inner">
-                            <textarea name="content"
-                                      id="newNoticeContent"
-                                      class="input-content-area"
-                                      placeholder="輸入內容..."
-                                      required></textarea>
+                            <button type="submit" class="template-btn">上架</button>
                         </div>
                     </div>
                 </div>
-                <!-- 🚀 建立並排容器 -->
             </div>
         </div>
-    </div>
-    {% comment %} 下面是批量的區域 {% endcomment %}
-    <div id="setupSection">
-        <div class=" setup-banner split-tool">
+    </form>
+    <div id="setupSection" style="display: none;">
+        <div class="setup-banner split-tool">
             <div class="split-left">
                 <h1 class="add-title">輸入格數</h1>
             </div>
@@ -169,26 +184,30 @@
             </div>
         </div>
     </div>
-    {% comment %} 這個輸入完我會讓他消失 下面是生成格子的div{% endcomment %}
     <form hx-post="{% url 'add-product' %}"
           hx-target="#response-area"
           id="batchUploadForm"
-          enctype="multipart/form-data">
+          enctype="multipart/form-data"
+          style="display: none">
         {% csrf_token %}
-        <div class="show-pre-add" id="batchSlotsContainer">
-            <input type="file" name="fish_image[]" accept="image/*">
-        </div>
-        <div class="batch-actions">
-            <button type="submit" class="template-btn">全部儲存並上架</button>
+        <div class="show-pre-add" id="batchSlotsContainer"></div>
+        <div class="batch-actions" id="actionArea" style="display: none;">
+            <div class="split-tool">
+                <div class="split-left"></div>
+                <div class="split-right">
+                    <button type="submit" class="template-btn">全部上架</button>
+                </div>
+            </div>
         </div>
     </form>
     <div id="response-area" style="display: none;"></div>
-    {% comment %} 下面是你的產品畫面 {% endcomment %}
-    {% for item in items %}
-        {% include "component/creature-card.html" with item=item %}
-    {% empty %}
-        <p class="empty-hint">目前還沒有上架產品喔！</p>
-    {% endfor %}
+    <div class="grid">
+        {% for item in items %}
+            {% include "component/creature-card.html" with item=item %}
+        {% empty %}
+            <p class="empty-hint">目前還沒有上架產品喔！</p>
+        {% endfor %}
+    </div>
 </div>
 {% comment %}
  你必須寫在script裡面，

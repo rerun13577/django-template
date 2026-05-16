@@ -3397,13 +3397,27 @@ a {
 
 .template-btn {
   font-size: 1rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.3rem 1rem;
   border: var(--border-muted);
   border-radius: 0.5rem;
   transition: var(--transition);
 }
 @media (hover: hover) {
   .template-btn:hover {
+    border: var(--border);
+  }
+}
+
+.batch-actions .template-btn {
+  margin: 0.5rem 1.25rem 1.25rem 0rem;
+  font-size: 1rem;
+  padding: 0.3rem 1rem;
+  border: var(--border-muted);
+  border-radius: 0.5rem;
+  transition: var(--transition);
+}
+@media (hover: hover) {
+  .batch-actions .template-btn:hover {
     border: var(--border);
   }
 }
@@ -3764,7 +3778,7 @@ a {
 
 /* 規格內部的 Grid 佈局 */
 .spec-grid-container {
-  padding: 0rem 0rem 1rem 0rem; /* 上右下左 */
+  padding: 0rem 0rem 0.5rem 0rem; /* 上右下左 */
 }
 
 .spec-group {
@@ -4221,6 +4235,7 @@ a {
 
 .setup-banner {
   gap: 1.2rem; /* 🚀 設定兩行之間的垂直間距 */
+  margin: 0.5rem auto 1.5rem auto;
   padding: 1rem;
   background: var(--bg);
   border-radius: var(--radius-m);
@@ -4298,7 +4313,7 @@ a {
   display: flex;
   width: 37.5rem;
   max-width: 95vw;
-  margin: 0 auto;
+  margin: 0.5rem auto 1rem auto;
   flex-direction: column;
   padding: 1.2rem;
   gap: 1rem;
@@ -4420,7 +4435,7 @@ a {
 
 .expand-grid-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem;
   width: 100%;
 }

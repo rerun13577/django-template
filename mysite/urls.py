@@ -86,7 +86,6 @@ urlpatterns = [
     path("api/manage-spec/", views.ManageSpecAPIView.as_view(), name="api_manage_spec"),
     # 🚀 這一行就是你在 Template 裡 {% url 'manage-template' %} 找的東西
     path("api/add-product/", views.AddProductBatchView.as_view(), name="add-product"),
-    path("products/", views.ShowProductView.as_view(), name="product-list"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar
@@ -104,3 +103,4 @@ if settings.DEBUG:
 # 這不是網頁 url是一個後端處理的接口 只要有人
 # comment/like/<int:comment_id> 這段可以讓你按讚只有這個會做動 不會其他的讚一起亮
 # 後端會抓下來comment_id 然後去他的資料庫加一
+# url 一個view對應到一個前端的頁面 這個view裡面會有一個函式叫做as_view() 這個函式會把類別轉換成函式

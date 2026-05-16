@@ -204,3 +204,6 @@ class AquaticImage(models.Model):
     def save(self, *args, **kwargs):
         handle_model_image_upload(self, "image")
         super().save(*args, **kwargs)
+
+
+# 你的儲存路徑aquatic/{使用者ID}/{生物分類}/{年/月/日}/{隨機字串}/{主圖或副圖}/main.webp

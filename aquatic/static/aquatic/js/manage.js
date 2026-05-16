@@ -218,67 +218,57 @@ window.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".mode-tab");
   const defaultTab = document.querySelector(".mode-tab.active");
 
-  // 視覺對齊
+  // 1. 視覺對齊藥丸背景
   if (defaultTab) moveActiveTab(defaultTab);
 
-  // 抓取所有區塊
-  const setupSection = document.getElementById("setupSection");
-  const batchContainer = document.getElementById("batchSlotsContainer");
-  const singleContainer = document.getElementById("singleUploadContainer"); // 🚀 補上這行
-
+  // 2. 初始化所有區塊的顯示狀態與 Input 活性
   if (defaultTab) {
-    const isBatch = defaultTab.innerText.includes("批量");
-    const isSingle = defaultTab.innerText.includes("單獨"); // 🚀 增加單獨的判斷
+    const currentMode = defaultTab.innerText.includes("批量") ? "batch" : defaultTab.innerText.includes("單獨") ? "single" : "off";
 
-    // 🚀 因果邏輯：不是批量就藏批量
-    if (!isBatch) {
-      if (setupSection) setupSection.style.display = "none";
-      if (batchContainer) batchContainer.style.display = "none";
-    }
-
-    // 🚀 因果邏輯：不是單獨就藏單獨（解決你的問題）
-    if (!isSingle) {
-      if (singleContainer) singleContainer.style.display = "none";
-    }
+    // 🚀 直接呼叫你寫好的 switchMode，讓它去處理所有的顯示/隱藏與 disabled
+    switchMode(defaultTab, currentMode);
   }
 
-  // 監聽 Hover 與 歸位 (維持不變)
+  // 3. 監聽 Hover (維持原樣)
   tabs.forEach((tab) => {
     tab.addEventListener("mouseenter", (e) => moveActiveTab(e.target));
   });
-  wrapper.addEventListener("mouseleave", () => {
-    const currentActive = document.querySelector(".mode-tab.active");
-    if (currentActive) moveActiveTab(currentActive);
-  });
+  if (wrapper) {
+    wrapper.addEventListener("mouseleave", () => {
+      const currentActive = document.querySelector(".mode-tab.active");
+      if (currentActive) moveActiveTab(currentActive);
+    });
+  }
 });
-
 // 🚀 3. 正式點擊切換功能 (對應你 HTML 裡的 onclick)
+// manage.js 中的 switchMode 整合版
+
 function switchMode(element, mode) {
-  // 1. 樣式與框框移動 (維持你原本的)
+  // A. 樣式與藥丸框框移動 (保留你原本的)
   document.querySelectorAll(".mode-tab").forEach((tab) => tab.classList.remove("active"));
   element.classList.add("active");
   moveActiveTab(element);
 
-  // 2. 抓取所有區塊
-  const setupSection = document.getElementById("setupSection"); // 批量設定條
-  const batchContainer = document.getElementById("batchSlotsContainer"); // 批量格子區
-  const singleContainer = document.getElementById("singleUploadContainer"); // 單獨大卡片
+  // B. 抓取新的核心三大區塊 (對應你的新 HTML id)
+  const singleForm = document.getElementById("singleUploadForm");
+  const setupSection = document.getElementById("setupSection");
+  const batchForm = document.getElementById("batchUploadForm");
 
-  // 🚀 核心因果：根據 mode 決定誰消失、誰出現
+  // C. 核心因果：純粹切換顯示，不再需要 disabled 欄位
   if (mode === "off") {
-    // 模式：關閉 -> 全部藏起來
-    setupSection.style.display = "none";
-    batchContainer.style.display = "none";
-    singleContainer.style.display = "none";
+    if (singleForm) singleForm.style.display = "none";
+    if (setupSection) setupSection.style.display = "none";
+    if (batchForm) batchForm.style.display = "none";
   } else if (mode === "single") {
-    // 模式：單獨 -> 藏批量，開單獨
-    setupSection.style.display = "none";
-    batchContainer.style.display = "none";
-    singleContainer.style.display = "block"; // 💡 顯示大卡片
+    // 模式：單獨 -> 只開單獨表單，關閉所有批量區塊
+    if (singleForm) singleForm.style.display = "block";
+    if (setupSection) setupSection.style.display = "none";
+    if (batchForm) batchForm.style.display = "none";
   } else if (mode === "batch") {
-    // 模式：批量 -> 藏單獨，開批量
-    singleContainer.style.display = "none";
-    setupSection.style.display = "grid"; // 💡 顯示批量設定條
-    batchContainer.style.display = "grid"; // 💡 顯示批量格子
+    // 模式：批量 -> 關閉單獨，開啟輸入格數 Banner。
+    // 💡 關鍵：此時整個 batchForm 先隱藏，等點擊「生成」後再打開。
+    if (singleForm) singleForm.style.display = "none";
+    if (setupSection) setupSection.style.display = "grid";
+    if (batchForm) batchForm.style.display = "none";
   }
 }

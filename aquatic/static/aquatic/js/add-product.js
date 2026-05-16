@@ -1,18 +1,22 @@
 function handleBatchConfirm() {
   const countInput = document.getElementById("batchCountInput");
   const count = parseInt(countInput.value);
-
   if (isNaN(count) || count <= 0) return;
 
-  // 1. 執行生成
+  // 1. 執行生成格子 (維持你原本的)
   generateBatchSlots(count);
 
-  // 2. 🚀 隱藏初始化區域
-  const setupSection = document.getElementById("setupSection");
-  setupSection.style.display = "none";
+  // 2. 抓取批量表單與按鈕
+  const batchForm = document.getElementById("batchUploadForm");
+  const actionArea = document.getElementById("actionArea");
 
-  // 3. (選配) 顯示一個「重設」小按鈕在角落
-  // document.getElementById("resetBtn").style.display = "block";
+  // 🚀 因：格子已在表單內生成完畢。果：直接把整個批量表單跟上架按鈕秀出來。
+  if (batchForm) batchForm.style.display = "block";
+  if (actionArea) actionArea.style.display = "block";
+
+  // 3. 隱藏輸入格數的 Banner
+  const setupSection = document.getElementById("setupSection");
+  if (setupSection) setupSection.style.display = "none";
 }
 
 // 把html這個變數裡面的東西都送進一個叫 batchSlotsContainer 的元素裡面
@@ -44,7 +48,8 @@ function generateBatchSlots(count) {
                            accept="image/*"
                            onchange="handlePreview(this)"
                            style="display: none"
-                           requested>
+                           data-label="生物照片"
+                           required>
                     <div class="upload-placeholder">
                         ${ICON_UPLOAD}
                     </div>
@@ -53,11 +58,19 @@ function generateBatchSlots(count) {
             </div>
 
             <div class="slot-field">
-                <input type="text" name="fish_name[]" placeholder="輸入名稱 (如：極火蝦)">
+                          <input type="text"
+                           name="fish_name[]"
+                           placeholder="品種名稱 (如：極火蝦)"
+                           data-label="品種名稱"
+                           required>
             </div>
 
             <div class="slot-field field-with-btn">
-                <input type="number" name="fish_price[]" placeholder="單價">
+                <input type="number"
+                       name="fish_price[]"
+                       placeholder="單價"
+                       data-label="單價"
+                       required>
                 <button type="button"
                         class="apply-all-btn"
                         onclick="syncAll('fish_price[]', this)"
@@ -65,7 +78,9 @@ function generateBatchSlots(count) {
             </div>
 
             <div class="slot-field field-with-btn">
-                <select name="fish_spec[]">
+                <select name="fish_spec[]"
+                        data-label="規格範本"
+                        required>
                     ${GLOBAL_SPEC_OPTIONS}
                 </select>
                 <button type="button"
@@ -75,7 +90,9 @@ function generateBatchSlots(count) {
             </div>
 
             <div class="slot-field field-with-btn">
-                <select name="fish_notice[]">
+                <select name="fish_notice[]"
+                        data-label="提醒範本"
+                        required>
                     ${GLOBAL_NOTICE_OPTIONS}
                 </select>
                 <button type="button"
@@ -173,24 +190,24 @@ function getSingleSlotHTML(index) {
         </div>
         <div class="slot-field">
             <label class="custom-upload-box">
-                <input type="file" name="fish_image[]" accept="image/*" onchange="handlePreview(this)" style="display: none">
+                <input type="file" name="fish_image[]" accept="image/*" onchange="handlePreview(this)" style="display: none" data-label="生物照片" required>
                 <div class="upload-placeholder">${ICON_UPLOAD}</div>
                 <img class="preview-img" src="" style="display: none;">
             </label>
         </div>
         <div class="slot-field">
-            <input type="text" name="fish_name[]" placeholder="品種名稱">
+            <input type="text" name="fish_name[]" placeholder="品種名稱" data-label="品種名稱" required>
         </div>
         <div class="slot-field field-with-btn">
-            <input type="number" name="fish_price[]" placeholder="單價">
+            <input type="number" name="fish_price[]" placeholder="單價" data-label="單價" required>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_price[]', this)">套用</button>
         </div>
         <div class="slot-field field-with-btn">
-            <select name="fish_spec[]">${GLOBAL_SPEC_OPTIONS}</select>
+            <select name="fish_spec[]" data-label="規格範本" required>${GLOBAL_SPEC_OPTIONS}</select>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_spec[]', this)">套用</button>
         </div>
         <div class="slot-field field-with-btn">
-            <select name="fish_notice[]">${GLOBAL_NOTICE_OPTIONS}</select>
+            <select name="fish_notice[]" data-label="提醒範本" required>${GLOBAL_NOTICE_OPTIONS}</select>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_notice[]', this)">套用</button>
         </div>
     </div>`;
@@ -247,6 +264,8 @@ function generateBatchSlots(count) {
 
 // 🚀 處理單獨上架的「引用開關」
 // 🚀 1. 搬移與狀態切換函數
+// manage.js 裡面的 toggleTemplate 函數
+
 function toggleTemplate(btn, state, fieldName) {
   const parent = btn.closest(".template-group");
   const selectField = parent.querySelector("select");
@@ -256,7 +275,6 @@ function toggleTemplate(btn, state, fieldName) {
 
   if (!activeBg || !selectField) return;
 
-  // 1. 移動藥丸背景 (你的原設計)
   activeBg.style.left = `${btn.offsetLeft}px`;
   activeBg.style.width = `${btn.clientWidth}px`;
   activeBg.style.height = `${btn.clientHeight}px`;
@@ -264,20 +282,15 @@ function toggleTemplate(btn, state, fieldName) {
   wrapper.querySelectorAll(".mini-tab").forEach((t) => t.classList.remove("active"));
   btn.classList.add("active");
 
-  // 2. 🚀 空間切換與驗證邏輯 (因果修正)
   if (state === "off") {
     // 【手動輸入模式】
-    selectField.style.display = "none"; // 隱藏選單
-    selectField.required = false; // 💡 因：欄位不見了。果：取消必填，否則送不出表單。
+    selectField.style.display = "none";
+    selectField.required = false;
 
     if (manualArea) {
-      manualArea.style.display = "block"; // 顯示手動格子
-
-      // 🚀 將手動區裡原本就該必填的 input 設為 required
-      // 註：這裡建議只針對 class 包含 spec-input-field 的，避免誤殺
-      manualArea.querySelectorAll(".spec-input-field").forEach((input) => {
-        // 只針對原本在 HTML 裡有寫 placeholder="最小/最大/填寫數值" 的設定必填
-        // 排除掉那些「選填」的次要數據
+      manualArea.style.display = "block";
+      // 🚀 注意：你 HTML 寫的是 e-spec-input-field，這裡要對齊
+      manualArea.querySelectorAll(".e-spec-input-field, textarea").forEach((input) => {
         if (input.placeholder !== "選填") {
           input.required = true;
         }
@@ -285,14 +298,16 @@ function toggleTemplate(btn, state, fieldName) {
     }
   } else {
     // 【引用範本模式】
-    selectField.style.display = "block"; // 顯示選單
-    selectField.required = true; // 💡 因：回到引用模式。果：選單變回必填。
+    selectField.style.display = "block";
+    selectField.required = true;
 
     if (manualArea) {
-      manualArea.style.display = "none"; // 隱藏手動格子
+      manualArea.style.display = "none";
 
-      // 🚀 因：手動區藏起來了。果：裡面的 input 全部取消必填，防止後台攔截。
-      manualArea.querySelectorAll("input, select").forEach((el) => (el.required = false));
+      // 🚀 核心修正點：加入 textarea，把隱藏區的所有必填通通拔掉！
+      manualArea.querySelectorAll("input, select, textarea").forEach((el) => {
+        el.required = false;
+      });
     }
   }
 }

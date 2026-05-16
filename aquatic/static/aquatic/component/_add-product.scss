@@ -307,7 +307,7 @@
 
 .setup-banner {
   gap: 1.2rem; /* 🚀 設定兩行之間的垂直間距 */
-
+  margin: 0.5rem auto 1.5rem auto;
   padding: 1rem;
   background: var(--bg);
   border-radius: var(--radius-m);
@@ -386,7 +386,7 @@
   display: flex;
   width: 37.5rem;
   max-width: 95vw;
-  margin: 0 auto;
+  margin: 0.5rem auto 1rem auto;
   flex-direction: column;
   padding: 1.2rem;
   gap: 1rem;
@@ -513,7 +513,7 @@
 
 .expand-grid-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr; // 🚀 因：要求並排。果：左右對稱。
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem; // 🚀 兩區塊間的距離
   width: 100%;
 

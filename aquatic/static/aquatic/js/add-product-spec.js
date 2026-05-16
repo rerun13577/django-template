@@ -6,22 +6,27 @@ document.addEventListener("input", function (e) {
   const el = e.target;
   const label = el.name;
 
-  if (!el.classList.contains("spec-input-field") || el.tagName === "SELECT") return;
+  // 🚀 核心修正：同時檢查兩種 Class 名稱
+  const isSpecField = el.classList.contains("spec-input-field") || el.classList.contains("e-spec-input-field");
 
-  // 🚀 因：在白名單內。果：直接放行，不執行數字過濾。
+  if (!isSpecField || el.tagName === "SELECT") return;
+
   if (textOnlyFields.some((key) => label.includes(key))) {
     console.log(`✅ ${label} 命中白名單，允許文字`);
     return;
   }
 
-  // 🚀 因：不在白名單。果：只允許數字和小數點。
   el.value = el.value.replace(/[^0-9.]/g, "");
 });
 
-// 3. 邏輯檢查 (離開焦點後觸發)
+// ==========================================
+// 3. 邏輯檢查 (離開焦點後觸發) —— 修正完全體
+// ==========================================
 document.addEventListener("focusout", function (e) {
   const el = e.target;
-  if (!el.classList.contains("spec-input-field") || el.tagName === "SELECT") return;
+
+  const isSpecField = el.classList.contains("spec-input-field") || el.classList.contains("e-spec-input-field");
+  if (!isSpecField || el.tagName === "SELECT") return;
 
   const label = el.name;
   if (textOnlyFields.some((key) => label.includes(key))) return;
@@ -32,19 +37,19 @@ document.addEventListener("focusout", function (e) {
   // 數值合理性檢查
   if (label.includes("pH")) {
     if (num > 14) {
-      alert("pH 值不能超過 14！");
+      window.showCustomToast("pH 值不能超過 14！"); // 🚀 修正：改用自訂紅框
       el.value = 14;
     } else if (num < 0) el.value = 0;
   } else if (label.includes("溫度") && num > 100) {
-    alert("這溫度會煮熟魚！");
+    window.showCustomToast("這溫度會煮熟魚！"); // 🚀 修正：改用自訂紅框
     el.value = "";
   } else if (label.includes("比重")) {
     if (num > 1.1) {
-      alert("比重異常！請確認數值");
+      window.showCustomToast("比重異常！請確認數值"); // 🚀 修正：改用自訂紅框
       el.value = "";
     } else if (num < 1.0) el.value = 1.0;
   } else if (label.includes("GH") && num > 30) {
-    alert("GH 硬度超過 30 建議確認數值！");
+    window.showCustomToast("GH 硬度超過 30 建議確認數值！"); // 🚀 修正：改用自訂紅框
     el.value = 30;
   }
 
@@ -61,7 +66,7 @@ document.addEventListener("focusout", function (e) {
         const minV = parseFloat(minEl.value);
         const maxV = parseFloat(maxEl.value);
         if (minV >= maxV) {
-          alert(`${base} 的最小值必須小於最大值！`);
+          window.showCustomToast(`${base} 的最小值必須小於最大值！`); // 🚀 修正：改用自訂紅框
           el.value = "";
           el.focus();
         }
