@@ -3523,7 +3523,7 @@ a {
   }
   .accordion-item {
     width: 92%;
-    margin: 1rem 0 0.25rem 0;
+    margin: 1rem auto 0.25rem auto;
     display: block;
     background: var(--bg-light);
     border-radius: var(--radius-m);
@@ -4489,6 +4489,10 @@ a {
 .e-spec-input-field::placeholder {
   color: var(--text-muted);
   opacity: 0.5;
+}
+
+.accordion-list {
+  margin: 0 auto;
 }
 
 /* 🚀 全域 HTMX 轉場動畫：讓刪除或新增不再「閃現」 */
