@@ -490,9 +490,11 @@ p {
   display: flex;
   flex-direction: column;
   flex: 0 0 350px;
-  border: 1px solid; /* 關鍵設定：最小高度 */
+  border: 1px solid;
   min-height: 450px;
+  box-sizing: border-box;
   scroll-snap-align: center;
+  position: relative; /* 🚀 核心因果修正：開啟絕對定位容器空間 */
 }
 
 .hot-creature img {
@@ -503,40 +505,55 @@ p {
   margin-bottom: 0.5rem;
 }
 
+/* 🚀 2. 商品名稱：固定鎖死兩行高度 */
 .hot-creature-title {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
-  width: 100%;
-  font-size: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  width: auto;
+  margin: 1rem 1rem 0.5rem 1rem;
+  font-size: 1.5rem; /* 遵照需求：大小不變 */
+  /* 💡 留空因果補丁：
+     font-size 是 1.5rem，設 line-height 為 1.3。
+     1.5 * 1.3 * 2(行) = 3.9rem。
+     直接將 height 固定設為 3.9rem，這樣就算只有一行字，它物理上也一定會佔滿兩行的垂直空間，
+     下方的價格絕對不會往上飄移，整排卡片的價格線會完全對齊。 */
+  line-height: 1.3;
+  height: 3.9rem;
 }
 
+/* 🚀 3. 價格欄位：回歸正常推擠 */
 .hot-creature-subtitle {
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: 1rem;
-  width: 100%;
-  font-size: 1.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 價格通常只有一行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  width: auto;
+  margin: 0rem 1rem 0.5rem 1rem;
+  font-size: 1.25rem; /* 遵照需求：大小不變 */
 }
 
+/* 🚀 4. 城市標籤：改用 ABS 絕對定位鎖死在右下角 */
 .hot-creature-city {
-  /* 原本的 display: flex 保留，這樣你可以控制裡面的對齊 */
   display: flex;
-  /* ★ 關鍵：加上這行！ */
+  align-items: center;
+  justify-content: center;
   width: -moz-fit-content;
   width: fit-content;
-  /* ★ 關鍵：這行確保它會自動跑到最右邊 */
-  margin-left: auto;
-  /* 其他保留 */
-  align-items: center;
   background-color: oklch(70% 0.05 230deg);
   border-radius: 1rem;
   padding: 0.25rem 0.85rem;
   color: var(--text-muted);
-  /* 確保文字垂直置中 (因為你有用 flex) */
-  align-items: center;
-  margin-right: 1rem;
-  margin-top: 3.5rem;
+  /* 🚀 核心改動：徹底拔除混亂的 margin-top，改用物理絕對定位 */
+  position: absolute;
+  bottom: 1rem; /* 💡 距離卡片底部 1rem，物理上絕對不貼邊 */
+  right: 1rem; /* 💡 距離卡片右邊 1rem，精準對齊上方間距 */
+  margin: 0; /* 清空原本的 margin 干擾 */
 }
 
 body {
