@@ -19,7 +19,8 @@ from .constants import CORE_SPECS_CONFIG, EXTRA_SPECS, FISH_SPECS_LABELS
 
 # 🚀 既然 CORE_SPECS 已經不存在了，就不要 import 它
 # 1. Model 從 models 資料夾抓
-from .models import (  # 記得引入模型
+from .models import (  # 🚀 核心修正：手動補上副圖模型  # 記得引入模型
+    AquaticImage,
     AquaticLife,
     Comment,
     PetFish,
@@ -466,18 +467,22 @@ class AddProductBatchView(FisshPageBase, View):
             "其他": "OTHER",
         }
 
-        # --- 1. 讀取前端所有欄位 ---
-        fish_names = request.POST.getlist("fish_name[]")
-        fish_images = request.FILES.getlist("fish_image[]")
-        fish_prices = request.POST.getlist("fish_price[]")
+        # 🚀 智慧相容防線：不管前端寫 fish_name[] 還是 fish_name，getlist 都能相容抓成 Python 陣列
+        fish_names = request.POST.getlist("fish_name[]") or request.POST.getlist(
+            "fish_name"
+        )
+        fish_prices = request.POST.getlist("fish_price[]") or request.POST.getlist(
+            "fish_price"
+        )
+        fish_specs = request.POST.getlist("fish_spec[]") or request.POST.getlist(
+            "fish_spec"
+        )
+        fish_notices = request.POST.getlist("fish_notice[]") or request.POST.getlist(
+            "fish_notice"
+        )
 
         global_spec = request.POST.get("global_spec")
-        fish_specs = request.POST.getlist("fish_spec[]")
-
         global_notice = request.POST.get("global_notice")
-        fish_notices = request.POST.getlist("fish_notice[]")
-
-        # 撈取前端 textarea (name="content") 的手寫文字
         custom_content = request.POST.get("content")
 
         try:
@@ -486,13 +491,11 @@ class AddProductBatchView(FisshPageBase, View):
                     if not name.strip():
                         continue
 
-                    # 匹配個別價格
+                    # 價格匹配
                     price_str = fish_prices[i] if i < len(fish_prices) else "0"
                     price_integer = int(price_str) if price_str.strip().isdigit() else 0
 
-                    # ────────────────────────────────────────────────────────
-                    # 因果邏輯 B：自動相容「提醒範本」與「手寫自定義」
-                    # ────────────────────────────────────────────────────────
+                    # 提醒範本處理
                     if (
                         fish_notices
                         and i < len(fish_notices)
@@ -510,7 +513,6 @@ class AddProductBatchView(FisshPageBase, View):
                             id=current_notice_id
                         ).first()
                     elif custom_content and custom_content.strip():
-                        notice_instance = None
                         final_description = custom_content.strip()
                     else:
                         return HttpResponse("上架失敗：提醒範本不可為空！", status=400)
@@ -527,9 +529,7 @@ class AddProductBatchView(FisshPageBase, View):
                     if hasattr(request.user, "city") and request.user.city:
                         new_fish.city = request.user.city
 
-                    # ────────────────────────────────────────────────────────
-                    # 🚀 核心因果修正 C：自動相容「引用規格範本」與「手動自定義規格」
-                    # ────────────────────────────────────────────────────────
+                    # 規格範本處理
                     if fish_specs and i < len(fish_specs) and fish_specs[i].strip():
                         current_spec_id = fish_specs[i]
                     else:
@@ -541,7 +541,6 @@ class AddProductBatchView(FisshPageBase, View):
                         else None
                     )
 
-                    # 內置安全轉型小門神，防止前端空字串 "" 讓資料庫轉型 float/int 時炸裂
                     def safe_float(v):
                         return float(v) if v and str(v).strip() else None
 
@@ -559,10 +558,8 @@ class AddProductBatchView(FisshPageBase, View):
                     ]
 
                     if spec_template:
-                        # 💡 情況甲：老闆選擇【引用範本】-> 從範本的 JSON 裡拿乾淨數據
                         data = spec_template.data if spec_template else {}
                         raw_cat = data.get("生物種類", "其他")
-
                         new_fish.ph_min = data.get("pH值_min")
                         new_fish.ph_max = data.get("pH值_max")
                         new_fish.temp_min = data.get("適宜溫度_min")
@@ -573,9 +570,7 @@ class AddProductBatchView(FisshPageBase, View):
                             k: data[k] for k in extra_keys if k in data
                         }
                     else:
-                        # 💡 情況乙：老闆選擇【關閉引用，手動填寫】-> 直接從 request.POST 攔截文字輸入框！
                         raw_cat = request.POST.get("生物種類", "其他")
-
                         new_fish.ph_min = safe_float(request.POST.get("pH值_min"))
                         new_fish.ph_max = safe_float(request.POST.get("pH值_max"))
                         new_fish.temp_min = safe_int(request.POST.get("適宜溫度_min"))
@@ -585,7 +580,6 @@ class AddProductBatchView(FisshPageBase, View):
                             request.POST.get("建議水量(L)")
                         )
 
-                        # 把 15 個雜項規格手動包成 JSON
                         manual_specs = {}
                         for k in extra_keys:
                             val = request.POST.get(k)
@@ -593,20 +587,71 @@ class AddProductBatchView(FisshPageBase, View):
                                 manual_specs[k] = val.strip()
                         new_fish.specs_json = manual_specs
 
-                    # 對齊種類代碼
                     new_fish.category = category_map.get(raw_cat, "OTHER")
 
                     # ────────────────────────────────────────────────────────
-                    # 因果邏輯 D：圖片精準配對
+                    # 🚀 核心共用補丁 D：完美合體單獨與批量的多圖分流
                     # ────────────────────────────────────────────────────────
-                    if i < len(fish_images):
-                        new_fish.image = fish_images[i]
+                    # ────────────────────────────────────────────────────────
+                    # 🚀 核心共用補丁 D：完美合體單獨與批量的多圖分流（已加入去重防線）
+                    # ────────────────────────────────────────────────────────
+                    slot_num = i + 1
+                    # 1. 優先撈取批量專用的獨立群組名牌
+                    current_fish_images = request.FILES.getlist(
+                        f"fish_image_{slot_num}[]"
+                    )
 
+                    # 2. 因果降級防線：如果批量名字落空，且目前是第 1 隻魚，就直接抓單獨版的 fish_image[]
+                    if not current_fish_images and i == 0:
+                        current_fish_images = request.FILES.getlist("fish_image[]")
+
+                    if current_fish_images:
+                        # 🚀 核心去重核心：利用 (檔名, 大小) 作為 Unique Key，物理清除因為多選產生的重疊檔案
+                        seen_files = set()
+                        unique_fish_images = []
+                        for f in current_fish_images:
+                            file_key = (f.name, f.size)
+                            if file_key not in seen_files:
+                                seen_files.add(file_key)
+                                unique_fish_images.append(f)
+
+                        # 重新寫入乾淨、無重複的陣列（此時長度會精準回歸為最大 4 張）
+                        current_fish_images = unique_fish_images
+
+                        # 第一張強制做封面
+                        new_fish.image = current_fish_images[0]
+
+                    # 先存主體拿到 PK
                     new_fish.save()
 
+                    # 剩餘的圖進副圖藝廊 (此時長度減 1，最多只會跑 3 次，完美避坑)
+                    if len(current_fish_images) > 1:
+                        for extra_img in current_fish_images[1:]:
+                            AquaticImage.objects.create(
+                                product=new_fish, image=extra_img
+                            )
+
+            # 因為你用了 HTMX (hx-post)，回傳這行腳本一樣能完美觸發前端重新整理
             return HttpResponse(
-                '<script>alert("上架成功！"); location.reload();</script>'
+                '<script>alert("商品上架成功！"); location.reload();</script>'
             )
 
         except Exception as e:
             return HttpResponse(f"儲存失敗：{str(e)}", status=400)
+
+
+class ShopListView(View):
+    def get(self, request):
+
+        # ────────────────────────────────────────────────────────
+        # 💡 因果邏輯：全表查詢與效能優化
+        # ────────────────────────────────────────────────────────
+        # 因：要展示全站所有人的商品，且前端卡片一定會顯示「商家名稱（owner）」
+        # 過：拿掉 filter(owner=...) 限制，改用 select_related("owner") 一口氣把發布者資料綁定進來
+        # 果：避免產生 N+1 次 SQL 查詢地獄，一行指令抓出全站最新上架的生物
+        aquatics = AquaticLife.objects.select_related("owner").order_by("-created_at")
+
+        context = {
+            "items": aquatics,  # 對齊你個人檔案 template 的命名習慣 "items"
+        }
+        return render(request, "shop.html", context)

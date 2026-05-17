@@ -44,16 +44,23 @@ function generateBatchSlots(count) {
             <div class="slot-field">
                 <label class="custom-upload-box">
                     <input type="file"
-                           name="fish_image[]"
-                           accept="image/*"
-                           onchange="handlePreview(this)"
-                           style="display: none"
-                           data-label="生物照片"
-                           required>
+                          name="fish_image[]"
+                          accept="image/*"
+                          onchange="handlePreview(this)"
+                          style="display: none"
+                          data-label="生物照片"
+                          required>
                     <div class="upload-placeholder">
                         ${ICON_UPLOAD}
                     </div>
                     <img class="preview-img" src="" style="display: none;">
+                    
+                    <button class="delete-prod-pic-btn"
+                            type="button"
+                            onclick="removePhoto(this)"
+                            style="display: none">
+                        ${ICON_X}
+                    </button>
                 </label>
             </div>
 
@@ -178,39 +185,115 @@ function updateSlotNumbers() {
   }
 }
 
-// 🚀 封裝：產生單個卡片的 HTML (因：避免重複代碼。果：維護方便。)
-function getSingleSlotHTML(index) {
+// 🚀 1. 唯一的衣服模板工廠：只要這裡有叉叉，全世界都有叉叉
+function getSingleSlotHTML(i) {
   return `
     <div class="slot-item">
         <div class="split-tool">
-            <div class="split-left"><div class="slot-header">第 ${index} 隻生物</div></div>
+            <div class="split-left">
+                <div class="slot-header">第 ${i} 隻生物</div>
+            </div>
             <div class="split-right">
-                <button type="button" class="remove-slot-btn" onclick="this.closest('.slot-item').remove(); updateSlotNumbers();">${ICON_X}</button>
+                <button type="button"
+                        class="remove-slot-btn"
+                        onclick="this.closest('.slot-item').remove(); updateSlotNumbers();"
+                        title="移除此格">
+                    ${ICON_X}
+                </button>
             </div>
         </div>
-        <div class="slot-field">
-            <label class="custom-upload-box">
-                <input type="file" name="fish_image[]" accept="image/*" onchange="handlePreview(this)" style="display: none" data-label="生物照片" required>
-                <div class="upload-placeholder">${ICON_UPLOAD}</div>
-                <img class="preview-img" src="" style="display: none;">
-            </label>
+
+        <div class="slot-field1 photo-upload-container">
+            
+            <div class="main-cover-box single-photo-ratio" data-active-slot="1" onclick="triggerActiveInput(event)">
+                <div class="custom-upload-box" style="position: relative; width: 100%; height: 100%;">
+                    
+                    <div class="upload-placeholder viewport-placeholder">
+                        ${ICON_UPLOAD}
+                        <span style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; display: block;">點擊選取或多選 4 張照片</span>
+                    </div>
+                    
+                    <img class="preview-img viewport-img" src="" style="display: none;">
+                    
+                    <button class="b-delete-prod-pic-btn"
+                            type="button"
+                            onclick="removeActivePhoto(event)"
+                            style="display: none">
+                        ${ICON_X}
+                    </button>
+                </div>
+            </div>
+
+            <div class="photo-train-slots">
+                <div class="sub-photo-slot active-focus" data-slot-index="1" onclick="handleSlotClick(this, '1', event)">
+                    <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
+                        <input type="file" name="fish_image_${i}[]" accept="image/*" onchange="handleGalleryUpload(this, '1')" style="display: none;" multiple required>
+                        <div class="upload-placeholder">+</div>
+                        <img class="preview-img slot-thumb" src="" style="display: none;">
+                    </div>
+                </div>
+                <div class="sub-photo-slot" data-slot-index="2" onclick="handleSlotClick(this, '2', event)">
+                    <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
+                        <input type="file" name="fish_image_${i}[]" accept="image/*" onchange="handleGalleryUpload(this, '2')" style="display: none;" multiple>
+                        <div class="upload-placeholder">+</div>
+                        <img class="preview-img slot-thumb" src="" style="display: none;">
+                    </div>
+                </div>
+                <div class="sub-photo-slot" data-slot-index="3" onclick="handleSlotClick(this, '3', event)">
+                    <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
+                        <input type="file" name="fish_image_${i}[]" accept="image/*" onchange="handleGalleryUpload(this, '3')" style="display: none;" multiple>
+                        <div class="upload-placeholder">+</div>
+                        <img class="preview-img slot-thumb" src="" style="display: none;">
+                    </div>
+                </div>
+                <div class="sub-photo-slot" data-slot-index="4" onclick="handleSlotClick(this, '4', event)">
+                    <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
+                        <input type="file" name="fish_image_${i}[]" accept="image/*" onchange="handleGalleryUpload(this, '4')" style="display: none;" multiple>
+                        <div class="upload-placeholder">+</div>
+                        <img class="preview-img slot-thumb" src="" style="display: none;">
+                    </div>
+                </div>
+            </div>
         </div>
+
         <div class="slot-field">
-            <input type="text" name="fish_name[]" placeholder="品種名稱" data-label="品種名稱" required>
+            <input type="text" name="fish_name[]" placeholder="品種名稱 (如：極火蝦)" required>
         </div>
         <div class="slot-field field-with-btn">
-            <input type="number" name="fish_price[]" placeholder="單價" data-label="單價" required>
+            <input type="number" name="fish_price[]" placeholder="單價" required>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_price[]', this)">套用</button>
         </div>
         <div class="slot-field field-with-btn">
-            <select name="fish_spec[]" data-label="規格範本" required>${GLOBAL_SPEC_OPTIONS}</select>
+            <select name="fish_spec[]" required>${GLOBAL_SPEC_OPTIONS}</select>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_spec[]', this)">套用</button>
         </div>
         <div class="slot-field field-with-btn">
-            <select name="fish_notice[]" data-label="提醒範本" required>${GLOBAL_NOTICE_OPTIONS}</select>
+            <select name="fish_notice[]" required>${GLOBAL_NOTICE_OPTIONS}</select>
             <button type="button" class="apply-all-btn" onclick="syncAll('fish_notice[]', this)">套用</button>
         </div>
-    </div>`;
+    </div>
+  `;
+}
+
+// 🚀 2. 指揮官 A：輸入數量一次生成大批卡片（你現在要修正的功能）
+function generateBatchSlots(count) {
+  const container = document.getElementById("batchSlotsContainer");
+  const finalCount = Math.min(count, 20); // 限制最多 20 個
+
+  let html = "";
+  for (let i = 1; i <= finalCount; i++) {
+    html += getSingleSlotHTML(i); // 拿回有叉叉的衣服
+  }
+
+  // 補上最後的 ＋ 號字卡
+  const showAddBtn = finalCount < 20 ? "flex" : "none";
+  html += `
+        <div id="addSlotBtn" class="slot-item add-slot-card" onclick="addSingleSlot()" style="display: ${showAddBtn}">
+            <div class="plus-icon">${ICON_PLUS}</div>
+            <span>點擊新增生物格</span>
+        </div>
+    `;
+  container.innerHTML = html;
 }
 
 function addSingleSlot() {
@@ -332,3 +415,197 @@ window.addEventListener("resize", initAllMiniToggles);
 document.body.addEventListener("htmx:configRequest", (event) => {
   event.detail.headers["X-CSRFToken"] = "{{ csrf_token }}";
 });
+
+// 🚀 預覽照片邏輯
+// 🚀 預覽照片邏輯
+function handlePreview(input) {
+  const box = input.closest(".custom-upload-box");
+  const placeholder = box.querySelector(".upload-placeholder");
+  const previewImg = box.querySelector(".preview-img");
+
+  /* ────────────────────────────────────────────────────────
+     🚀 核心因果修正：利用 CSS 逗號選取器（代表「或」）
+     不論是單獨卡的 class 還是批量卡的 b- class，誰在場就抓誰！
+     ──────────────────────────────────────────────────────── */
+  const deleteBtn = box.querySelector(".delete-prod-pic-btn, .b-delete-prod-pic-btn");
+
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      previewImg.src = e.target.result;
+      previewImg.style.display = "block";
+      placeholder.style.display = "none";
+      if (deleteBtn) deleteBtn.style.display = "flex"; // 抓到誰，誰就亮出來
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// 🚀 刪除照片邏輯（維持原樣，物理無敵）
+function removePhoto(button) {
+  // 阻止 label 被點擊再次觸發上傳視窗
+  if (window.event) window.event.preventDefault();
+
+  const box = button.closest(".custom-upload-box");
+  const input = box.querySelector('input[type="file"]');
+  const placeholder = box.querySelector(".upload-placeholder");
+  const previewImg = box.querySelector(".preview-img");
+
+  // 清空記憶體與預覽
+  input.value = "";
+  previewImg.src = "";
+  previewImg.style.display = "none";
+  placeholder.style.display = "flex";
+
+  // 🚀 因果：因為變數 button 就是點擊的那個節點本人，
+  // 瀏覽器直接對它執行隱藏，所以不管它是 delete 還是 b-delete 都絕對有效。
+  button.style.display = "none";
+}
+
+// 下面是照片列的上傳與展示邏輯，這部分比較複雜，請務必細讀註解理解因果關係。
+
+// 🚀 1. 點擊小格子智慧分流
+function handleSlotClick(slotElement, slotIndex, event) {
+  const container = slotElement.closest(".photo-upload-container");
+  switchActiveSlot(container, slotIndex);
+
+  const img = slotElement.querySelector(".slot-thumb");
+  const input = slotElement.querySelector('input[type="file"]');
+
+  if (!img.src || img.style.display === "none") {
+    if (input) input.click();
+  }
+}
+
+// 🚀 2. 獨立切換該卡片內的觀景窗展示
+function switchActiveSlot(container, slotIndex) {
+  const viewport = container.querySelector(".main-cover-box");
+  viewport.setAttribute("data-active-slot", slotIndex);
+
+  container.querySelectorAll(".sub-photo-slot").forEach((el) => el.classList.remove("active-focus"));
+  const currentSlot = container.querySelector(`.sub-photo-slot[data-slot-index="${slotIndex}"]`);
+  if (currentSlot) currentSlot.classList.add("active-focus");
+
+  const slotImg = currentSlot.querySelector(".slot-thumb");
+  const viewportImg = container.querySelector(".viewport-img");
+  const viewportPlaceholder = container.querySelector(".viewport-placeholder");
+
+  /* ────────────────────────────────────────────────────────
+     🚀 核心相容修正：改用逗號，不管是 .delete- 還是 .b-delete- 通通抓得到！
+     ──────────────────────────────────────────────────────── */
+  const viewportDeleteBtn = container.querySelector(".delete-prod-pic-btn, .b-delete-prod-pic-btn");
+
+  if (slotImg && slotImg.src && slotImg.style.display !== "none") {
+    viewportImg.src = slotImg.src;
+    viewportImg.style.display = "block";
+    viewportPlaceholder.style.display = "none";
+    if (viewportDeleteBtn) viewportDeleteBtn.style.display = "flex";
+  } else {
+    viewportImg.src = "";
+    viewportImg.style.display = "none";
+    viewportPlaceholder.style.display = "flex";
+    if (viewportDeleteBtn) viewportDeleteBtn.style.display = "none";
+  }
+}
+
+// 🚀 3. 多選與單選上傳分流演算法
+function handleGalleryUpload(input, slotIndex) {
+  if (!input.files || input.files.length === 0) return;
+
+  const container = input.closest(".photo-upload-container");
+  const startIndex = parseInt(slotIndex);
+  const files = input.files;
+
+  // 情況 A：單選
+  if (files.length === 1) {
+    const slotBox = input.closest(".custom-upload-box");
+    const slotPlaceholder = slotBox.querySelector(".upload-placeholder");
+    const slotImg = slotBox.querySelector(".preview-img");
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      slotImg.src = e.target.result;
+      slotImg.style.display = "block";
+      slotPlaceholder.style.display = "none";
+      switchActiveSlot(container, slotIndex);
+    };
+    reader.readAsDataURL(files[0]);
+    return;
+  }
+
+  // 情況 B：多選連續轟炸
+  for (let i = 0; i < files.length; i++) {
+    const currentTargetIndex = startIndex + i;
+    if (currentTargetIndex > 4) break;
+
+    const file = files[i];
+    const targetSlot = container.querySelector(`.sub-photo-slot[data-slot-index="${currentTargetIndex}"]`);
+    if (!targetSlot) continue;
+
+    const targetInput = targetSlot.querySelector('input[type="file"]');
+    const slotPlaceholder = targetSlot.querySelector(".upload-placeholder");
+    const slotImg = targetSlot.querySelector(".preview-img");
+
+    if (i > 0) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      targetInput.files = dt.files;
+    }
+
+    const reader = new FileReader();
+    (function (img, placeholder) {
+      reader.onload = function (e) {
+        img.src = e.target.result;
+        img.style.display = "block";
+        placeholder.style.display = "none";
+      };
+    })(slotImg, slotPlaceholder);
+
+    reader.readAsDataURL(file);
+  }
+
+  setTimeout(() => {
+    switchActiveSlot(container, startIndex.toString());
+  }, 100);
+}
+
+// 🚀 4. 點擊大框框重選照片
+function triggerActiveInput(e) {
+  if (e.target.closest(".b-delete-prod-pic-btn")) return;
+
+  const viewport = e.currentTarget;
+  const container = viewport.closest(".photo-upload-container");
+  const activeIndex = viewport.getAttribute("data-active-slot");
+  const activeInput = container.querySelector(`.sub-photo-slot[data-slot-index="${activeIndex}"] input[type="file"]`);
+
+  if (activeInput) activeInput.click();
+}
+
+// 🚀 5. 大框框的大叉叉：連帶擊殺下方本體
+function removeActivePhoto(e) {
+  e.stopPropagation();
+
+  const btn = e.currentTarget;
+  const container = btn.closest(".photo-upload-container");
+  const viewport = container.querySelector(".main-cover-box");
+  const activeIndex = viewport.getAttribute("data-active-slot");
+
+  const targetSlot = container.querySelector(`.sub-photo-slot[data-slot-index="${activeIndex}"]`);
+  if (!targetSlot) return;
+
+  const input = targetSlot.querySelector('input[type="file"]');
+  const slotPlaceholder = targetSlot.querySelector(".upload-placeholder");
+  const slotImg = targetSlot.querySelector(".preview-img");
+
+  input.value = "";
+  slotImg.src = "";
+  slotImg.style.display = "none";
+  slotPlaceholder.style.display = "flex";
+
+  container.querySelector(".viewport-img").src = "";
+  container.querySelector(".viewport-img").style.display = "none";
+  container.querySelector(".viewport-placeholder").style.display = "flex";
+  btn.style.display = "none";
+}

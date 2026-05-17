@@ -20,19 +20,35 @@
     transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
     .product-creature-title {
-      display: flex;
-      flex-wrap: wrap;
-      margin: 0rem 1rem 0.25rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
-      width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
-      font-size: 1.5rem;
+      /* 🚀 修正 A：寬度改 auto，左右各留 1rem 呼吸空間 */
+      width: auto;
+      margin: 0rem 1rem 0rem 1rem;
+      font-size: 1.25rem;
+      line-height: 1.4;
+      min-height: 4rem;
+      word-break: break-all;
     }
 
     .product-creature-subtitle {
       display: flex;
-      flex-wrap: wrap;
-      margin-left: 1rem;
-      width: 100%;
+      /* 🚀 核心修正 A：強行鎖死！不准換行，換行卡片高度就會炸裂 */
+      flex-wrap: nowrap;
+      align-items: center;
+
+      /* 🚀 核心修正 B：單行裁切防線 */
+      white-space: nowrap; /* 強制文字一直線拉到底 */
+      overflow: hidden; /* 超出卡片寬度的字直接蒸發 */
+      text-overflow: ellipsis; /* 蒸發的地方自動補上三個點 ... */
+
+      /* 延續上一題的貼邊內縮修正 */
+      width: auto;
+      margin: 0rem 1rem 0.5rem 1rem;
 
       font-size: 1.25rem;
     }

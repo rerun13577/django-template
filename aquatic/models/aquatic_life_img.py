@@ -2,38 +2,50 @@ import os
 import posixpath
 from uuid import uuid4
 
-from django.conf import settings  # 🚀 記得引入 settings
+from django.conf import settings
 from django.core.files.storage import default_storage
 from django.db import models
+from django.db.models.signals import post_delete  # 🚀 匯入訊號
+from django.dispatch import receiver  # 🚀 匯入接收器
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
 
+# 匯入你專案內部的工具與基底
 from ..utils import handle_model_image_upload, purge_cloudflare_cache
 from .base import BaseModel
 
 
 def get_aquatic_upload_path(instance, filename):
-    """🚀 萬用路徑：現在加入了 User ID 作為第一層目錄"""
+    """🚀 萬用路徑優化版：讓主圖與副圖落戶在同一個 Cloudflare 資料夾下"""
     date_str = now().strftime("%Y/%m/%d")
 
-    # 1. 取得 owner_id (處理 AquaticLife 或 AquaticImage 兩種情況)
     if isinstance(instance, AquaticLife):
         owner_id = instance.owner.id
         category = instance.category
         sub_folder = "cover"
+        # 主圖拿商品的 UUID
+        token = (
+            instance.folder_uuid
+            if hasattr(instance, "folder_uuid")
+            else uuid4().hex[:8]
+        )
+        file_name = "main.webp"  # 主圖固定叫 main.webp
     else:
-        # 這是副圖 AquaticImage，要從 product 往回找 owner
+        # 🚀 這是副圖 AquaticImage
         owner_id = instance.product.owner.id
         category = instance.product.category
         sub_folder = "gallery"
+        # 🚀 因果補丁：副圖直接去搶它大哥(product)的 UUID！這樣在 Cloudflare 就會鎖在同一個資料夾
+        token = (
+            instance.product.folder_uuid
+            if hasattr(instance.product, "folder_uuid")
+            else uuid4().hex[:8]
+        )
+        # 🚀 因為都在同一個 gallery 資料夾下，檔名絕對不能再死掐 main.webp，否則後面的副圖會把前面的物理覆蓋！改用隨機碼
+        file_name = f"{uuid4().hex[:8]}.webp"
 
-    token = (
-        instance.folder_uuid if hasattr(instance, "folder_uuid") else uuid4().hex[:8]
-    )
-
-    # 🚀 新路徑：aquatic/{user_id}/{category}/{date}/...
     return posixpath.join(
-        "aquatic", str(owner_id), category, date_str, token, sub_folder, "main.webp"
+        "aquatic", str(owner_id), category, date_str, token, sub_folder, file_name
     )
 
 
@@ -204,6 +216,28 @@ class AquaticImage(models.Model):
     def save(self, *args, **kwargs):
         handle_model_image_upload(self, "image")
         super().save(*args, **kwargs)
+
+
+@receiver(post_delete, sender=AquaticLife)
+def purge_aquatic_life_cache(sender, instance, **kwargs):
+    """因果：商品主體被刪 -> 驅逐 Cloudflare 封面圖快取"""
+    try:
+        if instance.image and hasattr(instance.image, "url") and instance.image.url:
+            purge_cloudflare_cache([instance.image.url])
+            print("🧹 Cloudflare 封面圖快取清除成功")
+    except Exception as e:
+        print(f"⚠️ 封面圖快取清除失敗: {e}")
+
+
+@receiver(post_delete, sender=AquaticImage)
+def purge_aquatic_gallery_cache(sender, instance, **kwargs):
+    """因果：副圖被刪 (包含連帶刪除) -> 驅逐 Cloudflare 副圖快取"""
+    try:
+        if instance.image and hasattr(instance.image, "url") and instance.image.url:
+            purge_cloudflare_cache([instance.image.url])
+            print("🧹 Cloudflare 副圖藝廊快取清除成功")
+    except Exception as e:
+        print(f"⚠️ 副圖快取清除失敗: {e}")
 
 
 # 你的儲存路徑aquatic/{使用者ID}/{生物分類}/{年/月/日}/{隨機字串}/{主圖或副圖}/main.webp

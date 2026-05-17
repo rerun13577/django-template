@@ -7,18 +7,47 @@
         {% csrf_token %}
         <div id="singleUploadContainer">
             <div class="single-card-sizing">
-                <div class="slot-field1">
-                    <label class="custom-upload-box single-photo-ratio">
-                        <input type="file"
-                               name="fish_image[]"
-                               accept="image/*"
-                               onchange="handlePreview(this)"
-                               style="display: none"
-                               data-label="生物照片"
-                               required>
-                        <div class="upload-placeholder">{% include 'icons/upload.html' %}</div>
-                        <img class="preview-img" src="" style="display: none;">
-                    </label>
+                <div class="slot-field1 photo-upload-container">
+                    <div class="main-cover-box single-photo-ratio"
+                         data-active-slot="1"
+                         onclick="triggerActiveInput(event)">
+                        <div class="custom-upload-box"
+                             style="position: relative;
+                                    width: 100%;
+                                    height: 100%">
+                            <div class="upload-placeholder viewport-placeholder">
+                                {% include 'icons/upload.html' %}
+                                <span style="font-size: 0.85rem;
+                                             color: var(--text-muted);
+                                             margin-top: 0.5rem;
+                                             display: block">點擊選取或多選 4 張照片</span>
+                            </div>
+                            <img class="preview-img viewport-img" src="" style="display: none;">
+                            <button class="delete-prod-pic-btn"
+                                    type="button"
+                                    onclick="removeActivePhoto(event)"
+                                    style="display: none">{% include "icons/cross.html" %}</button>
+                        </div>
+                    </div>
+                    <div class="photo-train-slots">
+                        {% for i in "1234" %}
+                            <div class="sub-photo-slot {% if forloop.first %}active-focus{% endif %}"
+                                 data-slot-index="{{ i }}"
+                                 onclick="handleSlotClick(this, '{{ i }}', event)">
+                                <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
+                                    <input type="file"
+                                           name="fish_image[]"
+                                           accept="image/*"
+                                           onchange="handleGalleryUpload(this, '{{ i }}')"
+                                           style="display: none"
+                                           multiple
+                                           {% if forloop.first %}required{% endif %}>
+                                    <div class="upload-placeholder">+</div>
+                                    <img class="preview-img slot-thumb" src="" style="display: none;">
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="slot-field1">
                     <input type="text"

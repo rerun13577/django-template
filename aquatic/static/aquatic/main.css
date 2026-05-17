@@ -2352,6 +2352,7 @@ a {
   align-items: center;
   background: transparent;
   border: none;
+  z-index: 23;
 }
 .delete-btn svg {
   width: 1.2rem;
@@ -3040,17 +3041,31 @@ a {
   transition: var(--transition);
 }
 .grid .product-creature .product-creature-title {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0rem 1rem 0.25rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
-  width: 100%;
-  font-size: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 🚀 修正 A：寬度改 auto，左右各留 1rem 呼吸空間 */
+  width: auto;
+  margin: 0rem 1rem 0rem 1rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  min-height: 4rem;
+  word-break: break-all;
 }
 .grid .product-creature .product-creature-subtitle {
   display: flex;
-  flex-wrap: wrap;
-  margin-left: 1rem;
-  width: 100%;
+  /* 🚀 核心修正 A：強行鎖死！不准換行，換行卡片高度就會炸裂 */
+  flex-wrap: nowrap;
+  align-items: center;
+  /* 🚀 核心修正 B：單行裁切防線 */
+  white-space: nowrap; /* 強制文字一直線拉到底 */
+  overflow: hidden; /* 超出卡片寬度的字直接蒸發 */
+  text-overflow: ellipsis; /* 蒸發的地方自動補上三個點 ... */
+  /* 延續上一題的貼邊內縮修正 */
+  width: auto;
+  margin: 0rem 1rem 0.5rem 1rem;
   font-size: 1.25rem;
 }
 .grid .product-creature .product-creature-subtitle {
@@ -3572,7 +3587,6 @@ a {
 .in-manage-temp {
   max-width: var(--width);
   margin: 0 auto;
-  padding: 15px;
   font-family: sans-serif;
 }
 
@@ -4493,6 +4507,94 @@ a {
 
 .accordion-list {
   margin: 0 auto;
+}
+
+.delete-prod-pic-btn {
+  /* ────────────────────────────────────────────────────────
+     🚀 核心因果修正：絕對定位鎖死在左上角
+     ──────────────────────────────────────────────────────── */
+  position: absolute; /* 啟動絕對定位（父層 .custom-upload-box 記得要有 position: relative） */
+  top: 20px;
+  left: 20px;
+  /* 拔掉沒用的 margin-left: auto */
+  cursor: pointer;
+  display: flex; /* 讓按鈕內部的 SVG 置中 */
+  align-items: center;
+  justify-content: center; /* 確保 SVG 水平也精準置中 */
+  background: transparent;
+  border: none;
+  z-index: 23; /* 物理防線：層級一定要高，才不會被上傳的圖片蓋過去 */
+  padding: 4px; /* 偷偷擴大一點點點擊範圍，比較好按 */
+}
+.delete-prod-pic-btn svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.delete-prod-pic-btn svg:hover {
+  color: var(--text); /* 滑鼠嚕過去時變亮，提示使用者這顆可以按 */
+  transform: scale(1.1); /* 微動效，增加精品感 */
+}
+
+.b-delete-prod-pic-btn {
+  /* ────────────────────────────────────────────────────────
+     🚀 核心因果修正：絕對定位鎖死在左上角
+     ──────────────────────────────────────────────────────── */
+  position: absolute; /* 啟動絕對定位（父層 .custom-upload-box 記得要有 position: relative） */
+  top: 16px;
+  left: 16px;
+  /* 拔掉沒用的 margin-left: auto */
+  cursor: pointer;
+  display: flex; /* 讓按鈕內部的 SVG 置中 */
+  align-items: center;
+  justify-content: center; /* 確保 SVG 水平也精準置中 */
+  background: transparent;
+  border: none;
+  z-index: 4545; /* 物理防線：層級一定要高，才不會被上傳的圖片蓋過去 */
+  padding: 4px; /* 偷偷擴大一點點點擊範圍，比較好按 */
+}
+.b-delete-prod-pic-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+.b-delete-prod-pic-btn svg:hover {
+  color: var(--text); /* 滑鼠嚕過去時變亮，提示使用者這顆可以按 */
+  transform: scale(1.1); /* 微動效，增加精品感 */
+}
+
+.photo-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  /* 🚀 核心修正：大框框完美維持 272/200 比例 */
+}
+.photo-upload-container .single-photo-ratio {
+  width: 100%;
+  aspect-ratio: 272/200; /* 只要寬度跟隨卡片縮放，高度自動等比例生成 */
+  height: auto !important; /* 強制拔掉以前寫死的固定高度 */
+}
+.photo-upload-container .photo-train-slots {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+.photo-upload-container .photo-train-slots .sub-photo-slot {
+  flex: 1;
+  cursor: pointer;
+}
+.photo-upload-container .photo-train-slots .sub-photo-slot.active-focus .custom-upload-box {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+.photo-upload-container .photo-train-slots .sub-photo-ratio {
+  aspect-ratio: 272/200; /* 只要寬度跟隨卡片縮放，高度自動等比例生成 */
+  height: auto !important;
 }
 
 /* 🚀 全域 HTMX 轉場動畫：讓刪除或新增不再「閃現」 */

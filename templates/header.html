@@ -14,10 +14,10 @@
   <div class="header-m">
     <ul>
       <li class="navber-list">
-        <a href="/">首頁</a>
+        <a href="{% url 'index' %}">首頁</a>
       </li>
       <li class="navber-list">
-        <a href="/">賣場</a>
+        <a href="{% url 'shop_list' %}">賣場</a>
       </li>
       <li class="navber-list">
         <a href="{% url 'blog' %}">社群</a>
@@ -42,13 +42,13 @@
       <!-- 漢堡選單 -->
       <ul class="navber-list-case">
         <li class="navber-list">
-          <a href="/">首頁</a>
+          <a href="{% url 'index' %}">首頁</a>
         </li>
         <li class="navber-list">
           <a href="{% url 'blog' %}">社群</a>
         </li>
         <li class="navber-list">
-          <a href="/">賣場</a>
+          <a href="{% url 'shop_list' %}">賣場</a>
         </li>
         <li class="navber-list">
           <a href="{% url 'profile' %}">個人</a>
