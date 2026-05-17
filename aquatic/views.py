@@ -12,6 +12,7 @@ from django.http import (
     JsonResponse,  # 🚀 回傳成功或失敗的訊息給 JS
 )
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string  # 🚀 補上這行，紅燈當場熄滅
 from django.utils.timezone import now  # 🚀 這是用來抓現在時間的機器
 from django.views import View
 
@@ -610,6 +611,7 @@ class AddProductBatchView(FisshPageBase, View):
         custom_content = request.POST.get("content")
 
         try:
+            created_products = []
             with transaction.atomic():
                 for i, name in enumerate(fish_names):
                     if not name.strip():
@@ -754,11 +756,58 @@ class AddProductBatchView(FisshPageBase, View):
                             AquaticImage.objects.create(
                                 product=new_fish, image=extra_img
                             )
-
+                    created_products.append(new_fish)
             # 因為你用了 HTMX (hx-post)，回傳這行腳本一樣能完美觸發前端重新整理
-            return HttpResponse(
-                '<script>alert("商品上架成功！"); location.reload();</script>'
-            )
+            cards_html = ""
+            for prod in created_products:
+                cards_html += render_to_string(
+                    "component/creature-card.html", {"item": prod}, request=request
+                )
+
+            # 🚀 補丁四：重新編排回傳的 HTML 盒子
+            # 利用 hx-swap-oob="beforeend:.grid"，強迫 HTMX 把裡面的卡片追加到你的 .grid 容器尾端
+            success_html = f"""
+                <div class="alert alert-success" style="padding: 1rem; background-color: oklch(0.85 0.05 140); border-radius: 0.5rem; margin-bottom: 1rem;">
+                    🎉 {len(created_products)} 件商品上架成功！
+                </div>
+
+                <div hx-swap-oob="afterbegin:.grid">
+                    {cards_html}
+                </div>
+                
+                <script>
+                    (function() {{
+                        alert("商品上架成功！");
+                        
+                        // 1. 清除暫存提示
+                        const emptyHint = document.querySelector('.empty-hint');
+                        if (emptyHint) emptyHint.remove();
+                        
+                        // 2. 表單欄位清空
+                        const singleForm = document.getElementById("singleUploadForm");
+                        const batchForm = document.getElementById("batchUploadForm");
+                        if (singleForm) singleForm.reset();
+                        if (batchForm) batchForm.reset();
+
+                        // 3. 圖片預覽還原
+                        document.querySelectorAll('.preview-img').forEach(img => {{
+                            img.src = "";
+                            img.style.display = 'none';
+                        }});
+                        
+                        // 🚀 因：原本寫 'block' 會踩爛 flex 置中。
+                        // 果：改成 '' 空字串，讓原本的 CSS 權重重新接管，按鈕秒回正中央！
+                        document.querySelectorAll('.upload-placeholder').forEach(p => {{
+                            p.style.display = ''; 
+                        }});
+                        
+                        document.querySelectorAll('.delete-prod-pic-btn').forEach(btn => {{
+                            btn.style.display = 'none';
+                        }});
+                    }})();
+                </script>
+            """
+            return HttpResponse(success_html)
 
         except Exception as e:
             return HttpResponse(f"儲存失敗：{str(e)}", status=400)
