@@ -311,62 +311,135 @@ class ProfileView(FisshPageBase):
 
 # 1. 範本 API (負責 存/改/刪)
 class ManageTemplateView(FisshAPIBase):
-    # 🚀 GET 負責「變身」
     def get(self, request, pk=None, *args, **kwargs):
         if pk:
             notice = ShopNotice.objects.get(id=pk, user=request.user)
-            # 這裡回傳你那個有 <input> 的編輯零件
             return render(request, "partials/notice_edit_form.html", {"n": notice})
         return HttpResponse("沒有提供 ID", status=400)
 
-    # 🚀 POST 負責「動作」
     def post(self, request, *args, **kwargs):
         temp_id = request.POST.get("id")
         action = request.POST.get("action")
 
-        # --- 刪除邏輯 ---
+        # --- 1. 刪除邏輯 ---
+        # --- 1. 刪除邏輯 ---
         if action == "delete":
             ShopNotice.objects.filter(id=temp_id, user=request.user).delete()
-            return HttpResponse("")  # 刪除成功回傳空，HTMX 會移除該元素
 
-        # --- 儲存邏輯 ---
+            # 🚀 核心刪除同步補丁：利用正則表達式物理清除字串記憶體，並拔除畫面 option
+            sync_script = f"""
+            <script>
+                (function() {{
+                    const deletedId = "{temp_id}";
+
+                    // 因：全域變數記憶體存在。果：用正則把對應的 <option> 標籤整條抹除
+                    if (typeof GLOBAL_NOTICE_OPTIONS !== 'undefined') {{
+                        const regex = new RegExp('<option value="' + deletedId + '">.*?</option>', 'g');
+                        GLOBAL_NOTICE_OPTIONS = GLOBAL_NOTICE_OPTIONS.replace(regex, '');
+                    }}
+
+                    // 因：掃描畫面上所有的提醒下拉選單。果：抓到該 ID 的 option 直接 .remove() 物理消滅
+                    document.querySelectorAll('select[name="fish_notice[]"], select[name="global_notice"], #global_notice').forEach(select => {{
+                        const opt = select.querySelector('option[value="' + deletedId + '"]');
+                        if (opt) opt.remove();
+                    }});
+                }})();
+            </script>
+            """
+            return HttpResponse(
+                sync_script
+            )  # 🚀 回傳腳本，HTMX 會用它替換掉原本的卡片卡槽
+
+        # --- 2. 儲存/更新邏輯 ---
         title = request.POST.get("title", "").strip()
         content = request.POST.get("content", "").strip()
 
         if not title or not content:
-            # 這裡可以回傳一個錯誤訊息，或是直接回傳 400
             return HttpResponse("內容不可為空", status=400)
+
         # 執行更新或新增
-        ShopNotice.objects.update_or_create(
+        notice_obj, created = ShopNotice.objects.update_or_create(
             id=temp_id if temp_id else None,
             user=request.user,
             defaults={"title": title, "content": content},
         )
 
-        # 🚀 關鍵改動：不要只回傳一小塊，要重新抓取所有範本，回傳整排清單
         notices = ShopNotice.objects.filter(user=request.user).order_by("-created_at")
 
-        # 🚀 這裡要對應你截圖中的那個檔案路徑
-        return render(request, "component/notice_list_items.html", {"notices": notices})
+        # 🚀 因：先渲染出常規的 HTML 清單
+        response = render(
+            request, "component/notice_list_items.html", {"notices": notices}
+        )
+
+        # 🚀 過：打包前端同步腳本。
+        # 註：因為前端已經改成 let，底下的 GLOBAL_NOTICE_OPTIONS += newOptHtml 就會精準解鎖。
+        new_opt_html = f'<option value="{notice_obj.id}">{notice_obj.title}</option>'
+        sync_script = f"""
+        <script>
+            (function() {{
+                const newId = "{notice_obj.id}";
+                const newName = "{notice_obj.title}";
+                const newOptHtml = '{new_opt_html}';
+
+                if (typeof GLOBAL_NOTICE_OPTIONS !== 'undefined' && !GLOBAL_NOTICE_OPTIONS.includes('value="' + newId + '"')) {{
+                    GLOBAL_NOTICE_OPTIONS += newOptHtml;
+                }}
+
+                document.querySelectorAll('select[name="fish_notice[]"], select[name="global_notice"], #global_notice').forEach(select => {{
+                    const existingOpt = select.querySelector('option[value="' + newId + '"]');
+                    if (!existingOpt) {{
+                        const opt = document.createElement('option');
+                        opt.value = newId;
+                        opt.textContent = newName;
+                        select.appendChild(opt);
+                    }} else {{
+                        existingOpt.textContent = newName;
+                    }}
+                }});
+            }})();
+        </script>
+        """
+        # 🚀 果：把腳本用二進位編碼，暴力黏在原有 HTML 屁股後面發射給 HTMX
+        response.content = response.content + sync_script.encode("utf-8")
+        return response
 
 
 # 2. 規格範本 API (負責 存/改/刪)
 class ManageSpecAPIView(FisshAPIBase):
     def post(self, request, *args, **kwargs):
         try:
-            # 🚀 因：HTMX 發送的是標準 POST 表單。果：改用 request.POST 拿資料。
-            # 不再使用 json.loads(request.body)
             temp_id = request.POST.get("id")
             action = request.POST.get("action")
             name = request.POST.get("name")
 
             # --- 1. 刪除邏輯 ---
+            # --- 1. 刪除邏輯 ---
             if action == "delete":
                 SpecTemplate.objects.filter(id=temp_id, user=request.user).delete()
-                # 🚀 改這裡！不要回傳 render_spec_list
-                # 因：前端 hx-target 是單一卡片的 ID。
-                # 果：回傳空字串，讓 HTMX 直接把該卡片「拔除」而不補東西。
-                return HttpResponse("")
+
+                # 🚀 核心刪除同步補丁：利用正則表達式物理清除字串記憶體，並拔除畫面 option
+                sync_script = f"""
+                <script>
+                    (function() {{
+                        const deletedId = "{temp_id}";
+
+                        // 因：全域變數記憶體存在。果：用正則把對應的 <option> 標籤整條抹除
+                        if (typeof GLOBAL_SPEC_OPTIONS !== 'undefined') {{
+                            const regex = new RegExp('<option value="' + deletedId + '">.*?</option>', 'g');
+                            GLOBAL_SPEC_OPTIONS = GLOBAL_SPEC_OPTIONS.replace(regex, '');
+                        }}
+
+                        // 因：掃描畫面上所有的規格下拉選單。果：抓到該 ID 的 option 直接 .remove() 物理消滅
+                        document.querySelectorAll('select[name="fish_spec[]"], select[name="global_spec"], #global_spec').forEach(select => {{
+                            const opt = select.querySelector('option[value="' + deletedId + '"]');
+                            if (opt) opt.remove();
+                        }});
+                    }})();
+                </script>
+                """
+                return HttpResponse(
+                    sync_script
+                )  # 🚀 回傳腳本，HTMX 會用它替換掉原本的卡片卡槽
 
             # --- 2. 儲存/更新邏輯 ---
             if not name:
@@ -374,8 +447,6 @@ class ManageSpecAPIView(FisshAPIBase):
                     {"status": "error", "message": "印章名稱不能為空"}, status=400
                 )
 
-            # 🚀 核心改動：手動把 POST 裡面的規格欄位抓出來，重新打包成 JSON 格式
-            # 我們過濾掉不需要的欄位（如 id, name, action, csrf）
             exclude_keys = ["id", "action", "name", "csrfmiddlewaretoken"]
             spec_data = {
                 k: v
@@ -383,7 +454,6 @@ class ManageSpecAPIView(FisshAPIBase):
                 if k not in exclude_keys and v.strip() != ""
             }
 
-            # 執行更新或新增
             if temp_id:
                 spec_obj = SpecTemplate.objects.filter(
                     id=temp_id, user=request.user
@@ -396,25 +466,79 @@ class ManageSpecAPIView(FisshAPIBase):
                 spec_obj = SpecTemplate(user=request.user)
 
             spec_obj.name = name
-            spec_obj.data = spec_data  # 🚀 這裡存入資料庫時，Django 會自動轉成 JSON
+            spec_obj.data = spec_data
             spec_obj.save()
 
-            # --- 3. 回傳整排清單 ---
-            return self.render_spec_list(request)
+            # --- 3. 獲取原有的清單 HTML 回傳（呼叫下方補好的工具） ---
+            response = self.render_spec_list(request)
+
+            # 核心因果同步線：利用 JS 強行修改前端記憶體與即時選單
+            new_opt_html = f'<option value="{spec_obj.id}">{spec_obj.name}</option>'
+            sync_script = f"""
+            <script>
+                (function() {{
+                    const newId = "{spec_obj.id}";
+                    const newName = "{spec_obj.name}";
+                    const newOptHtml = '{new_opt_html}';
+
+                    if (typeof GLOBAL_SPEC_OPTIONS !== 'undefined' && !GLOBAL_SPEC_OPTIONS.includes('value="' + newId + '"')) {{
+                        GLOBAL_SPEC_OPTIONS += newOptHtml;
+                    }}
+
+                    document.querySelectorAll('select[name="fish_spec[]"], select[name="global_spec"], #global_spec').forEach(select => {{
+                        const existingOpt = select.querySelector('option[value="' + newId + '"]');
+                        if (!existingOpt) {{
+                            const opt = document.createElement('option');
+                            opt.value = newId;
+                            opt.textContent = newName;
+                            select.appendChild(opt);
+                        }} else {{
+                            existingOpt.textContent = newName;
+                        }}
+                    }});
+                }})();
+            </script>
+            """
+            # 這裡就不會再噴 NoneType 錯誤了，因為 response 拿到了實體物件
+            response.content = response.content + sync_script.encode("utf-8")
+            return response
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-    # 封裝一個小工具，讓刪除跟儲存都能共用回傳清單的邏輯
+    # 🚀 實體修復線：把原本洗掉的渲染代碼刻回來
     def render_spec_list(self, request):
+        # 1. 撈出該用戶的實體規格資料
         spec_templates = SpecTemplate.objects.filter(user=request.user).order_by("-id")
+
+        # 2. 🚀 核心因果補丁 A：定義核心規格的標籤與型態，對齊你 HTML 裡的 item.type 與 item.label
+        core_config = [
+            {"label": "pH值", "type": "range"},
+            {"label": "適宜溫度", "type": "range"},
+            {"label": "體長(cm)", "type": "single"},
+            {"label": "建議水量(L)", "type": "single"},
+        ]
+
+        # 3. 🚀 核心因果補丁 B：定義次要規格的字串陣列，對齊你 HTML 裡的 {% for label in extra_labels %}
+        extra_labels = [
+            "GH硬度",
+            "KH硬度",
+            "性情",
+            "食性",
+            "比重",
+            "水流強度",
+            "光照需求",
+        ]
+
+        # 4. 把所有必備零件打包發射給前端 HTML
         return render(
             request,
             "component/spec_list_items.html",
             {
                 "spec_templates": spec_templates,
-                "core_config": CORE_SPECS_CONFIG,
-                "extra_labels": EXTRA_SPECS,
+                "templates": spec_templates,  # 備用名牌
+                "core_config": core_config,  # 🚀 讓前端核心迴圈動起來
+                "extra_labels": extra_labels,  # 🚀 讓前端次要迴圈動起來
             },
         )
 

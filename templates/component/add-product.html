@@ -242,12 +242,13 @@
  你必須寫在script裡面，
 因為這樣才能在 JS 裡面使用這兩個變數（GLOBAL_SPEC_OPTIONS 和 GLOBAL_NOTICE_OPTIONS）來生成下拉選單的內容。這樣做的好處是，你只需要在 HTML 模板裡面定義一次選項，然後在 JS 裡面就可以重複使用，避免了重複的 HTML 代碼，也讓你的 JS 更加靈活和易於維護。 {% endcomment %}
 <script>
-const GLOBAL_SPEC_OPTIONS = `
+// 🚀 修正：從 const 改成 let，解鎖 JavaScript 記憶體的寫入權限
+let GLOBAL_SPEC_OPTIONS = `
     <option value="">選擇規格範本...</option>
     {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
 `;
 
-const GLOBAL_NOTICE_OPTIONS = `
+let GLOBAL_NOTICE_OPTIONS = `
     <option value="">選擇提醒範本...</option>
     {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
 `;
