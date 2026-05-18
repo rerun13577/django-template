@@ -678,3 +678,105 @@
     }
   }
 }
+
+// 小魚編輯按鈕
+/* 🚀 新增：右上角三個點選單的絕對定位容器 */
+
+/* 🚀 1. 三個點容器：絕對定位在卡片右上角 */
+.fissh-card-menu-wrap {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 100; /* 確保權重高於圖片，不被遮擋 */
+}
+
+/* 🚀 2. 三個點圖標按鈕 */
+.fissh-card-menu-dots {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--border-muted);
+  background-color: var(--bg-light);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-s);
+  transition: var(--transition); /* 套用你的彈簧過渡 */
+}
+
+/* 游標移入三個點時高亮 */
+.fissh-card-menu-dots:hover {
+  background-color: var(--bg-big-light);
+  border-color: var(--border);
+  color: var(--text);
+  box-shadow: var(--shadow-m);
+}
+
+/* 🚀 3. 下拉選單面板（100% 復刻主頁動畫質感） */
+.fissh-card-menu-pane {
+  position: absolute;
+  top: 0%;
+  right: 0;
+  width: 11rem;
+  background: var(--bg-light);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+
+  /* 🔗 動態因果：預設隱形、往上偏移 10px、關閉點擊偵測 */
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+/* 🚀 4. 當被 JS 注入顯示類別時的物理狀態 */
+.fissh-card-menu-pane.fissh-show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto; /* 恢復點擊偵測 */
+}
+
+/* 🚀 5. 選單內部的每一列項目 */
+.fissh-card-menu-row {
+  padding: 0.75rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--ff-primary);
+  font-weight: var(--fw-regular);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.fissh-card-menu-row:hover {
+  background-color: var(--bg-big-light);
+  color: var(--text);
+}
+
+/* 圓角邊界修飾，防止 hover 顏色超出面板 */
+.fissh-card-menu-row:first-child {
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+}
+.fissh-card-menu-row:last-child {
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
+}
+
+/* 🚀 6. 獨立危險紅項目 */
+.fissh-card-menu-row.fissh-danger-node {
+  color: var(--danger);
+}
+.fissh-card-menu-row.fissh-danger-node:hover {
+  background-color: var(--bg-big-light);
+  color: var(--danger);
+}
+
+.product-creature.fissh-loading {
+  position: relative;
+  opacity: 0.4; /* 因：進入非同步傳輸。果：整張卡片黑化變暗 60% */
+  pointer-events: none; /* 因：遮斷瀏覽器訊號。果：卡片內所有連結、三個點點全面物理性死鎖，不可點擊 */
+  cursor: not-allowed;
+  transition: opacity 0.2s ease;
+}

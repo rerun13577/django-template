@@ -92,6 +92,9 @@ class AquaticLife(BaseModel):
         null=True,
         blank=True,
     )
+    is_active = models.BooleanField(
+        default=True, db_index=True, verbose_name="是否有效"
+    )
     PRICE_STATUS_CHOICES = [("NORMAL", "正常顯示價格"), ("NOT_FOR_SALE", "非賣品")]
 
     # --- 欄位定義 ---

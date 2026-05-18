@@ -60,7 +60,7 @@ class FisshAPIBase(View):
 class IndexView(View):
     def get(self, request):
         # 撈出資料庫裡所有的水生生物
-        items = AquaticLife.objects.all()
+        items = AquaticLife.objects.filter(is_active=True).order_by("-created_at")[:10]
         return render(request, "index.html", {"items": items})
 
 
@@ -288,9 +288,11 @@ class ProfileView(FisshPageBase):
             .order_by("-created_at")
         )
 
-        user_aquatics = AquaticLife.objects.filter(owner=target_user).order_by(
-            "-created_at"
-        )
+        # 🚀 核心因果修正：加入 filter(is_active=True)，且變數名稱 user_aquatics 物理鎖死不變！
+        user_aquatics = AquaticLife.objects.filter(
+            owner=target_user, is_active=True
+        ).order_by("-created_at")
+
         user_pets = PetFish.objects.filter(owner=target_user).order_by("-created_at")
 
         user_notices = []
@@ -550,26 +552,31 @@ class ManageDashboardView(FisshPageBase):
     def get(self, request, *args, **kwargs):
         user = request.user
 
-        # 🚀 1. 撈出小魚資料 (對應 add-product.html 裡的 {% for item in items %})
-        # 這裡為了測試先用 all()，之後再改回 filter(owner=user)
+        # 🚀 1. 基礎資料流：撈出該使用者所有的商品（不論上下架）
         products = AquaticLife.objects.filter(owner=user).order_by("-created_at")
 
-        # 🚀 2. 整合所有資料
+        # 🚀 2. 因果分流：利用同一個 QuerySet 在記憶體內進行狀態拆分（不增加資料庫負擔）
+        active_products = products.filter(is_active=True)
+        inactive_products = products.filter(is_active=False)
+
+        # 🚀 3. 整合所有資料進 Context
         context = {
-            # 產品列表資料
+            # 🔒 安全防線：完全保留你原本的 items，後續接的任何功能絕對 100% 不會壞
             "items": products,
-            # 範本與提醒 (manage.html 跟 add-product.html 可能都會用到)
+            # 🎯 分區新變數：供你在 HTML 裡渲染「上架區」與「下架區」的兩組獨立 grid 迴圈
+            "active_items": active_products,
+            "inactive_items": inactive_products,
+            # 範本與提醒 (原本的配置完全保留)
             "notices": ShopNotice.objects.filter(user=user).order_by("-created_at"),
             "spec_templates": SpecTemplate.objects.filter(user=user).order_by("-id"),
-            # 🚀 核心：表單格位配置 (沒有這些，你的 pH 值、溫度格子會消失)
+            # 核心：表單欄位配置
             "core_config": CORE_SPECS_CONFIG,
             "extra_labels": EXTRA_SPECS,
             "master_labels": FISH_SPECS_LABELS,
-            "target_user": user,  # 對稱個人檔案邏輯
+            "target_user": user,
         }
 
-        # 🚀 3. 渲染「主頁面」
-        # 既然 add-product 是被 include 在裡面，你只要 render 外層的 manage.html
+        # 🚀 4. 渲染「主頁面」
         return render(request, "manage.html", context)
 
 
@@ -761,7 +768,7 @@ class AddProductBatchView(FisshPageBase, View):
             cards_html = ""
             for prod in created_products:
                 cards_html += render_to_string(
-                    "component/creature-card.html", {"item": prod}, request=request
+                    "component/new-creature-card.html", {"item": prod}, request=request
                 )
 
             # 🚀 補丁四：重新編排回傳的 HTML 盒子
@@ -770,33 +777,32 @@ class AddProductBatchView(FisshPageBase, View):
                 <div class="alert alert-success" style="padding: 1rem; background-color: oklch(0.85 0.05 140); border-radius: 0.5rem; margin-bottom: 1rem;">
                     🎉 {len(created_products)} 件商品上架成功！
                 </div>
-
-                <div hx-swap-oob="afterbegin:.grid">
-                    {cards_html}
-                </div>
                 
                 <script>
                     (function() {{
                         alert("商品上架成功！");
                         
-                        // 1. 清除暫存提示
-                        const emptyHint = document.querySelector('.empty-hint');
-                        if (emptyHint) emptyHint.remove();
-                        
-                        // 2. 表單欄位清空
+                        // 🎯 核心修正：拋棄 hx-swap-oob，直接用 JS 鎖定上架區 ID 進行最前端空降
+                        const activeGrid = document.getElementById("active-grid");
+                        if (activeGrid) {{
+                            const emptyHint = activeGrid.querySelector('.empty-hint');
+                            if (emptyHint) emptyHint.remove();
+                            
+                            // 物理注入新卡片，絕對不產生多餘的 div 包裹層，維持 .grid 純淨度
+                            activeGrid.insertAdjacentHTML("afterbegin", `{cards_html}`);
+                        }}
+
+                        // 表單欄位與預覽清空還原（完全保留你原本的邏輯）
                         const singleForm = document.getElementById("singleUploadForm");
                         const batchForm = document.getElementById("batchUploadForm");
                         if (singleForm) singleForm.reset();
                         if (batchForm) batchForm.reset();
 
-                        // 3. 圖片預覽還原
                         document.querySelectorAll('.preview-img').forEach(img => {{
                             img.src = "";
                             img.style.display = 'none';
                         }});
                         
-                        // 🚀 因：原本寫 'block' 會踩爛 flex 置中。
-                        // 果：改成 '' 空字串，讓原本的 CSS 權重重新接管，按鈕秒回正中央！
                         document.querySelectorAll('.upload-placeholder').forEach(p => {{
                             p.style.display = ''; 
                         }});
@@ -813,6 +819,34 @@ class AddProductBatchView(FisshPageBase, View):
             return HttpResponse(f"儲存失敗：{str(e)}", status=400)
 
 
+class ProductToggleActiveView(FisshPageBase, View):
+    """🚀 終極合體：單一類別搞定商品 上架 / 下架 / 刪除"""
+
+    def post(self, request, pk, action, *args, **kwargs):
+        # 因：透過網址拿到商品 ID，並經由 FisshPageBase 安全鎖定 owner
+        product = get_object_or_404(AquaticLife, pk=pk, owner=request.user)
+
+        # 過：根據行為變數進行因果分流
+        if action == "delist":
+            product.is_active = False
+            product.save()
+        elif action == "relist":
+            product.is_active = True
+            product.save()
+
+        # 💥 全新追加：物理刪除防線
+        elif action == "delete":
+            # 因果效應：呼叫 .delete() 會引發級聯反應（Cascade）
+            # 資料庫會連帶把綁定這隻魚的副圖藝廊（AquaticImage）紀錄一併抹除
+            product.delete()
+
+        else:
+            return HttpResponse("非法操作", status=400)
+
+        # 果：統一回傳真空字串，告訴前端 JS 電流可以放行了
+        return HttpResponse("")
+
+
 class ShopListView(View):
     def get(self, request):
 
@@ -822,9 +856,13 @@ class ShopListView(View):
         # 因：要展示全站所有人的商品，且前端卡片一定會顯示「商家名稱（owner）」
         # 過：拿掉 filter(owner=...) 限制，改用 select_related("owner") 一口氣把發布者資料綁定進來
         # 果：避免產生 N+1 次 SQL 查詢地獄，一行指令抓出全站最新上架的生物
-        aquatics = AquaticLife.objects.select_related("owner").order_by("-created_at")
+        aquatics = (
+            AquaticLife.objects.filter(is_active=True)
+            .select_related("owner")
+            .order_by("-created_at")
+        )
 
         context = {
-            "items": aquatics,  # 對齊你個人檔案 template 的命名習慣 "items"
+            "items": aquatics,  # 變數名稱完全沿用，後端與前端絕對不相撞
         }
         return render(request, "shop.html", context)

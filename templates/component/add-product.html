@@ -230,11 +230,79 @@
         </div>
     </form>
     <div id="response-area" style="display: none;"></div>
-    <div class="grid">
-        {% for item in items %}
-            {% include "component/creature-card.html" with item=item %}
+    {% comment %} 小魚顯示區 {% endcomment %}
+    <h2>上架中商品</h2>
+    <div class="grid" id="active-grid">
+        {% for item in active_items %}
+            <a class="product-creature" href="/" id="product-card-{{ item.id }}">
+                <div class="fissh-card-menu-wrap">
+                    <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
+                    <div class="fissh-card-menu-pane">
+                        <div class="fissh-card-menu-row"
+                             onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
+                        <div class="fissh-card-menu-row"
+                             onclick="runFisshCardAction(event, 'delist', '{{ item.id }}')">下架商品</div>
+                        <div class="fissh-card-menu-row fissh-danger-node"
+                             onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
+                    </div>
+                </div>
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+                {% else %}
+                    <div style="width: 100%;
+                                height: 200px;
+                                background-color: var(--bg-light);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: var(--text-muted)">尚無圖片</div>
+                {% endif %}
+                <h3 class="product-creature-title">{{ item.name }}</h3>
+                {% if item.price_status == 'NOT_FOR_SALE' %}
+                    <p class="product-creature-subtitle non-sale">無價珍寶</p>
+                {% else %}
+                    <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                {% endif %}
+            </a>
         {% empty %}
-            <p class="empty-hint">目前還沒有上架產品喔！</p>
+            <p class="empty-hint">目前沒有上架商品喔！</p>
+        {% endfor %}
+    </div>
+    <h2>已下架商品</h2>
+    <div class="grid" id="inactive-grid">
+        {% for item in inactive_items %}
+            <a class="product-creature" href="/" id="product-card-{{ item.id }}">
+                <div class="fissh-card-menu-wrap">
+                    <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
+                    <div class="fissh-card-menu-pane">
+                        <div class="fissh-card-menu-row"
+                             onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
+                        <div class="fissh-card-menu-row"
+                             onclick="runFisshCardAction(event, 'relist', '{{ item.id }}')">上架商品</div>
+                        <div class="fissh-card-menu-row fissh-danger-node"
+                             onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
+                    </div>
+                </div>
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+                {% else %}
+                    <div style="width: 100%;
+                                height: 200px;
+                                background-color: var(--bg-light);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: var(--text-muted)">尚無圖片</div>
+                {% endif %}
+                <h3 class="product-creature-title">{{ item.name }}</h3>
+                {% if item.price_status == 'NOT_FOR_SALE' %}
+                    <p class="product-creature-subtitle non-sale">無價珍寶</p>
+                {% else %}
+                    <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                {% endif %}
+            </a>
+        {% empty %}
+            <p class="empty-hint">目前沒有下架商品。</p>
         {% endfor %}
     </div>
 </div>

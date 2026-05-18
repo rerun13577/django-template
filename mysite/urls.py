@@ -57,6 +57,11 @@ urlpatterns = [
     path("api/add-product/", views.AddProductBatchView.as_view(), name="add-product"),
     # 🚀 修正這行：前面補上 views. 讓它對齊整體的引入規格
     path("shop/", views.ShopListView.as_view(), name="shop_list"),
+    path(
+        "product/<int:pk>/<str:action>/",
+        views.ProductToggleActiveView.as_view(),
+        name="toggle_product",
+    ),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

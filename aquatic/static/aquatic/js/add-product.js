@@ -609,3 +609,155 @@ function removeActivePhoto(e) {
   container.querySelector(".viewport-placeholder").style.display = "flex";
   btn.style.display = "none";
 }
+
+// 編輯小魚
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 🚀 核心因果修正：改用全域事件代理，直接監聽整個 document
+  document.addEventListener("click", (e) => {
+    // 🎯 1. 偵測點擊目標：不論新卡片還是舊卡片，只要點擊的對象（或其祖先）包含三個點 class
+    const btn = e.target.closest(".fissh-card-menu-dots");
+
+    if (btn) {
+      // 因：使用者點擊了三個點。
+      // 果：物理攔截！秒斷所有向上冒泡的電流，絕對不讓外層 <a> 標籤觸發 href="/" 的跳轉！
+      e.preventDefault();
+      e.stopPropagation();
+
+      const pane = btn.nextElementSibling;
+      const isOpen = pane.classList.contains("fissh-show");
+
+      // 物理防護：先把畫面上所有可能開著的選單全數收起，避免重疊
+      document.querySelectorAll(".fissh-card-menu-pane").forEach((p) => p.classList.remove("fissh-show"));
+
+      if (!isOpen) {
+        pane.classList.add("fissh-show"); // 面板就地顯形
+      }
+      return; // 阻斷後續邏輯，直接退場
+    }
+
+    // 🎯 2. 全局雷達防線：如果點擊的地方跟整個選單結構無關，代表使用者想關閉選單
+    if (!e.target.closest(".fissh-card-menu-wrap")) {
+      document.querySelectorAll(".fissh-card-menu-pane").forEach((pane) => {
+        pane.classList.remove("fissh-show");
+      });
+    }
+  });
+});
+
+// 3. 獨立功能觸發器：點擊選單選項時執行
+function runFisshCardAction(event, action, itemId) {
+  event.preventDefault();
+  event.stopPropagation(); // 物理斷電：阻止外層 a 標籤跳轉
+
+  const pane = event.currentTarget.closest(".fissh-card-menu-pane");
+  if (pane) pane.classList.remove("fissh-show");
+
+  // 🎯 精準定位當前點擊的這張商品卡片本體
+  const card = document.getElementById(`product-card-${itemId}`);
+  const csrftoken = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+
+  if (action === "edit") {
+    console.log(`[ACTION] 編輯商品 ID: ${itemId}`);
+  } else if (action === "delist") {
+    // 因：準備向後端發送下架 POST。果：立刻幫卡片上一道鎖，變暗且防連點
+    if (card) card.classList.add("fissh-loading");
+
+    fetch(`/product/${itemId}/delist/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrftoken },
+    })
+      .then((res) => {
+        if (res.ok) {
+          // 🎯 物理移動至下架區
+          const inactiveGrid = document.getElementById("inactive-grid");
+          if (card && inactiveGrid) {
+            const emptyHint = inactiveGrid.querySelector(".empty-hint");
+            if (emptyHint) emptyHint.remove();
+
+            inactiveGrid.appendChild(card); // 卡片自動滾至下方
+
+            // 動態重寫按鈕線路：改為上架屬性
+            const delistBtn = card.querySelector('[onclick*="delist"]');
+            if (delistBtn) {
+              delistBtn.textContent = "上架商品";
+              delistBtn.setAttribute("onclick", `runFisshCardAction(event, 'relist', '${itemId}')`);
+            }
+          }
+        }
+      })
+      .finally(() => {
+        // 果：不論後端成功或失敗，通訊結束物理開鎖，還原字體與亮度
+        if (card) card.classList.remove("fissh-loading");
+      });
+  } else if (action === "relist") {
+    // 因：準備向後端發送重新上架 POST。果：卡片立刻變暗、死鎖
+    if (card) card.classList.add("fissh-loading");
+
+    fetch(`/product/${itemId}/relist/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrftoken },
+    })
+      .then((res) => {
+        if (res.ok) {
+          // 🎯 物理移動至上架區
+          const activeGrid = document.getElementById("active-grid");
+          if (card && activeGrid) {
+            const emptyHint = activeGrid.querySelector(".empty-hint");
+            if (emptyHint) emptyHint.remove();
+
+            activeGrid.appendChild(card); // 卡片自動回彈至上方
+
+            // 動態重寫按鈕線路：改回下架屬性
+            const relistBtn = card.querySelector('[onclick*="relist"]');
+            if (relistBtn) {
+              relistBtn.textContent = "下架商品";
+              relistBtn.setAttribute("onclick", `runFisshCardAction(event, 'delist', '${itemId}')`);
+            }
+          }
+        }
+      })
+      .finally(() => {
+        // 果：通訊完畢，解鎖卡片
+        if (card) card.classList.remove("fissh-loading");
+      });
+  } else if (action === "delete") {
+    console.log(`[ACTION] 觸發物理刪除，ID: ${itemId}`);
+
+    // 🛡️ 防呆防線：萬一指頭殘點錯，直接在網頁層發射中斷訊號
+    if (!confirm("幹，確定要刪除這商品嗎？刪掉就死透了、資料庫救不回來喔！")) {
+      return; // 使用者按取消：電流直接掐斷，什麼都不發生
+    }
+
+    // 因：確定要刪，立刻上鎖變暗，防止使用者在傳輸的 0.2 秒內瘋狂連點
+    if (card) card.classList.add("fissh-loading");
+
+    // 發射非同步電訊號
+    fetch(`/product/${itemId}/delete/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrftoken },
+    })
+      .then((res) => {
+        if (res.ok) {
+          // 果：資料庫那邊已經燒毀。前端直接下達 remove() 指令
+          if (card) {
+            // 網頁節點（DOM）當場斷根，不留任何渣滓與排版空隙
+            card.remove();
+            alert("商品已徹底刪除！");
+          }
+        } else {
+          alert("刪除失敗，後端電路可能有鬼。");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        // 安全退場：萬一沒刪成功，至少把卡片解鎖
+        if (card) card.classList.remove("fissh-loading");
+      });
+  }
+}
