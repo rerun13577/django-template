@@ -1,0 +1,374 @@
+@charset "UTF-8";
+/* 🧱 完美灌入你給的色調與規格物理常數 */
+
+/* 📦 藝廊主容器 */
+.fissh-gallery-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 🎥 大圖展示框（350/250 黃金比例控管） */
+.main-viewport-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 350 / 250; /* 🎯 物理鎖死 350:250 比例 */
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-m);
+
+  /* ────────────────────────────────────────────────────────
+     ⚡ 核心因果加固：開啟重力置中防線
+     ──────────────────────────────────────────────────────── */
+  display: flex; /* 因：開啟彈性盒子流 */
+  justify-content: center; /* 果：水平方向（左右）絕對置中 */
+  align-items: center; /* 果：垂直方向（上下）絕對置中 */
+}
+
+/* 👻 佔位符盒子 */
+.gallery-placeholder {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-muted);
+}
+
+.placeholder-text {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* 🖼️ 大圖主體（完全覆蓋） */
+.viewport-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 📋 下方小圖四網格 */
+.thumb-train-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0.75rem 1rem 0 1rem;
+  gap: 0.5rem;
+}
+
+/* 🏷️ 單個小圖卡槽 */
+.detail-thumb-slot {
+  aspect-ratio: 350 / 250; /* 🎯 物理鎖死 350:250 比例 */
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  border: 2px solid var(--border-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  opacity: 0.5;
+}
+
+/* 小圖卡槽內圖片 */
+.detail-thumb-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 🔥 點擊激活高亮狀態（權力通電） */
+.detail-thumb-slot.active-focus {
+  border: 2px solid var(--primary);
+  opacity: 1;
+}
+
+/* ────────────────────────────────────────────────────────
+   ⚡ 核心因果：價格與狀態區塊防線
+   ──────────────────────────────────────────────────────── */
+
+/* 💵 價格主容器：用來控制與上方品種名稱（Name）的物理間距 */
+.price-container {
+  margin: 1.5rem 0 0rem var(--article-margin); /* 🔗 上方距離 0.5rem，底部距離 1.5rem */
+  display: flex;
+  align-items: baseline; /* 🔗 關鍵：讓錢字號 $ 和 數字的底部完美對齊 */
+  gap: 0.25rem;
+}
+
+/* 💰 正常價格數字樣式 */
+.price-node {
+  font-size: 2.5rem; /* 放大字體，買家一眼就能抓到 */
+  font-weight: 900; /* 物理加粗，製造視覺重心 */
+  color: var(--primary); /* 🎯 吃你的次色調（霓虹紫/桃紅，極致黑系質感） */
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.2); /* 選擇性微發光，營造水族高檔感 */
+  margin-bottom: 0.1rem;
+}
+
+/* 🏷️ 貨幣前綴符號（NT$）*/
+.price-currency {
+  font-size: 2rem;
+  font-weight: var(--fw-regular, 400);
+  color: var(--text-muted); /* 讓符號低調，突顯主數字 */
+}
+
+/* 🚫 非賣品 / 收藏品特殊狀態（對齊你的 'NOT_FOR_SALE' 狀態） */
+.price-not-for-sale {
+  font-size: 1.25rem;
+  font-weight: var(--fw-bold, 900);
+  color: var(--danger); /* 🎯 吃你的警告色（紅色），物理斷絕購買因果 */
+  background-color: oklch(0.2 0.05 31.38); /* 淡淡的紅黑底色襯托 */
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--danger);
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-s);
+}
+
+/* 🎯 第二組：全新衍生樣式（專門給「公開詳細頁」內文使用）
+   因：詳細頁是大排版，如果還用 absolute 會導致文字離奇飄浮在大框或價格上方。
+   果：拔除絕對定位，回復自然流（Block/Flex），讓它工整地待在價格或描述旁邊。 */
+.in-article-city {
+  display: inline-flex; /* 💡 改為 inline-flex，寬度自適應文字長度 */
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+
+  background-color: var(--info); /* 🎨 完全照抄你的原廠設定色調 */
+  border-radius: 1rem;
+  padding: 0.25rem 0.85rem;
+  color: var(--text);
+  margin: 0rem var(--article-margin) 0rem 0rem;
+  box-shadow: var(--shadow-m);
+
+  font-size: 1.25rem;
+}
+
+/* ────────────────────────────────────────────────────────
+   ⚡ 核心因果：5 規格「上三下二」黃金對稱防線
+   ──────────────────────────────────────────────────────── */
+
+/* 📦 規格大外殼 */
+.specs-main-container {
+  display: flex;
+  flex-wrap: wrap; /* 因：允許折行，這是上三下二的物理基礎 */
+  justify-content: center; /* 果：當第二排剩 2 個時，自動在水平正中央對稱靠攏 */
+  gap: 1rem; /* 卡片物理間距 */
+  width: 100%;
+  padding: 1rem var(--article-margin);
+}
+
+/* 🏷️ 單個規格字卡外殼 */
+.spec-card-node {
+  /* 因：在扣除 gap 影響的前提下，設定為 30% 左右 */
+  flex: 0 1 calc(33.333% - 1rem);
+  min-width: 160px; /* 物理防線：防寬度過窄字體擠壓 */
+
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
+  padding: 1.25rem 1rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 讓內部所有 SVG 與文字絕對水平居中 */
+  text-align: center;
+  box-shadow: var(--shadow-s);
+  transition: var(--transition);
+}
+
+.spec-card-node:hover {
+  border-color: var(--scondary); /* 滑鼠滑過去變色，提升互動感 */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-m);
+}
+
+/* 🔮 SVG 圖案獨立包裝艙 */
+.spec-icon-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: var(--primary); /* 預設讓你的 SVG 繼承水族主色調（綠色） */
+}
+
+/* 確保裝進來的 SVG 物理比例不暴走 */
+.spec-icon-wrapper svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: color var(--transition); /* 補上過渡，讓變色有絲滑的淡入淡出感 */
+}
+.spec-card-node:hover .spec-icon-wrapper svg {
+  color: var(--secondary); /* 物理連通：卡片亮，SVG 就跟著一起亮！ */
+}
+
+/* 📱 RWD 手機版自動調變適應 */
+@media screen and (max-width: 768px) {
+  .spec-card-node {
+    /* 🎯 關鍵 A：拔除 min-width 的硬性限制，改由百分比徹底接管空間 */
+    min-width: 0 !important;
+
+    /* 🎯 關鍵 B：鎖死每排剛好 2 個卡片（50% 扣除 gap 的一半） */
+    flex: 0 1 calc(50% - 0.5rem);
+    padding: 1rem 0.75rem;
+  }
+
+  /* 🎯 關鍵 C：物理擒拿第 5 個（最後一個）卡片，讓它橫跨滿版 100% */
+  .spec-card-node:last-child {
+    flex: 0 1 100%;
+    min-height: 100px;
+
+    /* 選擇性優化：讓滿版的卡片內容改為橫向排列，排版會極致工整 */
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+    text-align: left;
+  }
+
+  /* 滿版時微調圖案下邊距，改為右邊距 */
+  .spec-card-node:last-child .spec-icon-wrapper {
+    margin-bottom: 0;
+  }
+}
+
+/* 📝 規格標題（如：適宜溫度） */
+.spec-info-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  font-weight: var(--fw-medium, 500);
+}
+
+/* 💾 規格數據實體（如：24 ~ 28 °C） */
+.spec-info-value {
+  margin-top: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--text);
+  font-weight: var(--fw-bold, 700);
+}
+
+/* 📱 RWD 手機版自動調變適應 */
+@media screen and (max-width: 768px) {
+  .spec-card-node {
+    /* 在小螢幕上自動調變為每排 2 個（50%），最後一個自動置中 */
+    flex: 0 1 calc(50% - 0.5rem);
+    padding: 1rem 0.75rem;
+  }
+}
+
+.spec-title {
+  font-size: 1.5rem; /* 物理放大，與下方的卡片數據拉開階級 */
+  font-weight: var(--fw-bold, 800); /* 強制加粗，直擊視覺重心 */
+  color: var(--text-muted); /* 吃全站主色（亮白或純黑） */
+
+  margin: 0.5rem var(--article-margin) 1.25rem var(--article-margin); /* 🔗 上方距離 1rem，底部距離 1.25rem，左右與文章同邊距 */
+
+  display: flex;
+  align-items: center; /* 讓標題文字與左側裝飾條垂直置中 */
+  gap: 0.6rem; /* 裝飾線與文字之間的空隙 */
+  letter-spacing: 0.03em;
+}
+
+/* 🧬 側邊物理裝飾小電路（左側發光高亮條） */
+.spec-title::before {
+  content: ""; /* 物理生成一個空白隱形盒子 */
+  width: 4px; /* 寬度 4 像素 */
+  height: 1.35rem; /* 高度完美咬合文字字級 */
+  background-color: var(--primary); /* 🎯 灌入你的水族主色（綠色），極致黑系質感 */
+  border-radius: var(--radius-s, 2px); /* 邊角微圓潤，不刺眼 */
+  box-shadow: 0 0 8px var(--primary); /* 讓主色小條微發光，細節高級感拉滿 */
+}
+
+/* 📦 2×X 網格大容器 */
+.specs-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 🎯 關鍵：鎖死 2 欄（2*X），左右各佔 50% */
+  gap: 0px 1.5rem; /* 上下緊貼（0px），左右推開 1.5rem 物理安全距離 */
+  width: 100%;
+  padding: 1rem var(--article-margin) 2rem var(--article-margin); /* 🔗 上方距離 1rem，底部距離 2rem，左右與文章同邊距 */
+}
+
+/* 🏷️ 單個數據列盒子（一組 Key-Value） */
+.sub-spec-row {
+  display: flex;
+  justify-content: space-between; /* 因：名稱靠左，數值靠右 */
+  align-items: center;
+  padding: 0.85rem 0.5rem;
+  border-bottom: 1px solid var(--border-muted); /* 📊 用虛化底線切出表格因果，再多數據也工整 */
+  transition: var(--transition);
+}
+
+/* 滑鼠滑過去微亮，提升動態高階感 */
+.sub-spec-row:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* 📝 規格名稱（如：適合底砂、繁殖難度） */
+.sub-spec-key {
+  font-size: 0.95rem;
+  color: var(--text-muted); /* 名稱內斂低調 */
+  font-weight: var(--fw-medium, 500);
+}
+
+/* 💾 規格實體數值（如：黑土、中等） */
+.sub-spec-value {
+  font-size: 0.95rem;
+  color: var(--text); /* 數值高亮亮白 */
+  font-weight: var(--fw-bold, 600);
+  text-align: right;
+}
+
+/* 👻 空間真空防線 */
+.sub-spec-empty {
+  grid-column: span 2; /* 強行橫跨 2 欄 */
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
+
+/* 📱 RWD 手機版自動化：窄螢幕時 2 欄會太擠，物理退回 1 欄直列防線 */
+@media screen and (max-width: 576px) {
+  .specs-sub-grid {
+    grid-template-columns: 1fr; /* 手機版變 1*X，絕對不爆版不重疊 */
+    gap: 0px;
+  }
+}
+
+.fissh-notice-box {
+  background-color: var(--bg-light); /* 實心底色，呼叫你設定的卡片黑系 */
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
+  margin: 1.25rem var(--article-margin) 1.2rem var(--article-margin);
+  padding: 1rem 2rem;
+
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6; /* 寬鬆的行高，看字不吃力 */
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-s);
+
+  /* 🎯 【核心特技 A】保留所有換行、空格 */
+  white-space: pre-wrap; /* 因：資料庫有換行。果：網頁等比例物理換行與留白 */
+
+  /* 🎯 【核心特技 B】防範文字衝出邊緣爆版 */
+  word-break: break-all; /* 因：英文或連續網址太長。果：死死卡在邊界線強制斷行 */
+}
+
+@media screen and (max-width: 576px) {
+  .fissh-notice-box {
+    background-color: transparent; /* 實心底色，呼叫你設定的卡片黑系 */
+    margin: 1.25rem 0 1.2rem 0;
+    padding: 0.5rem var(--article-margin);
+    border: none;
+    border-radius: none;
+    box-shadow: none;
+  }
+}
+
+/* 👻 空間真空防線 */
+.notice-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}

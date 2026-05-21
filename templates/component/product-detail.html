@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ product.name }} - FisshShop</title>
+        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+        <script src="{% static 'aquatic/js/product-detail.js' %}" defer></script>
+    </head>
+    <body>
+        {% include 'header.html' %}
+        <div class="in-article">
+            <div class="fissh-gallery-container">
+                <div class="main-viewport-box">
+                    <div class="gallery-placeholder"
+                         id="galleryPlaceholder"
+                         style="display: {% if product.image %}none{% else %}flex{% endif %}">
+                        {% include 'icons/upload.html' %}
+                        <span class="placeholder-text">暫無商品照片</span>
+                    </div>
+                    <img class="viewport-img"
+                         id="fisshGalleryViewport"
+                         src="{% if product.image %}{{ product.image.url }}{% endif %}"
+                         alt="{{ product.name }}"
+                         style="display: {% if product.image %}block{% else %}none{% endif %}"
+                         onerror="this.src = 'https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror = null;" />
+                </div>
+                <div class="thumb-train-grid">
+                    {% if product.image %}
+                        <div class="detail-thumb-slot active-focus"
+                             onclick="executeGallerySwitch(this)">
+                            <img src="{{ product.image.url }}" alt="封面主圖">
+                        </div>
+                    {% endif %}
+                    {% for extra in product.images.all %}
+                        <div class="detail-thumb-slot" onclick="executeGallerySwitch(this)">
+                            <img src="{{ extra.image.url }}" alt="商品副圖">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="price-container">
+                {% if product.price_status == 'NOT_FOR_SALE' %}
+                    <span class="price-not-for-sale">非賣品</span>
+                {% else %}
+                    <span class="price-currency"></span>
+                    <span class="price-node">NT${{ product.price }}</span>
+                {% endif %}
+            </div>
+            <div class="split-tool ">
+                <div class="split-left">
+                    <div class="in-article-maker">
+                        <a href="{% url 'user_profile' product.owner.username %}"
+                           class="in-maker-link"></a>
+                        <!-- 連接遮罩 -->
+                        {% include "component/user-photo-outclass.html" with target_user=post.author custom_class="in-maker-photo" %}
+                        <span class="in-maker-name">{{ product.owner.username }}</span>
+                    </div>
+                </div>
+                <div class="split-right">
+                    <span class="in-article-city">{{ product.get_city_display }}</span>
+                </div>
+            </div>
+            <h2 class="spec-title">主要規格</h2>
+            <div class="specs-main-container">
+                <div class="spec-card-node">
+                    <div class="spec-icon-wrapper">{% include "icons/fish.html" %}</div>
+                    <div class="spec-info-label">生物種類</div>
+                    <div class="spec-info-value">{{ product.get_category_display|default:"未分類" }}</div>
+                </div>
+                <div class="spec-card-node">
+                    <div class="spec-icon-wrapper">{% include "icons/thermometer.html" %}</div>
+                    <div class="spec-info-label">適宜溫度</div>
+                    <div class="spec-info-value">
+                        {% if product.temp_min and product.temp_max %}
+                            {{ product.temp_min }} ~ {{ product.temp_max }} °C
+                        {% else %}
+                            未綁定
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="spec-card-node">
+                    <div class="spec-icon-wrapper">{% include "icons/droplet.html" %}</div>
+                    <div class="spec-info-label">pH 值範圍</div>
+                    <div class="spec-info-value">
+                        {% if product.ph_min and product.ph_max %}
+                            {{ product.ph_min }} ~ {{ product.ph_max }}
+                        {% else %}
+                            未綁定
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="spec-card-node">
+                    <div class="spec-icon-wrapper">{% include "icons/ruler-dimension-line.html" %}</div>
+                    <div class="spec-info-label">成魚體長</div>
+                    <div class="spec-info-value">
+                        {% if product.adult_length %}
+                            {{ product.adult_length }} cm
+                        {% else %}
+                            未綁定
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="spec-card-node">
+                    <div class="spec-icon-wrapper">{% include "icons/container.html" %}</div>
+                    <div class="spec-info-label">建議水量</div>
+                    <div class="spec-info-value">
+                        {% if product.min_tank_size %}
+                            {{ product.min_tank_size }} L
+                        {% else %}
+                            未綁定
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <h2 class="spec-title">其他詳細規格</h2>
+            <div class="specs-sub-grid">
+                {% for key, value in product.specs_json.items %}
+                    <div class="sub-spec-row">
+                        <span class="sub-spec-key">{{ key }}</span>
+                        <span class="sub-spec-value">{{ value|default:"--" }}</span>
+                    </div>
+                {% empty %}
+                    <div class="sub-spec-empty">暫無其他規格數據。</div>
+                {% endfor %}
+            </div>
+            <h2 class="spec-title">購買與飼養注意事項</h2>
+            <div class="fissh-notice-box">{{ product.notice_template.content }}</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

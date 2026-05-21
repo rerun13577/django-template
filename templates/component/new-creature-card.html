@@ -1,11 +1,13 @@
-<a class="product-creature" href="/" id="product-card-{{ item.id }}">
+<a class="product-creature"
+   href="{% url 'product_detail' item.id %}"
+   id="product-card-{{ item.id }}">
     <div class="fissh-card-menu-wrap">
         <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
         <div class="fissh-card-menu-pane">
             <div class="fissh-card-menu-row"
                  onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
             <div class="fissh-card-menu-row"
-                 onclick="runFisshCardAction(event, 'relist', '{{ item.id }}')">上架商品</div>
+                 onclick="runFisshCardAction(event, 'delist', '{{ item.id }}')">下架商品</div>
             <div class="fissh-card-menu-row fissh-danger-node"
                  onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
         </div>

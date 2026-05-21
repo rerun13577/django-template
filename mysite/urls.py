@@ -62,6 +62,11 @@ urlpatterns = [
         views.ProductToggleActiveView.as_view(),
         name="toggle_product",
     ),
+    path(
+        "product/<int:product_id>/",
+        views.ProductDetailView.as_view(),
+        name="product_detail",
+    ),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

@@ -105,7 +105,7 @@
         <p class="section-subtitle">下面是我們的超級賣場</p>
         <div class="hot-creature-s">
           {% for item in items %}
-            <a class="hot-creature" href="/">
+            <a class="hot-creature" href="{% url 'product_detail' item.id %}">
               {% if item.image %}
                 <img src="{{ item.image.url }}" alt="{{ item.name }}" />
               {% else %}

@@ -728,7 +728,7 @@ function runFisshCardAction(event, action, itemId) {
     console.log(`[ACTION] 觸發物理刪除，ID: ${itemId}`);
 
     // 🛡️ 防呆防線：萬一指頭殘點錯，直接在網頁層發射中斷訊號
-    if (!confirm("幹，確定要刪除這商品嗎？刪掉就死透了、資料庫救不回來喔！")) {
+    if (!confirm("確定要刪除這商品嗎？此操作無法復原！")) {
       return; // 使用者按取消：電流直接掐斷，什麼都不發生
     }
 
@@ -761,3 +761,254 @@ function runFisshCardAction(event, action, itemId) {
       });
   }
 }
+
+// 前端壓縮
+// 🚀 1. 核心壓縮引擎：利用 Canvas 將 File 物件在記憶體內轉成輕量 WebP
+// 🚀 1. 核心壓縮引擎：利用 Canvas 在記憶體內轉 WebP
+function compressImageOnFrontend(file, maxWidth = 1200, quality = 0.75) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        // 等比例縮放計算
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // 導出 WebP 格式
+        canvas.toBlob(
+          (blob) => {
+            const newFilename = file.name.substring(0, file.name.lastIndexOf(".")) + ".webp";
+            const compressedFile = new File([blob], newFilename, { type: "image/webp" });
+            resolve(compressedFile);
+          },
+          "image/webp",
+          quality,
+        );
+      };
+    };
+  });
+}
+
+// 🚀 2. 全局監聽雷達：就地攔截、計算數據、回貼覆蓋
+document.addEventListener("change", async (e) => {
+  if (e.target.matches('input[type="file"]')) {
+    let files = e.target.files;
+
+    // 🛡️ 防手殘取消線路
+    if (!files.length) {
+      if (e.target._fissh_file_cache) {
+        console.log(`%c[Fissh 記憶防線] 偵測到取消！自動還原快取照片。`, "color: #ff3b30; font-weight: bold;");
+        const backupDataTransfer = new DataTransfer();
+        e.target._fissh_file_cache.forEach((file) => backupDataTransfer.items.add(file));
+        e.target.dataset.isCompressed = "true";
+        e.target.files = backupDataTransfer.files;
+        return;
+      }
+      return;
+    }
+
+    if (e.target.dataset.isCompressed === "true") {
+      e.target.dataset.isCompressed = "false";
+      return;
+    }
+
+    console.log(`%c[Fissh 壓縮雷達] 偵測到新照片，開始就地攔截壓縮...`, "color: #00caef; font-weight: bold;");
+    const dataTransfer = new DataTransfer();
+    const cacheArray = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith("image/")) {
+        const compressed = await compressImageOnFrontend(file);
+        dataTransfer.items.add(compressed);
+        cacheArray.push(compressed);
+      } else {
+        dataTransfer.items.add(file);
+        cacheArray.push(file);
+      }
+    }
+
+    // 💾 寫入快取
+    e.target._fissh_file_cache = cacheArray;
+    e.target.dataset.isCompressed = "true";
+    e.target.files = dataTransfer.files;
+
+    e.target.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const batchForm = document.getElementById("batchUploadForm");
+
+  if (batchForm) {
+    batchForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const allNameInputs = batchForm.querySelectorAll('input[name="fish_name[]"], input[name="fish_name"]');
+      const filledIndices = [];
+      allNameInputs.forEach((input, index) => {
+        if (input.value && input.value.trim() !== "") {
+          filledIndices.push(index);
+        }
+      });
+
+      const totalFilled = filledIndices.length;
+      if (totalFilled === 0) {
+        alert("請至少填寫一隻小魚的名字！");
+        return;
+      }
+
+      const CHUNK_SIZE = 4;
+      const csrftoken = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("csrftoken="))
+        ?.split("=")[1];
+      const submitBtn = batchForm.querySelector('button[type="submit"]');
+
+      // 🔒 進入傳輸狀態：按鈕當場死鎖，防止使用者暴怒連點
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.6";
+        submitBtn.style.cursor = "not-allowed";
+      }
+
+      // 2. 開始切片發送
+      for (let i = 0; i < totalFilled; i += CHUNK_SIZE) {
+        // 🎯 核心進度回饋：因：進入當前組別發送。果：把進度直接洗在按鈕文字上，讓使用者安心
+        if (submitBtn) {
+          const currentEnd = Math.min(i + CHUNK_SIZE, totalFilled);
+          submitBtn.innerHTML = `正在上傳第 ${i + 1} ~ ${currentEnd} 隻小魚 (總共 ${totalFilled} 隻)，請勿關閉網頁...`;
+        }
+
+        const chunkFormData = new FormData();
+        const globalKeys = [
+          "global_spec",
+          "global_notice",
+          "content",
+          "生物種類",
+          "pH值_min",
+          "pH值_max",
+          "適宜溫度_min",
+          "適宜溫度_max",
+          "體長(cm)",
+          "建議水量(L)",
+          "GH硬度",
+          "KH硬度",
+          "性情",
+          "食性",
+          "比重",
+          "水流強度",
+          "光照需求",
+        ];
+        const mainFormData = new FormData(batchForm);
+        globalKeys.forEach((key) => {
+          if (mainFormData.has(key)) chunkFormData.append(key, mainFormData.get(key));
+        });
+
+        const chunkIndices = filledIndices.slice(i, i + CHUNK_SIZE);
+        chunkIndices.forEach((globalIndex, localIndex) => {
+          const nameVal = allNameInputs[globalIndex].value;
+          const priceVal = batchForm.querySelectorAll('[name^="fish_price"]')[globalIndex]?.value || "0";
+          const specVal = batchForm.querySelectorAll('[name^="fish_spec"]')[globalIndex]?.value || "";
+          const noticeVal = batchForm.querySelectorAll('[name^="fish_notice"]')[globalIndex]?.value || "";
+
+          chunkFormData.append("fish_name[]", nameVal);
+          chunkFormData.append("fish_price[]", priceVal);
+          chunkFormData.append("fish_spec[]", specVal);
+          chunkFormData.append("fish_notice[]", noticeVal);
+
+          const localSlotNum = localIndex + 1;
+          const globalSlotNum = globalIndex + 1;
+
+          const fileInput = batchForm.querySelector(`input[name="fish_image_${globalSlotNum}[]"], input[name="fish_image_${globalSlotNum}"]`);
+          if (fileInput && fileInput.files.length > 0) {
+            for (let file of fileInput.files) {
+              chunkFormData.append(`fish_image_${localSlotNum}[]`, file);
+            }
+          }
+        });
+
+        try {
+          const response = await fetch(batchForm.action || window.location.href, {
+            method: "POST",
+            body: chunkFormData,
+            headers: { "X-CSRFToken": csrftoken },
+          });
+
+          if (response.ok) {
+            const htmlResult = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlResult, "text/html");
+            doc.querySelectorAll("script").forEach((oldScript) => {
+              const newScript = document.createElement("script");
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              newScript.remove();
+            });
+          }
+        } catch (err) {
+          console.error("傳輸中斷:", err);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      // 💥 終點線防線：當大迴圈全部跑完，所有批次都成功落地後
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+        submitBtn.innerHTML = "批次上架商品"; // 還原按鈕原本的文字
+      }
+
+      // 1. 清空數值
+      batchForm.reset();
+
+      // 2. 還原照片預覽框
+      batchForm.querySelectorAll(".preview-img").forEach((img) => {
+        img.src = "";
+        img.style.display = "none";
+      });
+      batchForm.querySelectorAll(".upload-placeholder").forEach((p) => {
+        p.style.display = "";
+      });
+      batchForm.querySelectorAll(".delete-prod-pic-btn").forEach((btn) => {
+        btn.style.display = "none";
+      });
+
+      // 🎯 最終一擊：在這裡才跳出總結彈窗，通知使用者大功告成！
+      alert(`總共 ${totalFilled} 隻商品已全部順利分批上架完畢！`);
+      console.log("%c[Fissh 保險安全線] 任務完美結束。", "color: #55bb00; font-weight: bold;");
+    });
+  }
+});
+
+// 🚀 全局監聽雷達：就地攔截、壓縮、並新增「防手殘取消」記憶還原功能
+
+document.addEventListener("reset", (e) => {
+  // 因：當任何表單執行 reset() 時（包含你那 200 行後端成功回傳後執行的 singleForm.reset()）
+  // 過：撈出該表單內所有的檔案上傳欄位
+  const fileInputs = e.target.querySelectorAll('input[type="file"]');
+
+  fileInputs.forEach((input) => {
+    // 果：無情抹除快取變數，徹底斷開記憶體連結，確保下一隻魚上傳時是純淨的真空狀態
+    delete input._fissh_file_cache;
+    input.dataset.isCompressed = "false";
+    console.log(`%c[Fissh 記憶防線] 表單重設成功！已物理銷毀欄位 [${input.name}] 的圖片快取。`, "color: #ff9f00;");
+  });
+});

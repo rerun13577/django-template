@@ -12,7 +12,7 @@
         {% include 'header.html' %}
         <div class="grid">
             {% for item in items %}
-                <a class="product-creature" href="/">
+                <a class="product-creature" href="{% url 'product_detail' item.id %}">
                     {% if item.image %}
                         <img src="{{ item.image.url }}" alt="{{ item.name }}" />
                     {% else %}

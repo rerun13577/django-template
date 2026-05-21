@@ -252,18 +252,23 @@ class CreatePostView(FisshAPIBase):
 # from .models import Post, AquaticLife, PetFish
 
 
-class ProfileView(FisshPageBase):
+class ProfileView(View):  # 🎯 因果修正 A：改繼承純粹的 View，解除強迫登入的物理鎖
     def get(self, request, username=None):
-        # 🚀 第一關：沒名字的情況
+
+        # ────────────────────────────────────────────────────────
+        # 🚀 第一關：網址「沒帶名字」的情境 (例如直接按導覽列的 /profile/)
+        # ────────────────────────────────────────────────────────
         if not username:
             if request.user.is_authenticated:
-                # 有登入：帶他去 /profile/你的名字/ (這樣連結就帶名字了)
+                # 因：有登入但沒帶名字。果：自動重導向到他自己的專屬頁面
                 return redirect("user_profile", username=request.user.username)
             else:
-                # 沒登入：直接踢去登入頁面
+                # 因：沒登入也沒帶名字。果：不知道要看誰，物理踢去登入頁面
                 return redirect("account_login")
 
-        # 🚀 第二關：有名字（不管是自己的還是別人的）
+        # ────────────────────────────────────────────────────────
+        # 🚀 第二關：網址「有帶名字」的情境 (不論是看自己還是看別人)
+        # ────────────────────────────────────────────────────────
         user_qs = User.objects.select_related("profile").prefetch_related(
             "socialaccount_set"
         )
@@ -271,43 +276,68 @@ class ProfileView(FisshPageBase):
         # 抓取目標使用者，不存在就噴 404
         target_user = get_object_or_404(user_qs, username=username)
 
-        # 直接抓人，不用再 if/else 判斷了
-        target_user = get_object_or_404(user_qs, username=username)
+        # ────────────────────────────────────────────────────────
+        # 🚀 第三關：區分「看自己」與「看別人」的資料庫優化防線
+        # ────────────────────────────────────────────────────────
 
-        # --- 以下維持原樣 ---
-        user_posts = (
-            Post.objects.filter(author=target_user)
-            .select_related("author")
-            .annotate(
-                is_liked=Exists(
-                    Post.likes.through.objects.filter(
-                        post_id=OuterRef("pk"), user_id=request.user.id
+        # 🎯 因果修正 B：判定當前瀏覽網頁的人是誰
+        is_me = request.user == target_user
+        is_guest = not request.user.is_authenticated
+
+        # 1. 處理貼文與點讚狀況（防止匿名使用者踩到 request.user.id 造成的 SQL 崩潰）
+        if is_guest:
+            # 沒登入的人看別人：物理上「不可能有點讚紀錄」，直接硬編碼為 False，不查點讚表
+            user_posts = (
+                Post.objects.filter(author=target_user)
+                .select_related("author")
+                .order_by("-created_at")
+            )
+            # 在 Python 層面幫貼文塞入 False，防前端噴 Template 錯誤
+            for post in user_posts:
+                post.is_liked = False
+        else:
+            # 有登入（看自己或看別人）：啟動 Exists 點讚雷達
+            user_posts = (
+                Post.objects.filter(author=target_user)
+                .select_related("author")
+                .annotate(
+                    is_liked=Exists(
+                        Post.likes.through.objects.filter(
+                            post_id=OuterRef("pk"), user_id=request.user.id
+                        )
                     )
                 )
+                .order_by("-created_at")
             )
-            .order_by("-created_at")
-        )
 
-        # 🚀 核心因果修正：加入 filter(is_active=True)，且變數名稱 user_aquatics 物理鎖死不變！
+        # 2. 商品清單（items）與寵物魚（pets）
+        # 💡 因果邏輯：如果是「看自己」，可能需要看到下架或隱藏的魚；
+        # 但你給的邏輯是統一 filter(is_active=True)，這裡完全沿用你的物理變數
         user_aquatics = AquaticLife.objects.filter(
             owner=target_user, is_active=True
         ).order_by("-created_at")
 
         user_pets = PetFish.objects.filter(owner=target_user).order_by("-created_at")
 
+        # 3. 店家公告（ShopNotice）
+        # 💡 因果邏輯：只有「看自己」才會載入公告（你原本寫的邏輯非常精準！）
         user_notices = []
-        if request.user == target_user:
+        if is_me:
             user_notices = ShopNotice.objects.filter(user=target_user).order_by(
                 "-created_at"
             )
 
+        # ────────────────────────────────────────────────────────
+        # 🚀 第四關：打包傳輸
+        # ────────────────────────────────────────────────────────
         context = {
             "target_user": target_user,
             "user": request.user,
             "posts": user_posts,
-            "items": user_aquatics,
+            "items": user_aquatics,  # 變數名稱物理鎖死，完美對接
             "pets": user_pets,
             "notices": user_notices,
+            "is_me": is_me,  # 🎯 順手塞一個布林值給前端，讓你方便隱藏「編輯個人資料」的按鈕
         }
         return render(request, "profile.html", context)
 
@@ -780,36 +810,24 @@ class AddProductBatchView(FisshPageBase, View):
                 
                 <script>
                     (function() {{
-                        alert("商品上架成功！");
                         
-                        // 🎯 核心修正：拋棄 hx-swap-oob，直接用 JS 鎖定上架區 ID 進行最前端空降
                         const activeGrid = document.getElementById("active-grid");
                         if (activeGrid) {{
                             const emptyHint = activeGrid.querySelector('.empty-hint');
                             if (emptyHint) emptyHint.remove();
-                            
-                            // 物理注入新卡片，絕對不產生多餘的 div 包裹層，維持 .grid 純淨度
                             activeGrid.insertAdjacentHTML("afterbegin", `{cards_html}`);
                         }}
 
-                        // 表單欄位與預覽清空還原（完全保留你原本的邏輯）
-                        const singleForm = document.getElementById("singleUploadForm");
-                        const batchForm = document.getElementById("batchUploadForm");
-                        if (singleForm) singleForm.reset();
-                        if (batchForm) batchForm.reset();
+                        // ❌ 【物理拔除這幾行！】不准在後端回傳時清空表單，否則後面批次會死
+                        // const singleForm = document.getElementById("singleUploadForm");
+                        // const batchForm = document.getElementById("batchUploadForm");
+                        // if (singleForm) singleForm.reset();
+                        // if (batchForm) batchForm.reset();
 
-                        document.querySelectorAll('.preview-img').forEach(img => {{
-                            img.src = "";
-                            img.style.display = 'none';
-                        }});
-                        
-                        document.querySelectorAll('.upload-placeholder').forEach(p => {{
-                            p.style.display = ''; 
-                        }});
-                        
-                        document.querySelectorAll('.delete-prod-pic-btn').forEach(btn => {{
-                            btn.style.display = 'none';
-                        }});
+                        // 原本的圖片預覽清空依然保留...
+                        document.querySelectorAll('.preview-img').forEach(img => {{ img.src = ""; img.style.display = 'none'; }});
+                        document.querySelectorAll('.upload-placeholder').forEach(p => {{ p.style.display = ''; }});
+                        document.querySelectorAll('.delete-prod-pic-btn').forEach(btn => {{ btn.style.display = 'none'; }});
                     }})();
                 </script>
             """
@@ -866,3 +884,22 @@ class ShopListView(View):
             "items": aquatics,  # 變數名稱完全沿用，後端與前端絕對不相撞
         }
         return render(request, "shop.html", context)
+
+
+class ProductDetailView(View):
+    """
+    🔗 小魚公開詳細頁面視圖
+    因：需要展示特定生物的完整水族規格
+    果：捞出單一 AquaticLife 物件並綁定 owner 資料，完全免登入開放
+    """
+
+    def get(self, request, product_id, *args, **kwargs):
+        # 1. 抓取單一生物並預先載入 owner 關係，與 ShopListView 邏輯對稱
+        product = get_object_or_404(
+            AquaticLife.objects.select_related("owner"), id=product_id
+        )
+
+        context = {
+            "product": product,  # 後端變數與你前端模板完全對齊
+        }
+        return render(request, "component/product-detail.html", context)
