@@ -1,35 +1,20 @@
-{% comment %} {% load static %}
-{% load socialaccount %}
-{# 先定義好預設照片的網址，之後代碼比較乾淨 #}
-{% static 'image/no-avatar.jpg' as default_avatar_url %}
-{% with social=target_user.socialaccount_set.all.0 %}
-    <div class="user-photo-wrapper">
-        {# --- 判斷開始 --- #}
-        {% if social.get_avatar_url %}
-            {# 1. 有 Django 內建的社群頭貼 #}
-            <img src="{{ social.get_avatar_url }}" class="{{ custom_class }}" alt="作者" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% elif social.extra_data.picture.data.url %}
-            {# 2. 頁首抓照片的邏輯：Facebook 的深層網址 #}
-            <img src="{{ social.extra_data.picture.data.url }}" class="{{ custom_class }}" alt="作者" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% elif social.extra_data.picture %}
-            {# 3. 處理 LINE 或其他社群平台在 extra_data 的直接網址 #}
-            <img src="{{ social.extra_data.picture }}" class="{{ custom_class }}" alt="作者" loading="lazy" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% else %}
-            {# --- 🎉 最終 Fallback：所有沒照片的人都在這裡解決 --- #}
-            {# 包含：手動註冊的 user1、user3，或是社群帳號但真的沒頭貼的人 #}
-            <img src="{{ default_avatar_url }}" class="{{ custom_class }}" alt="預設頭貼" loading="lazy">
-        {% endif %}
-    </div>
-{% endwith %} {% endcomment %}
 {% load static %}
 {% load socialaccount %}
 {% static 'image/no-avatar.jpg' as default_avatar_url %}
 {% with social=target_user.socialaccount_set.all.0 %}
-    {# 🚀 這裡加上超連結，連結到該使用者的 user_profile #}
+    {# 🚀 點擊頭貼物理導向個人主頁 #}
     <a href="{% url 'user_profile' target_user.username %}"
-       class=" user-photo-link">
+       class="user-photo-link">
         <div class="user-photo-wrapper">
-            {% if social.get_avatar_url %}
+            {# 🥇 第一防線：最高優先級！偵測到使用者有自己上傳照片，立刻導通並截止後續判斷 #}
+            {% if target_user.profile.avatar %}
+                <img src="{{ target_user.profile.avatar.url }}"
+                     class="{{ custom_class }}"
+                     alt="作者"
+                     loading="lazy"
+                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+                {# 🥈 第二防線：使用者沒上傳照片，電路向下流動，檢查第三方社群登入的頭貼 #}
+            {% elif social.get_avatar_url %}
                 <img src="{{ social.get_avatar_url }}"
                      class="{{ custom_class }}"
                      alt="作者"
@@ -49,6 +34,7 @@
                      alt="作者"
                      loading="lazy"
                      onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+                {# 🥉 第三防線：手動註冊也沒上傳照片、或是社群帳號沒頭貼，物理降級至預設圖 #}
             {% else %}
                 <img src="{{ default_avatar_url }}"
                      class="{{ custom_class }}"

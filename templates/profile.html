@@ -6,44 +6,52 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FisshShop | 個人頁面</title>
         <link rel="stylesheet" href="{% static 'aquatic/main.css' %}?v=1.0.2">
+        <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+        <script src="{% static 'aquatic/js/profile.js' %}" defer></script>
+        <script src="{% static 'aquatic/js/like-btn.js' %}" defer></script>
     </head>
     <body>
         {% include 'header.html' %}
-        <div class="in-profile">
+        <div class="in-profile" id="profile-info-section">
             <section class="profile-hero"
                      id="profile-hero"
-                     style="background-image: url('預設背景.jpg')">
+                     style="background-image: url('{% if target_user.profile.background_image %}{{ target_user.profile.background_image.url }}{% else %}{% static 'image/default-cover.jpg' %}{% endif %}')">
                 {% if user == target_user %}
                     <div class="edit-dropdown-container">
                         <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>
                         <div class="dropdown-content" id="edit-dropdown">
-                            <a href="/" class="dropdown-item">
-                                {% comment %} {% include "icons/user-edit.html" %} {% endcomment %}
-                                編輯個人檔案
-                            </a>
-                            <a href="/" class="dropdown-item">
-                                {% comment %} {% include "icons/plus-circle.html" %} {% endcomment %}
-                                新增寵物
-                            </a>
+                            <a href="javascript:void(0);"
+                               class="dropdown-item"
+                               hx-get="{% url 'edit_profile_form' username=target_user.username %}"
+                               hx-target="#profile-modal-container"
+                               hx-swap="innerHTML"
+                               hx-indicator="#loading-shield"
+                               hx-trigger="click">編輯個人檔案</a>
+                            <a href="/" class="dropdown-item">新增寵物</a>
                         </div>
                     </div>
                 {% endif %}
-                {# 🚀 這裡傳入的是 target_user，這樣看別人時才會顯示對方的頭貼 #}
                 {% if user == target_user %}
-                    {# 如果是主人，保留 label 包裹，讓他可以點擊上傳 #}
                     <label for="avatar-input" class="avatar-label">
                         {% include "component/user-photo-outclass.html" with target_user=target_user custom_class="customer-avatar" %}
                     </label>
                     <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                 {% else %}
-                    {# 如果是路人，直接顯示頭貼就好，不用 label #}
                     {% include "component/user-photo-outclass.html" with target_user=target_user custom_class="customer-avatar" %}
                 {% endif %}
             </section>
             <div class="profile-info">
                 <div class="info-left">
-                    <h1 class="profile-name">{{ target_user.username }}</h1>
-                    <span class="user-category">
+                    <h1 class="profile-name">
+                        {% if target_user.profile.nickname %}
+                            {{ target_user.profile.nickname }}
+                        {% else %}
+                            {{ target_user.username }}
+                        {% endif %}
+                    </h1>
+                    <span class="user-category"
+                          style="margin-top: 0.5rem;
+                                 display: inline-block">
                         {% if post.author.profile.category %}
                             {{ post.author.profile.get_category_display }}
                         {% else %}
@@ -53,44 +61,34 @@
                 </div>
                 <div class="info-right">
                     <span class="follower-count">
-                        {# 🚀 注意：這裡原本的 post.author.followers 很危險，直接用 target_user 抓 #}
                         <strong>{{ target_user.followers.count|default:"0" }}</strong> 粉絲
                     </span>
                 </div>
             </div>
+            {% if target_user.profile.city_region %}
+                <a href="https://www.google.com/maps/search/?api=1&query={{ target_user.profile.city_region|urlencode }}{{ target_user.profile.address_detail|urlencode }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="location-navigator-link"
+                   style="text-decoration: none;
+                          display: block;
+                          width: fit-content">
+                    <div class="user-location-tag">
+                        {% include "icons/map-pin.html" %}
+                        <span class="location-text">{{ target_user.profile.city_region }} {{ target_user.profile.address_detail }}</span>
+                    </div>
+                </a>
+            {% endif %}
             <section class="bio-section">
-                {# 🚀 改成 target_user #}
                 <p class="profile-bio">{{ target_user.profile.bio|default:"這位魚友很神秘，也許他/她知道藍鯨在哪裡..."|linebreaks }}</p>
             </section>
             <nav class="profile-tabs">
-                <button class="tab-item active" data-index="0">貼文</button>
-                <button class="tab-item" data-index="1">我的 fissh</button>
-                <button class="tab-item" data-index="2">product</button>
+                <button class="tab-item active" data-index="0">商品</button>
+                <button class="tab-item" data-index="1">貼文</button>
+                <button class="tab-item" data-index="2">寵物</button>
             </nav>
-            {% comment %} 視窗 {% endcomment %}
             <div class="tabs-window">
-                {% comment %} 內容 橫向 {% endcomment %}
                 <div class="tabs-slider" id="tabs-slider">
-                    {% comment %} 單個內容 {% endcomment %}
-                    <section class="tab-content" id="content-posts">
-                        <div class="post-grid">
-                            {% for post in posts %}
-                                {% comment %} {% include "component/article-display.html" with post=post %} {% endcomment %}
-                                {% include "component/article-display.html" with post=post is_liked=post.is_liked_by_viewer %}
-                            {% empty %}
-                                <p class="empty-hint">目前還沒有發布貼文喔！</p>
-                            {% endfor %}
-                        </div>
-                    </section>
-                    <section class="tab-content" id="content-products">
-                        <div class="grid">
-                            {% for pet in pets %}
-                                {% include "component/pet-card.html" with item=pet %}
-                            {% empty %}
-                                <p class="empty-hint">他/她可能只是喜歡看看小魚！</p>
-                            {% endfor %}
-                        </div>
-                    </section>
                     <section class="tab-content" id="content-products">
                         <div class="grid">
                             {% for item in items %}
@@ -100,11 +98,43 @@
                             {% endfor %}
                         </div>
                     </section>
+                    <section class="tab-content" id="content-posts">
+                        <div class="post-grid">
+                            {% for post in posts %}
+                                {% include "component/article-display.html" with post=post is_liked=post.is_liked_by_viewer %}
+                            {% empty %}
+                                <p class="empty-hint">目前還沒有發布貼文喔！</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    <section class="tab-content" id="content-pets">
+                        <div class="grid">
+                            {% for pet in pets %}
+                                {% include "component/pet-card.html" with item=pet %}
+                            {% empty %}
+                                <p class="empty-hint">他/她可能只是喜歡看看小魚！</p>
+                            {% endfor %}
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
-        <script src="{% static 'aquatic/js/add-product-template.js' %}"></script>
-        <script src="{% static 'aquatic/js/profile.js' %}?v=1.0.3"></script>
-        <script src="{% static 'aquatic/js/like-btn.js' %}"></script>
+        <div id="profile-modal-container"></div>
+        <div id="loading-shield" class="modal-overlay htmx-indicator">
+            <div style="color: #fff;
+                        font-size: 1.2rem;
+                        text-align: center;
+                        z-index: 100000">
+                <div class="spinner"
+                     style="margin: 0 auto 1rem;
+                            border: 4px solid rgba(255,255,255,0.3);
+                            border-top: 4px solid #fff;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite"></div>
+                正在載入...
+            </div>
+        </div>
     </body>
 </html>

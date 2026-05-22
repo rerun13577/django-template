@@ -103,6 +103,7 @@
 
 .bio-section {
   margin: 0 var(--profile-margin) 0 var(--profile-margin);
+  font-size: 1.125rem;
 }
 
 .profile-bio {
@@ -415,6 +416,52 @@
   }
 }
 
+.user-location-tag {
+  /* 🎯 獨立自佔一行防線：flex 預設為 block 特性，直接物理切斷前號元件的干擾 */
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* 圖示與文字的物理間距 */
+
+  /* 📐 佈局與排版 */
+  width: fit-content; /* 寬度剛好包裹住字數即可，不盲目撐滿 */
+  margin: 1.25rem var(--profile-margin) 1rem var(--profile-margin);
+
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: 1.25rem;
+  font-weight: var(--fw-regular);
+
+  /* 🎛️ 圓角與立體高光陰影 */
+  box-shadow: none; /* 注入自帶白色高光的專業陰影 */
+  border: none; /* 補上一層極細微的暗色邊框防線 */
+
+  /* 🚀 動態回饋：綁定你的貝氏曲線轉場動畫 */
+  transition: var(--transition);
+}
+
+/* 內部的地圖圖示（Map-pin SVG）物理微調 */
+.user-location-tag svg,
+.user-location-tag i {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0; /* 鋼鐵防線：文字再長也絕不允許圖示被擠壓變形 */
+  /* 讓圖示顏色直接繼承父層的 --text-muted，或是你想亮一點可以改成 var(--primary) */
+}
+
+/* 滑鼠懸停（Hover）微調質感 */
+.user-location-tag:hover {
+  color: var(--text); /* 字體點亮成主標題顏色 */
+  border-color: var(--border); /* 邊框輕微通電變亮 */
+}
+
+.location-text {
+  color: var(--text-muted); /* 字體點亮成主標題顏色 */
+  transition: var(--transition);
+  @include hover-device {
+    color: var(--text); /* 字體點亮成主標題顏色 */
+  }
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
 // rwd--------------------------------------------------------------------------------------------------------------------------------
@@ -541,6 +588,8 @@
 
   .bio-section {
     margin: 0 var(--profile-margin-mobile) 0 var(--profile-margin-mobile);
+
+    font-size: 1rem;
   }
 
   .profile-bio {

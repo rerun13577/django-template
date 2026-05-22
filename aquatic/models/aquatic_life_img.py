@@ -5,10 +5,17 @@ from uuid import uuid4
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.db import models
-from django.db.models.signals import post_delete  # 🚀 匯入訊號
-from django.dispatch import receiver  # 🚀 匯入接收器
+from django.db.models.signals import (
+    post_delete,  # 🚀 匯入訊號
+    post_save,
+)
+from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
+
+# 🚀 寫在 models.py 的最上方
+# 🚀 物理向後退一層，到 aquatic/ 底下抓 constants
+from ..constants import TAIWAN_REGIONS
 
 # 匯入你專案內部的工具與基底
 from ..utils import handle_model_image_upload, purge_cloudflare_cache
@@ -52,6 +59,7 @@ def get_aquatic_upload_path(instance, filename):
 class AquaticLife(BaseModel):
     # --- 原本的 CHOICES 區 (保持原樣，這部分很長但很清楚) ---
     CITY_CHOICES = [
+        ("NONE", "無資訊"),  # 🚀 物理插入預設無資訊選項
         ("KLU", "基隆市"),
         ("TP", "臺北市"),
         ("NTP", "新北市"),
@@ -106,7 +114,11 @@ class AquaticLife(BaseModel):
         verbose_name="產品種類",
     )
     city = models.CharField(
-        max_length=5, choices=CITY_CHOICES, default="NTP", verbose_name="所在地點"
+        max_length=50,
+        choices=CITY_CHOICES,
+        default="NONE",  # 🚀 只要沒填，物理預設就是 "NONE"，絕對不給空
+        # 🎯 物理砍掉 null=True 和 blank=True，斷絕任何變為 NULL 或空字串的因果可能
+        verbose_name="所在地點",
     )
     price = models.IntegerField(default=0, verbose_name="價格")
     price_status = models.CharField(
@@ -170,7 +182,32 @@ class AquaticLife(BaseModel):
         return "無首圖"
 
     # --- 核心 Save 邏輯 ---
+    # --- 核心 Save 邏輯 ---
     def save(self, *args, **kwargs):
+        # 0. 🚀 鋼鐵防線：自動跟 owner 的 Profile 地址與行政區同步電路
+        if self.owner and hasattr(self.owner, "profile"):
+            profile = self.owner.profile
+            user_address_string = profile.city_region  # 例如 "臺南市安平區"
+
+            if user_address_string:
+                matched_city_name = None
+                for city_name in TAIWAN_REGIONS.keys():
+                    if city_name in user_address_string:
+                        matched_city_name = city_name
+                        break
+
+                if matched_city_name:
+                    for code, name in self.CITY_CHOICES:
+                        if name == matched_city_name:
+                            self.city = code
+                            break
+                else:
+                    self.city = "NONE"
+            else:
+                self.city = "NONE"
+        else:
+            self.city = "NONE"
+
         # 1. 搬家邏輯：如果分類變了，自動把舊照片搬到新分類資料夾
         if self.pk:
             try:
@@ -190,7 +227,7 @@ class AquaticLife(BaseModel):
         # 2. 壓縮轉檔
         handle_model_image_upload(self, "image")
 
-        # 3. 呼叫 BaseModel 的 save (它會處理 UUID 並執行真正的存檔)
+        # 3. 呼叫 BaseModel 的 save
         super().save(*args, **kwargs)
 
         # 4. 清除快取
@@ -244,3 +281,39 @@ def purge_aquatic_gallery_cache(sender, instance, **kwargs):
 
 
 # 你的儲存路徑aquatic/{使用者ID}/{生物分類}/{年/月/日}/{隨機字串}/{主圖或副圖}/main.webp
+
+
+# 🚀 1. 物理引入你就在隔壁資料夾的 Profile（同一個 package，用相對路徑最穩）
+from .profile import Profile
+
+
+@receiver(
+    post_save, sender=Profile
+)  # 🎯 監聽：直接吃實體 Profile 類別，100% 不可能再跳電說找不到 App
+@receiver(post_save, sender=Profile)
+def sync_all_aquatic_location_on_profile_change(sender, instance, **kwargs):
+    if not hasattr(instance, "user") or not instance.user:
+        return
+
+    user = instance.user
+    user_address_string = instance.city_region
+
+    new_city_code = "NONE"
+    if user_address_string:
+        matched_city_name = None
+        for city_name in TAIWAN_REGIONS.keys():
+            if city_name in user_address_string:
+                matched_city_name = city_name
+                break
+
+        if matched_city_name:
+            for code, name in AquaticLife.CITY_CHOICES:
+                if name == matched_city_name:
+                    new_city_code = code
+                    break
+
+    # 🎯 大轟炸直接精簡成一行：只更新大方向縣市代碼，完全不碰 specs_json
+    AquaticLife.objects.filter(owner=user).update(city=new_city_code)
+    print(
+        f"⚡ [信號同步通電] 已將用戶 {user.username} 名下小魚地點同步為: {new_city_code}"
+    )

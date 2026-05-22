@@ -1,0 +1,330 @@
+@charset "UTF-8";
+
+// ────────────────────────────────────────────────────────
+// 🌌 模組 A：全螢幕半透明毛玻璃遮罩層
+// ────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  backdrop-filter: blur(12px);
+  transition: var(--transition);
+  display: none !important;
+}
+
+.htmx-request.modal-overlay,
+.htmx-request .modal-overlay {
+  display: flex !important;
+}
+
+// ────────────────────────────────────────────────────────
+// 📦 模組 B：彈窗實體卡片與內容滾動區
+// ────────────────────────────────────────────────────────
+.modal-content-card {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 41.5rem;
+  height: 90dvh;
+  padding: 2rem; /* 🚀 維持 2rem 大內襯，確保大氣呼吸感 */
+  background: var(--bg-light);
+  border-radius: var(--radius-l);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-l);
+  transform: scale(0.9);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &[style*="display: flex"] {
+    transform: scale(1);
+  }
+}
+
+.input-article-content {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 8px 1.5rem 0;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--bg-big-light);
+    border-radius: 100px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    &:hover {
+      background: var(--text-muted);
+    }
+    &:active {
+      background: var(--text);
+    }
+  }
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+// ────────────────────────────────────────────────────────
+// 🗂️ 模組 C：極簡風格表單欄位（對齊你修改的新名稱）
+// ────────────────────────────────────────────────────────
+.profile-header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 3.5rem;
+  width: 100%;
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.profile-title {
+  margin: auto;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-close-x {
+  position: absolute;
+  left: 0;
+  padding: 5px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: var(--transition);
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.input-field-group {
+  width: 100%;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.clean-underlined-input {
+  width: 100%;
+  padding: 0.75rem 0;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--text-muted);
+
+  outline: none;
+  color: var(--text);
+  transition: var(--transition);
+
+  &:focus {
+    border-bottom-color: var(--text);
+  }
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.clean-underlined-textarea {
+  @extend .clean-underlined-input;
+  resize: none;
+  field-sizing: content;
+  overflow: hidden !important;
+  height: auto !important;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+// 🎯 核心修正：精品上傳外殼（強制按鈕物理置中）
+.clean-file-box {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* 🚀 核心：讓選擇檔案按鈕在容器內水平置中 */
+  padding: 0.5rem 0;
+
+  .profile-image-input {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .custom-file-upload {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-s);
+
+    &:hover {
+      color: var(--text);
+      border-color: var(--text);
+      box-shadow: var(--shadow-m);
+    }
+  }
+}
+
+// 🎯 核心修正：即時相片預覽卡片（水平置中＋懸浮自毀叉叉定位）
+.image-preview-container {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* 🚀 核心：預覽照片同步絕對置中 */
+  margin-top: 10px;
+
+  .image-preview-wrapper {
+    position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+    display: inline-block;
+
+    .image-preview {
+      max-width: 120px;
+      max-height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-m);
+    }
+
+    .remove-image-btn {
+      position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+      top: -0.5rem;
+      right: -0.5rem;
+      background-color: var(--bg-big-light);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--shadow-s);
+      transition: var(--transition);
+
+      &:hover {
+        background-color: var(--text);
+        color: var(--bg);
+        border-color: var(--text);
+      }
+    }
+  }
+}
+
+// 🗺️ 地點彈性網格
+.clean-location-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  width: 100%;
+
+  .grid-cell {
+    flex: 1;
+    min-width: 140px;
+
+    &.wide-cell {
+      flex: 1.8;
+      min-width: 200px;
+    }
+
+    span {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 0.75rem 0.5rem;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border-muted);
+      border-radius: var(--radius-s);
+      outline: none;
+      font-size: 1rem;
+      transition: var(--transition);
+      &:focus {
+        border-color: var(--border);
+      }
+    }
+  }
+}
+
+// 💾 底部送出按鈕（含 8px 捲軸置中補償防線）
+.profile-form-container {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding-left: 8px;
+}
+
+@media (max-width: 667px) {
+  .profile-form-container {
+    max-width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.save-profile-btn {
+  width: 60%;
+  padding: 1.1rem;
+  background: var(--primary);
+  color: var(--text);
+  border: var(--bg);
+  border-radius: var(--radius-m);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-l);
+  transition: var(--transition);
+  margin: 1rem auto 0 auto;
+  display: block;
+
+  @include hover-device {
+    box-shadow: var(--shadow-l);
+    background: var(--secondary);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

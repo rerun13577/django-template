@@ -33,7 +33,6 @@ urlpatterns = [
     # 格人頁面系統
     # 🚀 方案：兩條路徑都找同一個 View，邏輯交給 View 裡面的 if not username 處理
     path("profile/", views.ProfileView.as_view(), name="profile"),
-    path("profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"),
     # 🚀 下面這個「api/template/save/」維持不動
     # urls.py
     # 🚀 只需要這一個入口，以後 JS 全部打這條路徑
@@ -67,6 +66,18 @@ urlpatterns = [
         views.ProductDetailView.as_view(),
         name="product_detail",
     ),
+    # 🎯 物理改法：加上 <str:username> 動態軌道，但順序一樣要在最上面
+    path(
+        "profile/<str:username>/edit-form/",
+        views.EditProfileFormView.as_view(),
+        name="edit_profile_form",
+    ),
+    path(
+        "profile/<str:username>/update/",
+        views.UpdateProfileView.as_view(),
+        name="update_profile",
+    ),
+    path("profile/<str:username>/", views.ProfileView.as_view(), name="user_profile"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

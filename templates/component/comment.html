@@ -26,7 +26,13 @@
           {% comment %} 留言大頭貼組件 {% endcomment %}
           {% include "component/user-photo.html" with target_user=comment.author custom_class="in-comment-avatar" %}
           <div class="in-comment-without-avatar">
-            <a href="#" class="in-comment-name">{{ comment.author.username }}</a>
+            <a href="#" class="in-comment-name">
+              {% if comment.author.profile.nickname %}
+                {{ comment.author.profile.nickname }}
+              {% else %}
+                {{ comment.author.username }}
+              {% endif %}
+            </a>
             <p class="in-comment-content">{{ comment.content }}</p>
             <div class="action-s">
               <button class="action-btn comment-like-btn {% if comment.is_liked %}liked{% endif %}"

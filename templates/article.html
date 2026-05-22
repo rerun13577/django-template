@@ -31,7 +31,13 @@
              class="in-maker-link"></a>
           <!-- 連接遮罩 -->
           {% include "component/user-photo-outclass.html" with target_user=post.author custom_class="in-maker-photo" %}
-          <span class="in-maker-name">{{ post.author.username }}</span>
+          <span class="in-maker-name">
+            {% if post.author.profile.nickname %}
+              {{ post.author.profile.nickname }}
+            {% else %}
+              {{ post.author.username }}
+            {% endif %}
+          </span>
         </div>
         <!-- 顯示maker的照片 -->
         <!-- 放出封面照片 -->

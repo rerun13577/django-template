@@ -1,0 +1,120 @@
+<div class="modal-overlay"
+     id="profile-edit-modal"
+     style="display: flex !important">
+    <div class="modal-content-card">
+        <div class="profile-header">
+            <button class="modal-close-x"
+                    onclick="document.getElementById('profile-edit-modal').remove()">✕</button>
+            <h3 class="profile-title">編輯個人資料</h3>
+        </div>
+        <div class="input-article-content">
+            <form hx-post="{% url 'update_profile' username=profile.user.username %}"
+                  hx-target="#profile-info-section"
+                  hx-encoding="multipart/form-data"
+                  enctype="multipart/form-data"
+                  hx-swap="outerHTML"
+                  id="profile-edit-form"
+                  class="profile-form-container">
+                {% csrf_token %}
+                <div class="input-field-group">
+                    <label class="field-label">個人暱稱</label>
+                    <input type="text"
+                           name="nickname"
+                           value="{{ profile.nickname }}"
+                           class="clean-underlined-input"
+                           placeholder="你的專屬暱稱...">
+                </div>
+                <!-- 1. 更換大頭貼區塊 -->
+                <div class="input-field-group">
+                    <label class="field-label">更換大頭貼</label>
+                    <div class="clean-file-box">
+                        <label for="modal-avatar-input" class="custom-file-upload">選擇大頭貼檔案</label>
+                        <input type="file"
+                               name="avatar"
+                               id="modal-avatar-input"
+                               accept="image/*"
+                               class="profile-image-input"
+                               data-preview="#avatar-preview">
+                        <!-- 🎯 鎖定外層容器 ID -->
+                    </div>
+                    <!-- 🎯 專業防線：一打開彈窗，如果資料庫有舊圖，就先塞進預覽容器內；沒有就是空的 -->
+                    <div id="avatar-preview" class="image-preview-container">
+                        {% if profile.avatar %}
+                            <div class="image-preview-wrapper">
+                                <img src="{{ profile.avatar.url }}" class="image-preview" alt="現有頭貼">
+                                <!-- 💡 這裡先不手動塞叉叉按鈕，因為這張是資料庫的舊圖，除非使用者重新選擇新檔案，否則點擊送出本來就不會變動它 -->
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- 2. 更換背景圖區塊 -->
+                <div class="input-field-group">
+                    <label class="field-label">更換背景圖</label>
+                    <div class="clean-file-box">
+                        <label for="background-input" class="custom-file-upload">選擇背景圖檔案</label>
+                        <input type="file"
+                               name="background_image"
+                               id="background-input"
+                               accept="image/*"
+                               class="profile-image-input"
+                               data-preview="#background-preview">
+                        <!-- 🎯 鎖定外層容器 ID -->
+                    </div>
+                    <!-- 🎯 專業防線：一打開彈窗，如果資料庫有舊背景，直接吐出來展示 -->
+                    <div id="background-preview" class="image-preview-container">
+                        {% if profile.background_image %}
+                            <div class="image-preview-wrapper">
+                                <img src="{{ profile.background_image.url }}"
+                                     class="image-preview"
+                                     alt="現有背景">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="input-field-group">
+                    <label class="field-label">你的地點</label>
+                    <div class="clean-location-grid">
+                        <div class="grid-cell">
+                            <span>選擇縣市</span>
+                            <select id="city-select" onchange="updateZoneOptions()">
+                                <option value="">-- 縣市 --</option>
+                                {% for city in taiwan_regions.keys %}
+                                    <option value="{{ city }}" {% if current_city == city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="grid-cell">
+                            <span>選擇區域</span>
+                            <select id="zone-select" onchange="combineFullAddress()">
+                                <option value="">-- 區域 --</option>
+                            </select>
+                        </div>
+                        <div class="grid-cell wide-cell">
+                            <span>路名/面交點</span>
+                            <input type="text"
+                                   name="address_detail"
+                                   value="{{ profile.address_detail }}"
+                                   placeholder="如：景安捷運站">
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden"
+                       name="city_region"
+                       id="hidden-city-region"
+                       value="{{ profile.city_region }}">
+                <div class="input-field-group">
+                    <label class="field-label">自我介紹</label>
+                    <textarea name="bio"
+                              rows="1"
+                              class="clean-underlined-textarea"
+                              placeholder="聊聊你的魚缸或蝦缸吧...">{{ profile.bio }}</textarea>
+                </div>
+                <button type="submit" class="save-profile-btn">送出</button>
+            </form>
+        </div>
+    </div>
+    <!-- 🚀 資料探針：把後端的 JSON 資料偷偷交給 DOM，供外部 profile.js 讀取 -->
+    <div id="js-taiwan-regions-data"
+         data-json="{{ taiwan_regions_json }}"
+         style="display: none"></div>
+</div>

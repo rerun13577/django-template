@@ -1,27 +1,16 @@
-{% comment %} {% load static %}
-{% load socialaccount %}
-{% static 'image/no-avatar.jpg' as default_avatar_url %}
-{% with social=target_user.socialaccount_set.all.0 %}
-    {# 🚀 重點：把 custom_class 放在這裡！ #}
-    <div class="{{ custom_class }}">
-        {% if social.get_avatar_url %}
-            <img src="{{ social.get_avatar_url }}" alt="創作者照片" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% elif social.extra_data.picture.data.url %}
-            <img src="{{ social.extra_data.picture.data.url }}" alt="創作者照片" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% elif social.extra_data.picture %}
-            <img src="{{ social.extra_data.picture }}" alt="創作者照片" loading="lazy" onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-        {% else %}
-            <img src="{{ default_avatar_url }}" alt="預設頭貼" loading="lazy">
-        {% endif %}
-    </div>
-{% endwith %} {% endcomment %}
 {% load static %}
 {% load socialaccount %}
 {% static 'image/no-avatar.jpg' as default_avatar_url %}
 {% with social=target_user.socialaccount_set.all.0 %}
-    {# 🚀 加上超連結：點擊後前往該使用者的主頁 #}
     <div class="{{ custom_class }}">
-        {% if social.get_avatar_url %}
+        {# 🥇 第一防線：優先偵測使用者有沒有自己上傳大頭貼 #}
+        {% if target_user.profile.avatar %}
+            <img src="{{ target_user.profile.avatar.url }}"
+                 alt="創作者照片"
+                 loading="lazy"
+                 onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+            {# 🥈 第二防線：沒有自己上傳的，才改拿 Google 的第三方登入頭貼 #}
+        {% elif social.get_avatar_url %}
             <img src="{{ social.get_avatar_url }}"
                  alt="創作者照片"
                  loading="lazy"
@@ -38,6 +27,7 @@
                  alt="創作者照片"
                  loading="lazy"
                  onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+            {# 🥉 第三防線：全部皆空，物理降級使用預設大頭貼 #}
         {% else %}
             <img src="{{ default_avatar_url }}" alt="預設頭貼" loading="lazy">
         {% endif %}

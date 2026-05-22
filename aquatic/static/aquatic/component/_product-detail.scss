@@ -80,47 +80,78 @@
   opacity: 1;
 }
 
-/* ────────────────────────────────────────────────────────
-   ⚡ 核心因果：價格與狀態區塊防線
-   ──────────────────────────────────────────────────────── */
+.product-title-price-box {
+  margin: 2rem 0 0.5rem var(--article-margin); /* 🔗 一次鎖定上下與全站文章的左邊距 */
+  width: 100%;
 
-/* 💵 價格主容器：用來控制與上方品種名稱（Name）的物理間距 */
-.price-container {
-  margin: 1.5rem 0 0rem var(--article-margin); /* 🔗 上方距離 0.5rem，底部距離 1.5rem */
+  /* 🎯 核心修正：讓整組盒子物理往左吸一點點，一網打盡中英文自帶的隱形左側留白 */
+  margin-left: calc(var(--article-margin) - 0.05em);
+  padding-right: var(--article-margin);
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+/* 🏷️ 主商品名稱（上層） */
+.product-main-name {
+  font-size: 2rem;
+  font-weight: var(--fw-bold, 900);
+  color: var(--text);
+  line-height: 1.3;
+  letter-spacing: 0.05em; /* 保持你的豪邁寬鬆設定 */
+  margin: 0 0 0.75rem 0; /* 底部推開 0.5rem 物理間距給下方的價格 */
+
+  white-space: normal; /* 🔗 允許正常換行 */
+  word-wrap: break-word; /* 🔗 允許長單字換行 */
+  word-break: break-all; /* 🔗 強制在字元間斷行，絕對不准省略、不准點點點（...） */
+  display: block; /* 🔗 確保它是一整塊完整的物理空間 */
+  height: auto; /* 🔗 高度自適應，有幾行就撐高幾行 */
+}
+
+/* 💵 價格行包裝（下層） */
+.price-row-wrap {
   display: flex;
-  align-items: baseline; /* 🔗 關鍵：讓錢字號 $ 和 數字的底部完美對齊 */
-  gap: 0.25rem;
+  flex-wrap: wrap; /* 🎯 關鍵 A：允許折行。因：金額高達百萬。果：手機寬度不夠時自動拆成兩行 */
+  align-items: baseline; /* 🔗 關鍵：讓 NT$ 和 數字的底部完美卡在同一條水平線上 */
+  gap: 0.25rem; /* 保持你的寬鬆設定 */
+  margin: 0;
+  margin-top: 0.5rem;
+  padding: 0;
 }
 
 /* 💰 正常價格數字樣式 */
 .price-node {
-  font-size: 2.5rem; /* 放大字體，買家一眼就能抓到 */
-  font-weight: 900; /* 物理加粗，製造視覺重心 */
-  color: var(--primary); /* 🎯 吃你的次色調（霓虹紫/桃紅，極致黑系質感） */
-  line-height: 1;
+  font-size: 2.5rem; /* 保持你的巨型價格設定 */
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1.1;
   letter-spacing: 0.05em;
-  text-shadow: 0 0 10px rgba(244, 63, 94, 0.2); /* 選擇性微發光，營造水族高檔感 */
-  margin-bottom: 0.1rem;
+  text-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
 }
 
 /* 🏷️ 貨幣前綴符號（NT$）*/
 .price-currency {
-  font-size: 2rem;
+  font-size: 2rem; /* 保持你的大符號設定 */
   font-weight: var(--fw-regular, 400);
-  color: var(--text-muted); /* 讓符號低調，突顯主數字 */
+  color: var(--text-muted);
 }
 
-/* 🚫 非賣品 / 收藏品特殊狀態（對齊你的 'NOT_FOR_SALE' 狀態） */
+/* 🚫 非賣品特殊狀態 */
 .price-not-for-sale {
   font-size: 1.25rem;
   font-weight: var(--fw-bold, 900);
-  color: var(--danger); /* 🎯 吃你的警告色（紅色），物理斷絕購買因果 */
-  background-color: oklch(0.2 0.05 31.38); /* 淡淡的紅黑底色襯托 */
+  color: var(--danger);
+  background-color: oklch(0.2 0.05 31.38);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-s);
   border: 1px solid var(--danger);
   letter-spacing: 0.05em;
   box-shadow: var(--shadow-s);
+}
+
+/* 📱 RWD 手機版自動化調變 */
+
+.product-owner {
+  padding: 0rem var(--article-margin) 0rem 0rem;
 }
 
 /* 🎯 第二組：全新衍生樣式（專門給「公開詳細頁」內文使用）
@@ -136,7 +167,7 @@
   border-radius: 1rem;
   padding: 0.25rem 0.85rem;
   color: var(--text);
-  margin: 0rem var(--article-margin) 0rem 0rem;
+  margin: 0rem;
   box-shadow: var(--shadow-m);
 
   font-size: 1.25rem;
@@ -371,4 +402,26 @@
   color: var(--text-muted);
   font-style: italic;
   font-size: 0.9rem;
+}
+
+@media screen and (max-width: 764px) {
+  .product-main-name {
+    font-size: 1.75rem;
+  }
+
+  .price-node {
+    font-size: 2rem; /* 保持你的巨型價格設定 */
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+    display: inline-block; /* 因：transform 必須在塊級或行內塊級元素上才能通電 */
+    transform: scaleY(1.1); /* 果：把 Y 軸（高度）強行放大成 1.25 倍，字體立刻變高挑 */
+    transform-origin: bottom; /* 🔗 關鍵：鎖定底部為縮放基準點，確保底部不會位移歪掉 */
+  }
+
+  .product-owner {
+    padding: 0rem var(--article-margin) 0rem 0.75rem;
+  }
 }

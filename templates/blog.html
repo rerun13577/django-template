@@ -50,7 +50,13 @@
                 {% include "component/user-photo.html" with target_user=post.author custom_class="maker-photo" %}
                 <div class="content-without-maker-photo">
                   <a href="{% url 'user_profile' post.author.username %}"
-                     class="maker-name">{{ post.author.username }}</a>
+                     class="maker-name">
+                    {% if post.author.profile.nickname %}
+                      {{ post.author.profile.nickname }}
+                    {% else %}
+                      {{ post.author.username }}
+                    {% endif %}
+                  </a>
                   <h3 class="article-title">{{ post.title }}</h3>
                   <div class="action-s">
                     <button class="action-btn like-btn {% if post.is_liked %}liked{% endif %}"
