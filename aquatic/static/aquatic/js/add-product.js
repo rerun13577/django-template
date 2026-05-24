@@ -356,6 +356,12 @@ function toggleTemplate(btn, state, fieldName) {
   const wrapper = btn.closest(".mini-toggle-wrapper");
   const activeBg = wrapper.querySelector(".mini-tab-active");
 
+  console.log("偵測點 - 父層結構:", parent);
+  console.log("偵測點 - 找到的區塊:", manualArea);
+  if (manualArea) {
+    console.log("偵測點 - 區塊內內容:", manualArea.innerHTML.substring(0, 50));
+  }
+
   if (!activeBg || !selectField) return;
 
   activeBg.style.left = `${btn.offsetLeft}px`;
@@ -369,6 +375,9 @@ function toggleTemplate(btn, state, fieldName) {
     // 【手動輸入模式】
     selectField.style.display = "none";
     selectField.required = false;
+
+    // 🚀 核心修正 1：物理清空下拉選單的值，徹底斬斷後端的範本優先級
+    selectField.value = "";
 
     if (manualArea) {
       manualArea.style.display = "block";
@@ -387,9 +396,10 @@ function toggleTemplate(btn, state, fieldName) {
     if (manualArea) {
       manualArea.style.display = "none";
 
-      // 🚀 核心修正點：加入 textarea，把隱藏區的所有必填通通拔掉！
+      // 🚀 核心修正 2：拔掉必填的同時，順手物理清空隱藏區的殘留字串
       manualArea.querySelectorAll("input, select, textarea").forEach((el) => {
         el.required = false;
+        el.value = ""; // 物理蒸發自定義內容
       });
     }
   }
@@ -413,7 +423,14 @@ window.addEventListener("resize", initAllMiniToggles);
 
 // 🚀 讓 HTMX 每次發請求都自動帶上 CSRF Token
 document.body.addEventListener("htmx:configRequest", (event) => {
-  event.detail.headers["X-CSRFToken"] = "{{ csrf_token }}";
+  const csrftoken = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+
+  if (csrftoken) {
+    event.detail.headers["X-CSRFToken"] = csrftoken;
+  }
 });
 
 // 🚀 預覽照片邏輯
@@ -661,7 +678,47 @@ function runFisshCardAction(event, action, itemId) {
     ?.split("=")[1];
 
   if (action === "edit") {
-    console.log(`[ACTION] 編輯商品 ID: ${itemId}`);
+    console.log(`[ACTION] 乾淨原生異步流：開始引導編輯 ID: ${itemId}`);
+
+    // 因：立刻變暗上鎖，防止使用者殘點
+    if (card) card.classList.add("fissh-loading");
+
+    // 🎯 核心修正：改用原生 fetch。100% 隔絕 HTMX 與 <a> 標籤的漏電衝突！
+    fetch(`/product/${itemId}/edit/`, {
+      method: "GET", // 純淨無瑕的 GET 請求
+    })
+      .then((res) => {
+        console.log(`[後端響應] 狀態碼: ${res.status}`);
+        if (res.ok) {
+          return res.text();
+        }
+        throw new Error(`後端砸出錯誤碼: ${res.status}`);
+      })
+      .then((htmlData) => {
+        const modalContainer = document.getElementById("edit-modal-container");
+        if (modalContainer) {
+          modalContainer.innerHTML = htmlData;
+          console.log("[電路全開] 表單灌入完畢，原地喚醒彈窗。");
+
+          // 🚀 🚀 🚀 核心救命補丁：叫 HTMX 掃描這個新塞進來的表單！
+          if (typeof htmx !== "undefined") {
+            htmx.process(modalContainer);
+          }
+
+          // 觸發你的開窗 JS
+          if (typeof openEditModal === "function") {
+            openEditModal();
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("[斷路點報錯] 編輯加載慘遭中斷:", err);
+        alert("無法讀取商品資料，請檢查後端線路。");
+      })
+      .finally(() => {
+        // 果：通訊完畢，不論成敗直接物理開鎖還原卡片
+        if (card) card.classList.remove("fissh-loading");
+      });
   } else if (action === "delist") {
     // 因：準備向後端發送下架 POST。果：立刻幫卡片上一道鎖，變暗且防連點
     if (card) card.classList.add("fissh-loading");
@@ -1011,4 +1068,87 @@ document.addEventListener("reset", (e) => {
     input.dataset.isCompressed = "false";
     console.log(`%c[Fissh 記憶防線] 表單重設成功！已物理銷毀欄位 [${input.name}] 的圖片快取。`, "color: #ff9f00;");
   });
+});
+
+// 編輯表單切換邏輯
+function initTemplateState() {
+  const groups = document.querySelectorAll(".template-group");
+
+  groups.forEach((group, index) => {
+    const select = group.querySelector("select");
+    const buttons = group.querySelectorAll(".mini-tab");
+    if (!select || buttons.length < 2) return;
+
+    // 判定狀態：select 有值 = 引用模式 (on)，沒值 = 關閉模式 (off)
+    const hasValue = select.value && select.value.trim() !== "";
+
+    // 核心邏輯：根據 index 決定預設行為
+    let targetBtn;
+    let fieldName;
+
+    if (index === 0) {
+      // 規格範本：強制預設關閉 (關閉按鈕是 buttons[0])
+      targetBtn = buttons[0];
+      fieldName = "fish_spec";
+    } else {
+      // 提醒範本：有資料則引用 (buttons[1])，無資料則關閉 (buttons[0])
+      targetBtn = hasValue ? buttons[1] : buttons[0];
+      fieldName = "fish_notice";
+    }
+
+    // 觸發切換
+    const state = targetBtn.innerText.trim() === "引用" ? "on" : "off";
+
+    // 重要：只有在目前 active 狀態與目標不一致時才觸發，避免閃爍
+    if (!targetBtn.classList.contains("active")) {
+      toggleTemplate(targetBtn, state, fieldName);
+    }
+  });
+}
+
+// 🚀 監聽 HTMX 的「替換完工」廣播
+document.body.addEventListener("htmx:afterSwap", (event) => {
+  // 因：判斷這次完工的對象，是不是我們的小魚卡片？
+  if (event.detail.target.id.startsWith("product-card-")) {
+    // 果 1：呼叫你原本的關閉函數 (處理隱藏、動畫等)
+    if (typeof closeEditModal === "function") {
+      closeEditModal();
+    }
+
+    // 果 2：物理洗白！把容器裡的 HTML 徹底挖空
+    // 這樣表單的舊資料就會跟著容器一起灰飛煙滅，完美達成「清空」
+    const modalContainer = document.getElementById("edit-modal-container");
+    if (modalContainer) {
+      modalContainer.innerHTML = "";
+    }
+
+    console.log("✅ HTMX 替換成功：編輯彈窗已自動收起並物理清空！");
+  }
+});
+
+// 🚀 監聽 HTMX 請求完成的廣播 (專門負責單獨新增表單的清空)
+document.body.addEventListener("htmx:afterRequest", function (event) {
+  // 因：判斷 1. 這次請求是否成功？ 2. 發起請求的是不是「單獨新增表單」？
+  if (event.detail.successful && event.detail.elt.id === "singleUploadForm") {
+    const form = event.detail.elt;
+
+    // 果 1：觸發表單原生 reset！
+    // (這會完美觸發你寫好的 document.addEventListener("reset")，把圖片快取徹底銷毀)
+    form.reset();
+
+    // 果 2：物理還原自訂的照片預覽 UI
+    form.querySelectorAll(".preview-img").forEach((img) => {
+      img.src = "";
+      img.style.display = "none";
+    });
+    form.querySelectorAll(".upload-placeholder").forEach((p) => {
+      p.style.display = ""; // 恢復顯示「+」號或上傳文字
+    });
+    // 這裡要注意：用逗號選取器同時抓兩種叉叉按鈕
+    form.querySelectorAll(".delete-prod-pic-btn, .b-delete-prod-pic-btn").forEach((btn) => {
+      btn.style.display = "none"; // 把叉叉隱藏
+    });
+
+    console.log("✅ 單獨新增表單已送出，並自動物理清空完畢！");
+  }
 });

@@ -1,6 +1,7 @@
+{% comment %} <a class="product-creature" id="fish-card-{{ item.pk }}" href="{% url 'product_detail' item.id %}" id="product-card-{{ item.id }}"> {% endcomment %}
 <a class="product-creature"
-   href="{% url 'product_detail' item.id %}"
-   id="product-card-{{ item.id }}">
+   id="product-card-{{ item.id }}"
+   href="{% url 'product_detail' item.id %}">
     <div class="fissh-card-menu-wrap">
         <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
         <div class="fissh-card-menu-pane">

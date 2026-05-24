@@ -30,32 +30,30 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     # 🧪 實驗室
     path("lab/", TemplateView.as_view(template_name="index.html")),
-    # 格人頁面系統
-    # 🚀 方案：兩條路徑都找同一個 View，邏輯交給 View 裡面的 if not username 處理
+    # 個人頁面系統
     path("profile/", views.ProfileView.as_view(), name="profile"),
-    # 🚀 下面這個「api/template/save/」維持不動
-    # urls.py
-    # 🚀 只需要這一個入口，以後 JS 全部打這條路徑
-    # 🚀 這裡要改成你現在 View 真正的名字
     # 唯一的頁面入口
     path("manage/", views.ManageDashboardView.as_view(), name="manage_dashboard"),
     # 兩個寫入用的 API 接口
     path(
         "api/manage-template/",
         views.ManageTemplateView.as_view(),
-        name="manage-template",  # 🚀 把 api_ 拿掉，對齊你的 HTML
+        name="manage-template",
     ),
-    # 🚀 為了讓 HTMX 能拿「編輯表單」，你還需要補這條帶 ID 的路徑
     path(
         "api/manage-template/<int:pk>/",
         views.ManageTemplateView.as_view(),
         name="manage-template-detail",
     ),
     path("api/manage-spec/", views.ManageSpecAPIView.as_view(), name="api_manage_spec"),
-    # 🚀 這一行就是你在 Template 裡 {% url 'manage-template' %} 找的東西
     path("api/add-product/", views.AddProductBatchView.as_view(), name="add-product"),
-    # 🚀 修正這行：前面補上 views. 讓它對齊整體的引入規格
     path("shop/", views.ShopListView.as_view(), name="shop_list"),
+    path(
+        "product/<int:pk>/edit/",
+        views.edit_product_view,
+        name="edit-product",
+    ),
+    # 🎯 2. 變數路徑放下面：如果不是 edit (例如 delist, delete)，才會掉下來給這個類別處理
     path(
         "product/<int:pk>/<str:action>/",
         views.ProductToggleActiveView.as_view(),
@@ -66,7 +64,6 @@ urlpatterns = [
         views.ProductDetailView.as_view(),
         name="product_detail",
     ),
-    # 🎯 物理改法：加上 <str:username> 動態軌道，但順序一樣要在最上面
     path(
         "profile/<str:username>/edit-form/",
         views.EditProfileFormView.as_view(),

@@ -1,4 +1,5 @@
 <div class="manage-layout" id="manageLayout">
+    {% load static %}
     <form hx-post="{% url 'add-product' %}"
           hx-target="#response-area"
           id="singleUploadForm"
@@ -176,8 +177,7 @@
                                 <textarea name="content"
                                           id="newNoticeContent"
                                           class="input-content-area"
-                                          placeholder="輸入內容..."
-                                          required></textarea>
+                                          placeholder="輸入內容..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -287,30 +287,30 @@
                     </div>
                 </div>
                 {% if item.image %}
-                    <img src="{{ product.get_image_url }}"
-                         alt="{{ product.name }}"
-                         onerror=" this.src = 'https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror = null; " />
-                </div>
-            {% else %}
-                <div style="width: 100%;
-                            height: 200px;
-                            background-color: var(--bg-light);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            color: var(--text-muted)">尚無圖片</div>
-            {% endif %}
-            <h3 class="product-creature-title">{{ item.name }}</h3>
-            {% if item.price_status == 'NOT_FOR_SALE' %}
-                <p class="product-creature-subtitle non-sale">無價珍寶</p>
-            {% else %}
-                <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-            {% endif %}
-        </a>
-    {% empty %}
-        <p class="empty-hint">目前沒有下架商品。</p>
-    {% endfor %}
-</div>
+                    <img src="{{ item.image.url }}"
+                         alt="{{ item.name }}"
+                         onerror="this.src='https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror=null;" />
+                {% else %}
+                    <div style="width: 100%;
+                                height: 200px;
+                                background-color: var(--bg-light);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: var(--text-muted)">尚無圖片</div>
+                {% endif %}
+                <h3 class="product-creature-title">{{ item.name }}</h3>
+                {% if item.price_status == 'NOT_FOR_SALE' %}
+                    <p class="product-creature-subtitle non-sale">無價珍寶</p>
+                {% else %}
+                    <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                {% endif %}
+            </a>
+        {% empty %}
+            <p class="empty-hint">目前沒有下架商品。</p>
+        {% endfor %}
+    </div>
+    <div id="edit-modal-container"></div>
 </div>
 {% comment %}
  你必須寫在script裡面，

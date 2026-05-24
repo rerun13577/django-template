@@ -38,29 +38,36 @@ document.addEventListener(
   })(),
   true,
 );
-
 // ────────────────────────────────────────────────────────
 // 3. 🚀 後端防線：全域監聽 HTMX 傳回的錯誤狀態碼 (400, 401, 500 等)
 // ────────────────────────────────────────────────────────
 document.addEventListener("htmx:responseError", function (e) {
   let errorMsg = "伺服器發生未知錯誤喔！";
+  const responseText = e.detail.xhr.responseText;
+
+  // 🛡️ 鋼鐵防線：因果過濾！如果後端噴回來的是整張 HTML 網頁 (例如 404、500 報錯頁)
+  // 絕對不能丟進 Toast，否則會把前端排版直接物理撐爆
+  if (responseText && (responseText.trim().startsWith("<!DOCTYPE") || responseText.includes("<html"))) {
+    console.error(`[HTMX 系統重磅報錯] 狀態碼: ${e.detail.xhr.status}。後端直接吐回了整張 HTML 網頁，拒絕寫入 Toast！`);
+    window.showCustomToast("系統電路跳電，請工程師檢查控制台！");
+    return; // 物理斷路，拒絕向下執行
+  }
 
   try {
-    // 因：嘗試解析後端回傳的是不是 JSON 格式 (例如 401 未登入保險箱)
-    const res = JSON.parse(e.detail.xhr.responseText);
+    // 嘗試解析是不是 JSON 格式
+    const res = JSON.parse(responseText);
     errorMsg = res.message || errorMsg;
 
-    // 果：如果是未登入造成的錯誤，自動導向登入頁
     if (res.login_url) {
       setTimeout(() => {
         window.location.href = res.login_url;
       }, 1500);
     }
   } catch (err) {
-    // 因：如果後端直接丟回純文字 (例如我們剛剛在 View 寫的 status=400 錯誤提示)
-    errorMsg = e.detail.xhr.responseText || errorMsg;
+    // 如果後端直接丟回一般純文字提示
+    errorMsg = responseText || errorMsg;
   }
 
-  // 🔥 果：不管後端發生什麼慘事，通通送進你漂亮的紅框 Toast！
+  // 正常的錯誤文字，安全送進紅框 Toast
   window.showCustomToast(errorMsg);
 });

@@ -66,15 +66,44 @@
       </ul>
       {% if user.is_authenticated %}
         <div class="user-case">
-          {% with social=user.socialaccount_set.all.0 %}
-            {% if social.get_avatar_url %}
-              <img src="{{ social.get_avatar_url }}" class="user-photo" />
-            {% elif social.extra_data.picture.data.url %}
-              <img src="{{ social.extra_data.picture.data.url }}" class="user-photo" />
-            {% else %}
-              <div class="user-photo">{{ user.username|slice:":1" }}</div>
-            {% endif %}
-          {% endwith %}
+          <div class="user-photo-link"
+               id="user-photo-trigger"
+               style="cursor: pointer">
+            <div class="user-photo-wrapper">
+              {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}"
+                     class="user-photo"
+                     alt="作者"
+                     loading="lazy"
+                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+              {% elif social.get_avatar_url %}
+                <img src="{{ social.get_avatar_url }}"
+                     class="user-photo"
+                     alt="作者"
+                     loading="lazy"
+                     referrerpolicy="no-referrer"
+                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+              {% elif social.extra_data.picture.data.url %}
+                <img src="{{ social.extra_data.picture.data.url }}"
+                     class="user-photo"
+                     alt="作者"
+                     loading="lazy"
+                     referrerpolicy="no-referrer"
+                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+              {% elif social.extra_data.picture %}
+                <img src="{{ social.extra_data.picture }}"
+                     class="user-photo"
+                     alt="作者"
+                     loading="lazy"
+                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
+              {% else %}
+                <img src="{{ default_avatar_url }}"
+                     class="user-photo"
+                     alt="預設頭貼"
+                     loading="lazy">
+              {% endif %}
+            </div>
+          </div>
           <div class="dropdown-menu" id="dropdown-menu">
             <a href="{% url 'account_logout' %}" class="logout-btn">登出</a>
           </div>

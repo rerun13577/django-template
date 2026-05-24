@@ -2,6 +2,9 @@ import json  # 🚀 處理前端傳來的 JSON 字串
 from uuid import uuid4
 
 from django.contrib.auth import authenticate, login  # 補上 authenticate
+
+# 🎯 終極防線：直接用 method_decorator 確保不管前端丟什麼 Method
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage  # 🚀 處理內文照片的儲存
@@ -16,6 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string  # 🚀 補上這行，紅燈當場熄滅
 from django.utils.timezone import now  # 🚀 這是用來抓現在時間的機器
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from .constants import (
     CORE_SPECS_CONFIG,
@@ -944,10 +948,6 @@ class EditProfileFormView(FisshPageBase):
         return render(request, "component/profile_edit_form.html", context)
 
 
-# 🎯 2. POST 類別：專門負責接收彈窗數據，寫入 R2 並局部刷新前台
-# 🎯 2. POST 類別：專門負責接收彈窗數據，寫入 R2 並局部刷新前台
-
-
 # 🎯 2. POST 類別：專門負責接收彈窗數據，寫入 R2 並刷新前台
 class UpdateProfileView(FisshPageBase):
     def post(self, request, username, *args, **kwargs):
@@ -967,10 +967,124 @@ class UpdateProfileView(FisshPageBase):
             profile.background_image = request.FILES["background_image"]
 
         profile.save()
-
         # 🔄 關鍵修正：不再回傳局部 HTML，直接下達命令讓前端全自動 Reload
         from django.http import HttpResponse
 
         response = HttpResponse()
         response["HX-Refresh"] = "true"
         return response
+
+
+@csrf_exempt
+@login_required(login_url="/accounts/login/")
+def edit_product_view(request, pk):
+    fish = get_object_or_404(AquaticLife, pk=pk, owner=request.user)
+    reverse_category_map = {
+        "FISH": "魚類",
+        "SHRIMP": "蝦類",
+        "PLANT": "水草類",
+        "SHELLFISH": "螺蚌類",
+        "OTHER": "其他",
+    }
+
+    # 1. 🟢 POST 存檔電路
+    if "fish_name[]" in request.POST or request.method == "POST":
+        try:
+            fish.name = request.POST.get("fish_name[]")
+
+            try:
+                fish.price = int(request.POST.get("fish_price[]", 0))
+            except (ValueError, TypeError):
+                return HttpResponse("價格必須填寫整數純數字喔！", status=400)
+
+            # 基礎欄位寫入
+            fish.category = reverse_category_map.get(
+                request.POST.get("生物種類", "其他"), "OTHER"
+            )
+            fish.ph_min = request.POST.get("pH值_min")
+            fish.ph_max = request.POST.get("pH值_max")
+            fish.temp_min = request.POST.get("適宜溫度_min")
+            fish.temp_max = request.POST.get("適宜溫度_max")
+            fish.adult_length = request.POST.get("體長(cm)")
+            fish.min_tank_size = request.POST.get("建議水量(L)")
+
+            # JSON 規格處理
+            new_specs = {}
+            # 合併核心與次要規格 (這裡確保體長、水量等資料不會被漏掉)
+            extra_labels = [
+                "GH硬度",
+                "KH硬度",
+                "性情",
+                "食性",
+                "比重",
+                "水流強度",
+                "光照需求",
+            ]
+            for label in extra_labels:
+                val = request.POST.get(label)
+                if val:
+                    new_specs[label] = val
+            fish.specs_json = new_specs
+
+            # 提醒範本處理
+            global_notice_id = request.POST.get("global_notice")
+            if global_notice_id:
+                fish.notice_template_id = global_notice_id
+                fish.description = ""
+            else:
+                fish.notice_template = None
+                fish.description = request.POST.get("content", "")
+
+            # 多圖處理
+            if "fish_image[]" in request.FILES:
+                current_fish_images = request.FILES.getlist("fish_image[]")
+                seen_files = set()
+                unique_fish_images = []
+                for f in current_fish_images:
+                    file_key = (f.name, f.size)
+                    if file_key not in seen_files:
+                        seen_files.add(file_key)
+                        unique_fish_images.append(f)
+
+                if unique_fish_images:
+                    fish.image = unique_fish_images[0]
+                    AquaticImage.objects.filter(product=fish).delete()
+                    if len(unique_fish_images) > 1:
+                        for extra_img in unique_fish_images[1:]:
+                            AquaticImage.objects.create(product=fish, image=extra_img)
+
+            fish.save()
+            # 🚀 改成這樣，不要 reload
+            # 這裡 render 出該生物最新的 card HTML
+            # 把這段放在 fish.save() 後面
+            # 1. 渲染出這隻魚「更新後」的新卡片 HTML
+            # 1. 渲染出這隻魚最新的卡片 HTML
+            new_card_html = render_to_string(
+                "component/new-creature-card.html", {"item": fish}, request=request
+            )
+            return HttpResponse(new_card_html)
+
+        except Exception as e:
+            return HttpResponse(f"儲存失敗！後端原因: {str(e)}", status=400)
+
+    # 2. 🟢 GET 開啟彈窗電路 (Context 打包區)
+    fish_specs = fish.specs_json
+    if isinstance(fish_specs, str):
+        try:
+            fish_specs = json.loads(fish_specs)
+        except:
+            fish_specs = {}
+
+    # 🟢 GET 彈窗電路：直接把常數檔丟進 context
+    context = {
+        "fish": fish,
+        "fish_specs": fish_specs,
+        "category_display": reverse_category_map.get(fish.category, "其他"),
+        "spec_templates": SpecTemplate.objects.filter(user=request.user),
+        "notices": ShopNotice.objects.filter(user=request.user),
+        "core_config": CORE_SPECS_CONFIG,
+        "extra_labels": EXTRA_SPECS,
+        # 🚀 關鍵補丁：撈出所有關聯的圖片
+        "additional_images": AquaticImage.objects.filter(product=fish),
+    }
+    return render(request, "component/edit-product-form.html", context)
