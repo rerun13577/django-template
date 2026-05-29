@@ -889,6 +889,7 @@ document.addEventListener("change", async (e) => {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+
       if (file.type.startsWith("image/")) {
         const compressed = await compressImageOnFrontend(file);
         dataTransfer.items.add(compressed);

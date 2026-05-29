@@ -15,7 +15,7 @@
         <div class="in-profile" id="profile-info-section">
             <section class="profile-hero"
                      id="profile-hero"
-                     style="background-image: url('{% if target_user.profile.background_image %}{{ target_user.profile.background_image.url }}{% else %}{% static 'image/default-cover.jpg' %}{% endif %}')">
+                     {% if target_user.profile.background_image %} style="background-image: url('{{ target_user.profile.background_image.url }}');" {% endif %}>
                 {% if user == target_user %}
                     <div class="edit-dropdown-container">
                         <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>

@@ -54,47 +54,54 @@ class Profile(BaseModel):
     bio = models.TextField(max_length=500, blank=True)
 
     def save(self, *args, **kwargs):
-        # 1. 偵測是否有真正的新檔案從前端進來（防止誤殺舊圖）
+        print("\n[防線 1] 🟢 進入 models.py 的 Profile.save() 準備儲存！")
+
+        # 🚀 引入上傳檔案的標準型別，用來做絕對精準的判定
+        from django.core.files.uploadedfile import UploadedFile
+
         has_new_avatar = False
         has_new_background = False
 
-        if (
-            self.avatar
-            and hasattr(self.avatar, "file")
-            and not isinstance(self.avatar, models.fields.files.FieldFile)
-        ):
-            has_new_avatar = True
+        # 1. 檢查大頭貼
+        if self.avatar and hasattr(self.avatar, "file"):
+            # 🎯 物理透視：直接檢查內部的 .file 是不是剛上傳的 UploadedFile
+            if isinstance(self.avatar.file, UploadedFile):
+                has_new_avatar = True
 
-        if (
-            self.background_image
-            and hasattr(self.background_image, "file")
-            and not isinstance(self.background_image, models.fields.files.FieldFile)
-        ):
-            has_new_background = True
+        # 2. 檢查背景圖
+        print(f"[防線 2] 檢查背景圖狀態: {self.background_image}")
+        if self.background_image and hasattr(self.background_image, "file"):
+            # 🎯 物理透視：直接看裡面！
+            if isinstance(self.background_image.file, UploadedFile):
+                has_new_background = True
+                print(
+                    "[防線 3] 🎯 破除外殼！確認內部是 UploadedFile，判定為【全新背景圖】！"
+                )
+            else:
+                print("[防線 3] ⛔ 內部不是 UploadedFile，判定為【舊圖】。")
 
-        # 2. 處理新大頭貼
+        # 3. 處理新大頭貼
         if has_new_avatar:
-            self.avatar.name = "avatar.webp"  # 物理標記：打上 avatar 烙印
+            self.avatar.name = "avatar.webp"
             handle_model_image_upload(self, "avatar")
-            # 💡 核心拔除亂碼防線：萬一壓縮工具自作聰明改了名字或加上防重複後綴，
-            # 我們在存入資料庫前，強行把它的欄位名稱洗回純淨的 "profiles/UUID/avatar/main.webp"
-            # 這樣就能徹底截斷 Django 自動生成 main_xxxx.webp 的因果鏈結
             if self.avatar and hasattr(self.avatar, "name"):
                 self.avatar.name = get_profile_upload_path(self, "avatar.webp")
 
-        # 3. 處理新背景圖
+        # 4. 處理新背景圖
         if has_new_background:
-            self.background_image.name = "background_image.webp"  # 物理標記
+            self.background_image.name = "background_image.webp"
+            print("[防線 4] 🚀 放行！正式發射訊號給 utils.py 進行轉檔！")
             handle_model_image_upload(self, "background_image")
             if self.background_image and hasattr(self.background_image, "name"):
                 self.background_image.name = get_profile_upload_path(
                     self, "background_image.webp"
                 )
 
-        # 4. 呼叫底層 BaseModel 正式落庫存檔入 R2
+        # 5. 正式落庫
         super().save(*args, **kwargs)
+        print("[防線 5] 💾 資料庫儲存完畢。")
 
-        # 5. 沖刷 Cloudflare CDN 快取
+        # 6. 沖刷快取
         purge_list = []
         if has_new_avatar and self.avatar and hasattr(self.avatar, "url"):
             purge_list.append(self.avatar.url)
@@ -107,6 +114,7 @@ class Profile(BaseModel):
 
         if purge_list:
             purge_cloudflare_cache(purge_list)
+            print("[防線 6] 🧹 快取清除訊號已發送。")
 
     def __str__(self):
         return f"{self.user.username} 的個人檔案"

@@ -15,14 +15,12 @@
 
 .profile-hero {
   /* 1. 尺寸定義 (你剛才說的 16:9) */
-  width: 41.5rem; /* 做法 A：用比例（推薦 3:1 到 4:1 之間） */
+  /* 1. 尺寸定義 (決絕寬度坍塌) */
+  width: 100%; /* 或者你真的想鎖死寬度，就改成 width: 41.5rem; 把這行刪掉 */
+  max-width: 1200px; /* 加個保險，避免在超大螢幕被拉得太長 */
   aspect-ratio: 4 / 1;
-  /* 做法 B：直接鎖死高度（桌機通常 250px - 350px 最舒服） */
-  width: 100%;
+  min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
   margin: 0 auto;
-  background-size: cover;
-  background-position: center; /* 確保切掉的是邊緣，保留中心內容 */
-
   /* 3. 裝飾與佈局 */
   position: relative; /* 作為裡面大頭貼絕對定位的基準點 */
 }
@@ -227,15 +225,15 @@
 }
 
 .profile-hero {
-  /* 為了處理照片，這兩行一定要加 */
+  /* 2. 背景圖邏輯 */
   background-size: cover;
   background-position: center;
-  overflow: visible; /* 🚀 關鍵：讓大頭貼可以「壓」在邊界上而不被切掉 */
-  background-color: #ddd; /* 圖片還沒載入時的墊底色 */
-  /* 2. 圖片顯示邏輯 (最關鍵) */
-  background-size: cover; /* 🚀 因：確保圖片填滿整個框。果：多餘的部分會被裁切，不會留白或變形。 */
-  background-position: center; /* 🚀 因：圖片以中心為準。果：縮放時最重要的中間內容不會被切掉。 */
-  background-repeat: no-repeat; /* 防止圖片太小時重複出現 */
+  background-repeat: no-repeat;
+  background-color: #ddd;
+
+  /* 3. 裝飾與佈局 */
+  position: relative;
+  overflow: visible; /* 讓大頭貼可以突破邊界壓在線上 */
 }
 
 .edit-icon {
