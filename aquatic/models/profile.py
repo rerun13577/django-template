@@ -82,16 +82,20 @@ class Profile(BaseModel):
 
         # 3. 處理新大頭貼
         if has_new_avatar:
-            self.avatar.name = "avatar.webp"
+            # 🚀 修正順序：先讓 utils 轉檔（這樣它才看得到原始副檔名）
             handle_model_image_upload(self, "avatar")
+            # 轉檔完畢，強制上制服
+            self.avatar.name = "avatar.webp"
             if self.avatar and hasattr(self.avatar, "name"):
                 self.avatar.name = get_profile_upload_path(self, "avatar.webp")
 
         # 4. 處理新背景圖
         if has_new_background:
-            self.background_image.name = "background_image.webp"
             print("[防線 4] 🚀 放行！正式發射訊號給 utils.py 進行轉檔！")
+            # 🚀 修正順序：先讓 utils 轉檔
             handle_model_image_upload(self, "background_image")
+            # 轉檔完畢，強制上制服
+            self.background_image.name = "background_image.webp"
             if self.background_image and hasattr(self.background_image, "name"):
                 self.background_image.name = get_profile_upload_path(
                     self, "background_image.webp"
