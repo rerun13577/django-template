@@ -188,7 +188,12 @@ else:
 
 # --- 6. 其他關鍵設定 ---
 SITE_ID = 4 if os.getenv("ZEABUR") else 2
-CSRF_TRUSTED_ORIGINS = ["https://fisshshop.com", "https://*.zeabur.app"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://fisshshop.com",
+    "https://*.zeabur.app",
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok-free.app",
+]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

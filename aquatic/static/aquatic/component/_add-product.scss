@@ -384,8 +384,8 @@
 
 .single-card-sizing {
   display: flex;
-  width: 37.5rem;
-  max-width: 95vw;
+  width: 95%;
+  max-width: 37.5rem;
   margin: 0.5rem auto 1rem auto;
   flex-direction: column;
   padding: 1.2rem;
@@ -642,6 +642,9 @@
   }
 }
 
+.manage-layout {
+}
+
 .photo-upload-container {
   display: flex;
   flex-direction: column;
@@ -776,7 +779,19 @@
 .product-creature.fissh-loading {
   position: relative;
   opacity: 0.4; /* 因：進入非同步傳輸。果：整張卡片黑化變暗 60% */
+  // 是css讓他不可以點的
   pointer-events: none; /* 因：遮斷瀏覽器訊號。果：卡片內所有連結、三個點點全面物理性死鎖，不可點擊 */
   cursor: not-allowed;
   transition: opacity 0.2s ease;
+}
+
+.main-cover-box img.preview-img[src=""],
+.main-cover-box img.preview-img:not([src]),
+.main-cover-box .viewport-img[src=""],
+.main-cover-box .viewport-img:not([src]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important; /* 物理退到最底層，絕對不准擋住 z-index: 2 的影片 */
 }

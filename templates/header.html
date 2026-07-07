@@ -17,7 +17,7 @@
         <a href="{% url 'index' %}">首頁</a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'shop_list' %}">賣場</a>
+        <a href="{% url 'shop' %}">賣場</a>
       </li>
       <li class="navber-list">
         <a href="{% url 'blog' %}">社群</a>
@@ -26,7 +26,7 @@
         <a href="{% url 'profile' %}">個人</a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'manage_dashboard' %}">管理</a>
+        <a href="{% url 'dashboard' %}">管理</a>
       </li>
     </ul>
   </div>
@@ -48,13 +48,13 @@
           <a href="{% url 'blog' %}">社群</a>
         </li>
         <li class="navber-list">
-          <a href="{% url 'shop_list' %}">賣場</a>
+          <a href="{% url 'shop' %}">賣場</a>
         </li>
         <li class="navber-list">
           <a href="{% url 'profile' %}">個人</a>
         </li>
         <li class="navber-list">
-          <a href="{% url 'manage_dashboard' %}">管理</a>
+          <a href="{% url 'dashboard' %}">管理</a>
         </li>
         <li class="navber-list">
           {% if user.is_authenticated %}

@@ -2,7 +2,7 @@
 <div class="accordion-item create-mode"
      id="add-spec-form"
      style="display: none">
-    <form hx-post="{% url 'api_manage_spec' %}"
+    <form hx-post="{% url 'api-spec' %}"
           hx-target="#spec-list-container"
           hx-swap="innerHTML settle:200ms"
           hx-on:htmx:after-request="if(event.detail.successful) uiReset();">
@@ -184,7 +184,7 @@
                             <div class="split-left">
                                 <button class="template-btn delete-template"
                                         type="button"
-                                        hx-post="{% url 'api_manage_spec' %}"
+                                        hx-post="{% url 'api-spec' %}"
                                         hx-vals='{"id": "{{ s.id }}", "action": "delete"}'
                                         hx-target="#spec-item-{{ s.id }}"
                                         hx-confirm="確定要刪除這個規格印章嗎？"

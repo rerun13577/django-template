@@ -12,32 +12,34 @@
         {% include 'header.html' %}
         <div class="in-article">
             <div class="fissh-gallery-container">
-                <div class="main-viewport-box">
-                    <div class="gallery-placeholder"
-                         id="galleryPlaceholder"
-                         style="display: {% if product.image %}none{% else %}flex{% endif %}">
-                        {% include 'icons/upload.html' %}
-                        <span class="placeholder-text">暫無商品照片</span>
-                    </div>
-                    <img class="viewport-img"
-                         id="fisshGalleryViewport"
-                         src="{% if product.image %}{{ product.image.url }}{% endif %}"
-                         alt="{{ product.name }}"
-                         style="display: {% if product.image %}block{% else %}none{% endif %}"
-                         onerror="this.src = 'https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror = null;" />
-                </div>
-                <div class="thumb-train-grid">
-                    {% if product.image %}
-                        <div class="detail-thumb-slot active-focus"
-                             onclick="executeGallerySwitch(this)">
-                            <img src="{{ product.image.url }}" alt="封面主圖">
+                <div class="main-viewport-box"
+                     style="position: relative;
+                            width: 100%;
+                            aspect-ratio: 1 / 1;
+                            background: var(--bg-light)">
+                    {% if product.video %}
+                        <video class="viewport-video"
+                               src="{{ product.video.url }}"
+                               autoplay
+                               controls
+                               muted
+                               playsinline
+                               style="width: 100%;
+                                      height: 100%;
+                                      object-fit: cover">
+                        </video>
+                    {% else %}
+                        <div class="gallery-placeholder"
+                             style="display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    height: 100%;
+                                    color: var(--text-muted)">
+                            {% include 'icons/upload.html' %}
+                            <span class="placeholder-text" style="margin-top: 10px;">暫無商品影片</span>
                         </div>
                     {% endif %}
-                    {% for extra in product.images.all %}
-                        <div class="detail-thumb-slot" onclick="executeGallerySwitch(this)">
-                            <img src="{{ extra.image.url }}" alt="商品副圖">
-                        </div>
-                    {% endfor %}
                 </div>
             </div>
             <div class="product-title-price-box">

@@ -60,6 +60,7 @@
       transition: var(--transition);
     }
 
+    video,
     img {
       width: 100%; // 寬度跟隨卡片
       height: 200px; // 固定一個高度
@@ -113,6 +114,7 @@
       overflow: hidden;
       transition: var(--transition); //讓他滑開 滑進去都會動，放裡面只有進去會慢慢動 滑出來他直接不演了
 
+      video,
       img {
         width: 100%;
         /* 🚀 1. 把高度交給比例計算，不要鎖死在 200px */

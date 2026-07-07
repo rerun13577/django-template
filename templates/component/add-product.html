@@ -21,165 +21,61 @@
                                 <span style="font-size: 0.85rem;
                                              color: var(--text-muted);
                                              margin-top: 0.5rem;
-                                             display: block">點擊選取或多選 4 張照片</span>
+                                             display: block">點擊選取影片</span>
                             </div>
-                            <img class="preview-img viewport-img" src="" style="display: none;">
+                            <input type="file"
+                                   id="fish-video-input"
+                                   name="video"
+                                   accept="video/mp4,video/webm"
+                                   onchange="handleVideoUpload(this)"
+                                   style="display: none">
+                            <video class="preview-video viewport-video"
+                                   style="display: none;
+                                          position: absolute;
+                                          top: 0;
+                                          left: 0;
+                                          width: 100%;
+                                          height: 100%;
+                                          object-fit: cover;
+                                          z-index: 2"
+                                   loop
+                                   muted
+                                   playsinline>
+                            </video>
                             <button class="delete-prod-pic-btn"
                                     type="button"
                                     onclick="removeActivePhoto(event)"
-                                    style="display: none">{% include "icons/cross.html" %}</button>
+                                    style="display: none;
+                                           z-index: 10">{% include "icons/cross.html" %}</button>
                         </div>
-                    </div>
-                    <div class="photo-train-slots">
-                        {% for i in "1234" %}
-                            <div class="sub-photo-slot {% if forloop.first %}active-focus{% endif %}"
-                                 data-slot-index="{{ i }}"
-                                 onclick="handleSlotClick(this, '{{ i }}', event)">
-                                <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
-                                    <input type="file"
-                                           name="fish_image[]"
-                                           accept="image/*"
-                                           onchange="handleGalleryUpload(this, '{{ i }}')"
-                                           style="display: none"
-                                           multiple
-                                           {% if forloop.first %}required{% endif %}>
-                                    <div class="upload-placeholder">+</div>
-                                    <img class="preview-img slot-thumb" src="" style="display: none;">
-                                </div>
-                            </div>
-                        {% endfor %}
                     </div>
                 </div>
                 <div class="slot-field1">
                     <input type="text"
-                           name="fish_name[]"
+                           name="fish_name"
                            placeholder="品種名稱 (如：極火蝦)"
                            data-label="品種名稱"
                            required>
                 </div>
                 <div class="slot-field1">
                     <input type="number"
-                           name="fish_price[]"
+                           name="fish_price"
                            placeholder="單價"
                            data-label="單價"
                            required>
                 </div>
                 <div class="expand-grid-layout">
                     <div class="slot-field1 template-group">
-                        <div class="split-tool">
-                            <div class="split-left">
-                                <span class="slot-header" style="font-size: 0.9rem;">規格範本</span>
-                            </div>
-                            <div class="split-right">
-                                <div class="mini-toggle-wrapper">
-                                    <div class="mini-tab-active"></div>
-                                    <button type="button"
-                                            class="mini-tab"
-                                            onclick="toggleTemplate(this, 'off', 'fish_spec')">關閉</button>
-                                    <button type="button"
-                                            class="mini-tab active"
-                                            onclick="toggleTemplate(this, 'on', 'fish_spec')">引用</button>
-                                </div>
-                            </div>
-                        </div>
-                        <select name="fish_spec[]" data-label="規格範本">
+                        <select name="fish_spec" data-label="規格範本">
                             <option value="">選擇規格範本...</option>
                             {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
                         </select>
-                        <div class="accordion-body is-visible" style="display: block;">
-                            <div class="spec-inner">
-                                <div class="spec-grid-container">
-                                    <div class="spec-group">
-                                        <div class="group-header">核心規格數據</div>
-                                        <div class="spec-grid1">
-                                            {% for item in core_config %}
-                                                {% if item.type == "range" %}
-                                                    <div class="spec-item range-group">
-                                                        <label>{{ item.label }} (範圍)</label>
-                                                        <div class="range-inputs">
-                                                            <input type="text"
-                                                                   class="e-spec-input-field"
-                                                                   name="{{ item.label }}_min"
-                                                                   placeholder="最小"
-                                                                   required>
-                                                            <span>-</span>
-                                                            <input type="text"
-                                                                   class="e-spec-input-field"
-                                                                   name="{{ item.label }}_max"
-                                                                   placeholder="最大"
-                                                                   required>
-                                                        </div>
-                                                    </div>
-                                                {% elif item.type == "select" %}
-                                                    <div class="spec-item">
-                                                        <label>{{ item.label }}</label>
-                                                        <select name="{{ item.label }}"
-                                                                class="e-spec-input-field select-field"
-                                                                required>
-                                                            <option value="">請選擇</option>
-                                                            {% for opt in item.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
-                                                        </select>
-                                                    </div>
-                                                {% else %}
-                                                    <div class="spec-item">
-                                                        <label>{{ item.label }}</label>
-                                                        <input type="text"
-                                                               class="e-spec-input-field"
-                                                               name="{{ item.label }}"
-                                                               placeholder="填寫數值"
-                                                               required>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <div class="spec-group">
-                                        <div class="group-header">次要規格數據</div>
-                                        <div class="spec-grid1">
-                                            {% for label in extra_labels %}
-                                                <div class="spec-item">
-                                                    <label>{{ label }}</label>
-                                                    <input type="text"
-                                                           class="e-spec-input-field"
-                                                           name="{{ label }}"
-                                                           placeholder="選填">
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="slot-field1 template-group">
-                        <div class="split-tool">
-                            <div class="split-left">
-                                <span class="slot-header" style="font-size: 0.9rem;">提醒範本</span>
-                            </div>
-                            <div class="split-right">
-                                <div class="mini-toggle-wrapper">
-                                    <div class="mini-tab-active"></div>
-                                    <button type="button"
-                                            class="mini-tab"
-                                            onclick="toggleTemplate(this, 'off', 'fish_notice')">關閉</button>
-                                    <button type="button"
-                                            class="mini-tab active"
-                                            onclick="toggleTemplate(this, 'on', 'fish_notice')">引用</button>
-                                </div>
-                            </div>
-                        </div>
-                        <select name="global_notice" data-label="提醒範本">
+                        <select name="fish_notice" data-label="提醒範本">
                             <option value="">選擇提醒範本...</option>
                             {% for n in notices %}<option value="{{ n.id }}">{{ n.title }}</option>{% endfor %}
                         </select>
-                        <div class="accordion-body is-visible" style="display: block;">
-                            <div class="spec-inner">
-                                <textarea name="content"
-                                          id="newNoticeContent"
-                                          class="input-content-area"
-                                          placeholder="輸入內容..."></textarea>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="batch-actions">
@@ -193,78 +89,12 @@
             </div>
         </div>
     </form>
-    <div id="setupSection" style="display: none;">
-        <div class="setup-banner split-tool">
-            <div class="split-left">
-                <h1 class="add-title">輸入格數</h1>
-            </div>
-            <div class="split-right">
-                <div class="setup-controls">
-                    <input type="number"
-                           id="batchCountInput"
-                           value="5"
-                           min="1"
-                           max="20"
-                           class="batch-num-input">
-                    <button type="button"
-                            class="confirm-batch-btn"
-                            onclick="handleBatchConfirm()">生成</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <form action="{% url 'add-product' %}"
-          id="batchUploadForm"
-          enctype="multipart/form-data"
-          style="display: none">
-        {% csrf_token %}
-        <div class="show-pre-add" id="batchSlotsContainer"></div>
-        <div class="batch-actions" id="actionArea" style="display: none;">
-            <div class="split-tool">
-                <div class="split-left"></div>
-                <div class="split-right">
-                    <button type="submit" class="template-btn">全部上架</button>
-                </div>
-            </div>
-        </div>
-    </form>
     <div id="response-area" style="display: none;"></div>
     {% comment %} 小魚顯示區 {% endcomment %}
     <h2>上架中商品</h2>
     <div class="grid" id="active-grid">
         {% for item in active_items %}
-            <a class="product-creature"
-               href="{% url 'product_detail' item.id %}"
-               id="product-card-{{ item.id }}">
-                <div class="fissh-card-menu-wrap">
-                    <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
-                    <div class="fissh-card-menu-pane">
-                        <div class="fissh-card-menu-row"
-                             onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
-                        <div class="fissh-card-menu-row"
-                             onclick="runFisshCardAction(event, 'delist', '{{ item.id }}')">下架商品</div>
-                        <div class="fissh-card-menu-row fissh-danger-node"
-                             onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
-                    </div>
-                </div>
-                {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.name }}" />
-                {% else %}
-                    <div style="width: 100%;
-                                height: 200px;
-                                background-color: var(--bg-light);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: var(--text-muted)">尚無圖片</div>
-                {% endif %}
-                <h3 class="product-creature-title">{{ item.name }}</h3>
-                {% if item.price_status == 'NOT_FOR_SALE' %}
-                    <p class="product-creature-subtitle non-sale">無價珍寶</p>
-                {% else %}
-                    <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-                {% endif %}
-            </a>
+            {% include "component/new-creature-card.html" %}
         {% empty %}
             <p class="empty-hint">目前沒有上架商品喔！</p>
         {% endfor %}
@@ -272,40 +102,7 @@
     <h2>已下架商品</h2>
     <div class="grid" id="inactive-grid">
         {% for item in inactive_items %}
-            <a class="product-creature"
-               href="{% url 'product_detail' item.id %}"
-               id="product-card-{{ item.id }}">
-                <div class="fissh-card-menu-wrap">
-                    <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
-                    <div class="fissh-card-menu-pane">
-                        <div class="fissh-card-menu-row"
-                             onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
-                        <div class="fissh-card-menu-row"
-                             onclick="runFisshCardAction(event, 'relist', '{{ item.id }}')">上架商品</div>
-                        <div class="fissh-card-menu-row fissh-danger-node"
-                             onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
-                    </div>
-                </div>
-                {% if item.image %}
-                    <img src="{{ item.image.url }}"
-                         alt="{{ item.name }}"
-                         onerror="this.src='https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror=null;" />
-                {% else %}
-                    <div style="width: 100%;
-                                height: 200px;
-                                background-color: var(--bg-light);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                color: var(--text-muted)">尚無圖片</div>
-                {% endif %}
-                <h3 class="product-creature-title">{{ item.name }}</h3>
-                {% if item.price_status == 'NOT_FOR_SALE' %}
-                    <p class="product-creature-subtitle non-sale">無價珍寶</p>
-                {% else %}
-                    <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-                {% endif %}
-            </a>
+            {% include "component/new-creature-card.html" with is_inactive=True %}
         {% empty %}
             <p class="empty-hint">目前沒有下架商品。</p>
         {% endfor %}

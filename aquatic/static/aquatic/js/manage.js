@@ -244,31 +244,20 @@ window.addEventListener("DOMContentLoaded", () => {
 // manage.js 中的 switchMode 整合版
 
 function switchMode(element, mode) {
-  // A. 樣式與藥丸框框移動 (保留你原本的)
+  // A. 樣式與藥丸框框移動
   document.querySelectorAll(".mode-tab").forEach((tab) => tab.classList.remove("active"));
   element.classList.add("active");
-  moveActiveTab(element);
+  if (typeof moveActiveTab === "function") moveActiveTab(element);
 
-  // B. 抓取新的核心三大區塊 (對應你的新 HTML id)
+  // B. 抓取唯一的單獨表單區塊（批量的 id 全部物理拔除，省空間）
   const singleForm = document.getElementById("singleUploadForm");
-  const setupSection = document.getElementById("setupSection");
-  const batchForm = document.getElementById("batchUploadForm");
 
-  // C. 核心因果：純粹切換顯示，不再需要 disabled 欄位
+  // C. 核心因果：精準切換開與關
   if (mode === "off") {
+    // 模式：關閉 -> 隱藏單獨表單
     if (singleForm) singleForm.style.display = "none";
-    if (setupSection) setupSection.style.display = "none";
-    if (batchForm) batchForm.style.display = "none";
   } else if (mode === "single") {
-    // 模式：單獨 -> 只開單獨表單，關閉所有批量區塊
+    // 模式：單獨 -> 顯示單獨表單
     if (singleForm) singleForm.style.display = "block";
-    if (setupSection) setupSection.style.display = "none";
-    if (batchForm) batchForm.style.display = "none";
-  } else if (mode === "batch") {
-    // 模式：批量 -> 關閉單獨，開啟輸入格數 Banner。
-    // 💡 關鍵：此時整個 batchForm 先隱藏，等點擊「生成」後再打開。
-    if (singleForm) singleForm.style.display = "none";
-    if (setupSection) setupSection.style.display = "grid";
-    if (batchForm) batchForm.style.display = "none";
   }
 }

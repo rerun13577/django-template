@@ -9,6 +9,8 @@ from PIL import Image, ImageOps
 from pillow_heif import register_heif_opener
 
 register_heif_opener()
+# 這個檔案是資料庫的零件
+# 另一個utility是給view的零件
 
 
 def purge_cloudflare_cache(url_list):

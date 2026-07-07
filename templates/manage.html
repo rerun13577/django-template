@@ -13,8 +13,9 @@
         <script src="{% static 'aquatic/js/manage.js' %}" defer></script>
         <script src="{% static 'aquatic/js/add-product-spec.js' %}" defer></script>
         {% comment %} 其他功能腳本 {% endcomment %}
-        <script src="{% static 'aquatic/js/add-product.js' %}?v=2026" defer></script>
+        {% comment %} <script src="{% static 'aquatic/js/add-product.js' %}?v=2026" defer></script> {% endcomment %}
         {% comment %} 生物上傳 {% endcomment %}
+        <script src="{% static 'aquatic/js/add-product-2.js' %}?v=2026" defer></script>
         <script src="{% static 'aquatic/js/htmx.js' %}" defer></script>
     </head>
     <body>
@@ -25,7 +26,7 @@
                 <button class="tab-item" onclick="switchTab(this, 'specs')">規格範本</button>
                 <button class="tab-item" onclick="switchTab(this, 'products')">新增生物</button>
             </nav>
-            <div id="manage-content">
+            <div id="manage-content" class="manage-content">
                 <div id="tab-notices" class="tab-section">
                     <div class="split-tool">
                         <div class="split-left">
@@ -59,8 +60,7 @@
                                 <button type="button"
                                         class="mode-tab active"
                                         onclick="switchMode(this, 'off')">關閉</button>
-                                <button type="button" class="mode-tab" onclick="switchMode(this, 'single')">單獨</button>
-                                <button type="button" class="mode-tab" onclick="switchMode(this, 'batch')">批量</button>
+                                <button type="button" class="mode-tab" onclick="switchMode(this, 'single')">上架</button>
                             </div>
                         </div>
                     </div>

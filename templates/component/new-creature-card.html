@@ -1,4 +1,3 @@
-{% comment %} <a class="product-creature" id="fish-card-{{ item.pk }}" href="{% url 'product_detail' item.id %}" id="product-card-{{ item.id }}"> {% endcomment %}
 <a class="product-creature"
    id="product-card-{{ item.id }}"
    href="{% url 'product_detail' item.id %}">
@@ -7,14 +6,27 @@
         <div class="fissh-card-menu-pane">
             <div class="fissh-card-menu-row"
                  onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
-            <div class="fissh-card-menu-row"
-                 onclick="runFisshCardAction(event, 'delist', '{{ item.id }}')">下架商品</div>
+            {% if is_inactive %}
+                <div class="fissh-card-menu-row"
+                     onclick="runFisshCardAction(event, 'relist', '{{ item.id }}')">上架商品</div>
+            {% else %}
+                <div class="fissh-card-menu-row"
+                     onclick="runFisshCardAction(event, 'delist', '{{ item.id }}')">下架商品</div>
+            {% endif %}
             <div class="fissh-card-menu-row fissh-danger-node"
                  onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
         </div>
     </div>
-    {% if item.image %}
-        <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+    {% if item.video %}
+        <video src="{{ item.video.url }}#t=0.001"
+               preload="metadata"
+               muted
+               playsinline
+               style="width: 100%;
+                      height: 200px;
+                      object-fit: cover;
+                      display: block">
+        </video>
     {% else %}
         <div style="width: 100%;
                     height: 200px;
@@ -22,7 +34,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: var(--text-muted)">尚無圖片</div>
+                    color: var(--text-muted)">尚無影片</div>
     {% endif %}
     <h3 class="product-creature-title">{{ item.name }}</h3>
     {% if item.price_status == 'NOT_FOR_SALE' %}

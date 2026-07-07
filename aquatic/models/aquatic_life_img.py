@@ -15,7 +15,13 @@ from django.utils.timezone import now
 
 # 🚀 寫在 models.py 的最上方
 # 🚀 物理向後退一層，到 aquatic/ 底下抓 constants
-from ..constants import TAIWAN_REGIONS
+from ..constants import (
+    AQUATIC_CATEGORIES,
+    CITY_CHOICES,
+    DEFAULT_CATEGORY,
+    TAIWAN_CITIES,
+    TAIWAN_REGIONS,
+)
 
 # 匯入你專案內部的工具與基底
 from ..utils import handle_model_image_upload, purge_cloudflare_cache
@@ -58,39 +64,6 @@ def get_aquatic_upload_path(instance, filename):
 
 class AquaticLife(BaseModel):
     # --- 原本的 CHOICES 區 (保持原樣，這部分很長但很清楚) ---
-    CITY_CHOICES = [
-        ("NONE", "無資訊"),  # 🚀 物理插入預設無資訊選項
-        ("KLU", "基隆市"),
-        ("TP", "臺北市"),
-        ("NTP", "新北市"),
-        ("TY", "桃園市"),
-        ("HCU", "新竹市"),
-        ("HCH", "新竹縣"),
-        ("ILN", "宜蘭縣"),
-        ("MLI", "苗栗縣"),
-        ("TC", "臺中市"),
-        ("CHH", "彰化縣"),
-        ("NTO", "南投縣"),
-        ("YLN", "雲林縣"),
-        ("CYI", "嘉義市"),
-        ("CYH", "嘉義縣"),
-        ("TN", "臺南市"),
-        ("KH", "高雄市"),
-        ("PTH", "屏東縣"),
-        ("HUA", "花蓮縣"),
-        ("TTT", "臺東縣"),
-        ("PEH", "澎湖縣"),
-        ("KMN", "金門縣"),
-        ("LJN", "連江縣"),
-    ]
-
-    CATEGORY_CHOICES = [
-        ("FISH", "魚類"),
-        ("SHRIMP", "蝦類"),
-        ("PLANT", "水生植物"),
-        ("SHELLFISH", "螺蚌類"),
-        ("OTHER", "其他"),
-    ]
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -109,8 +82,8 @@ class AquaticLife(BaseModel):
     name = models.CharField(max_length=100, verbose_name="品種名稱")
     category = models.CharField(
         max_length=10,
-        choices=CATEGORY_CHOICES,
-        default="SHRIMP",
+        choices=AQUATIC_CATEGORIES,
+        default=DEFAULT_CATEGORY,
         verbose_name="產品種類",
     )
     city = models.CharField(
@@ -128,27 +101,25 @@ class AquaticLife(BaseModel):
         verbose_name="價格狀態",
     )
 
-    # 🚀 核心 5 數據 (固定欄位，純數字)
-    # 1. pH值 (存範圍，搜尋更準)
+    video = models.FileField(
+        upload_to=get_aquatic_upload_path,  # 🚀 直接沿用你寫的超讚路徑機制
+        null=True,
+        blank=True,
+        verbose_name="商品影片(MP4/WebM)",
+    )
+
+    # --- 核心 5 數據 (環境規格) ---
     ph_min = models.FloatField(null=True, blank=True, verbose_name="最小pH值")
     ph_max = models.FloatField(null=True, blank=True, verbose_name="最大pH值")
-
-    # 2. 適宜溫度
     temp_min = models.IntegerField(null=True, blank=True, verbose_name="最小溫度")
     temp_max = models.IntegerField(null=True, blank=True, verbose_name="最大溫度")
-
-    # 3. 成魚體長 (cm)
     adult_length = models.FloatField(null=True, blank=True, verbose_name="成魚體長(cm)")
-
-    # 4. 建議水量 (l)
     min_tank_size = models.IntegerField(
         null=True, blank=True, verbose_name="建議水量(L)"
     )
 
-    # 🚀 剩下的 15 個雜項規格 (存 JSON)
+    # --- 擴充與附屬欄位 ---
     specs_json = models.JSONField(default=dict, blank=True, verbose_name="其他詳細規格")
-
-    # 🚀 購物須知連結 (這就是你說的：改了全站都要變的東西)
     notice_template = models.ForeignKey(
         "ShopNotice",
         on_delete=models.SET_NULL,
@@ -157,7 +128,6 @@ class AquaticLife(BaseModel):
         related_name="products",
         verbose_name="套用的購物須知",
     )
-
     stock = models.IntegerField(default=0, verbose_name="庫存數量")
     description = models.TextField(blank=True, verbose_name="詳細描述")
     image = models.ImageField(
@@ -173,6 +143,9 @@ class AquaticLife(BaseModel):
             return "無價珍寶"
         return f"NT$ {self.price}"
 
+    # 如果沒有寫跟有寫
+    # 有寫product.sale_price()
+    # 沒有寫self.price
     @property
     def show_cover(self):
         if self.image:
@@ -181,56 +154,67 @@ class AquaticLife(BaseModel):
             )
         return "無首圖"
 
-    # --- 核心 Save 邏輯 ---
-    # --- 核心 Save 邏輯 ---
-    def save(self, *args, **kwargs):
-        # 0. 🚀 鋼鐵防線：自動跟 owner 的 Profile 地址與行政區同步電路
-        if self.owner and hasattr(self.owner, "profile"):
-            profile = self.owner.profile
-            user_address_string = profile.city_region  # 例如 "臺南市安平區"
+    def _sync_owner_city(self):
+        """自動與發布者的 Profile 地址進行行政區代碼同步（前端為 select 100% 精准）"""
+        # 1. 安全攔截：沒 owner 或沒 profile 直接設為 NONE
+        if not (self.owner and hasattr(self.owner, "profile")):
+            self.city = "NONE"
+            return
 
-            if user_address_string:
-                matched_city_name = None
-                for city_name in TAIWAN_REGIONS.keys():
-                    if city_name in user_address_string:
-                        matched_city_name = city_name
-                        break
+        user_address = self.owner.profile.city_region
+        if not user_address:
+            self.city = "NONE"
+            return
 
-                if matched_city_name:
-                    for code, name in self.CITY_CHOICES:
-                        if name == matched_city_name:
-                            self.city = code
-                            break
-                else:
-                    self.city = "NONE"
-            else:
-                self.city = "NONE"
+        # 2. 核心比對：直接檢查 TAIWAN_CITIES 裡哪個縣市有在 user_address 裡面
+        # 因為是 select 傳入，這行 next 跑出來的結果一定 100% 精準
+        matched_city_name = next(
+            (city for city in TAIWAN_CITIES if city in user_address), None
+        )
+
+        # 3. 寫入欄位：因為我們的 CITY_CHOICES 已經重構成 (city, city)，
+        # 儲存值（Code）跟顯示名稱（Name）一模一樣（例如：("臺南市", "臺南市")）
+        # 所以完全不需要再經過第二層 next 去查代碼，直接把 matched_city_name 塞給 self.city 就收工了！
+        if matched_city_name:
+            self.city = matched_city_name
         else:
             self.city = "NONE"
 
-        # 1. 搬家邏輯：如果分類變了，自動把舊照片搬到新分類資料夾
-        if self.pk:
-            try:
-                old_instance = AquaticLife.objects.get(pk=self.pk)
-                if old_instance.category != self.category and self.image:
-                    old_path = self.image.name.replace("\\", "/")
-                    new_path = get_aquatic_upload_path(self, os.path.basename(old_path))
-                    if default_storage.exists(old_path) and old_path != new_path:
-                        with default_storage.open(old_path) as f:
-                            default_storage.save(new_path, f)
-                        default_storage.delete(old_path)
-                        self.image.name = new_path
-                        print(f"🚚 搬家成功: {old_path} -> {new_path}")
-            except Exception as e:
-                print(f"⚠️ 搬家失敗預警: {e}")
+    def _handle_category_image_move(self):
+        """當分類變更時，自動將舊圖片搬移至新分類資料夾"""
+        if not self.pk or not self.image:
+            return
 
-        # 2. 壓縮轉檔
+        try:
+            old_instance = AquaticLife.objects.get(pk=self.pk)
+            if old_instance.category != self.category:
+                old_path = self.image.name.replace("\\", "/")
+                new_path = get_aquatic_upload_path(self, os.path.basename(old_path))
+
+                if default_storage.exists(old_path) and old_path != new_path:
+                    with default_storage.open(old_path) as f:
+                        default_storage.save(new_path, f)
+                    default_storage.delete(old_path)
+                    self.image.name = new_path
+                    print(f"🚚 搬家成功: {old_path} -> {new_path}")
+        except Exception as e:
+            print(f"⚠️ 搬家失敗預警: {e}")
+
+    # --- 核心 Save 邏輯 ---
+    def save(self, *args, **kwargs):
+        # 1. 🚀 鋼鐵防線：自動跟 owner 的 Profile 地址同步
+        self._sync_owner_city()
+
+        # 2. 搬家邏輯：如果分類變了，自動搬照片
+        self._handle_category_image_move()
+
+        # 3. 壓縮轉檔（必須在 super().save() 之前，確保新檔名寫入資料庫）
         handle_model_image_upload(self, "image")
 
-        # 3. 呼叫 BaseModel 的 save
+        # 4. 呼叫 BaseModel 的 save 真正寫入資料庫
         super().save(*args, **kwargs)
 
-        # 4. 清除快取
+        # 5. 清除 Cloudflare 快取
         if self.image:
             purge_cloudflare_cache([self.image.url])
 
@@ -307,7 +291,7 @@ def sync_all_aquatic_location_on_profile_change(sender, instance, **kwargs):
                 break
 
         if matched_city_name:
-            for code, name in AquaticLife.CITY_CHOICES:
+            for code, name in CITY_CHOICES:
                 if name == matched_city_name:
                     new_city_code = code
                     break

@@ -2616,13 +2616,12 @@ a {
 
 .profile-hero {
   /* 1. 尺寸定義 (你剛才說的 16:9) */
-  width: 41.5rem; /* 做法 A：用比例（推薦 3:1 到 4:1 之間） */
+  /* 1. 尺寸定義 (決絕寬度坍塌) */
+  width: 100%; /* 或者你真的想鎖死寬度，就改成 width: 41.5rem; 把這行刪掉 */
+  max-width: 1200px; /* 加個保險，避免在超大螢幕被拉得太長 */
   aspect-ratio: 4/1;
-  /* 做法 B：直接鎖死高度（桌機通常 250px - 350px 最舒服） */
-  width: 100%;
+  min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
   margin: 0 auto;
-  background-size: cover;
-  background-position: center; /* 確保切掉的是邊緣，保留中心內容 */
   /* 3. 裝飾與佈局 */
   position: relative; /* 作為裡面大頭貼絕對定位的基準點 */
 }
@@ -2765,15 +2764,14 @@ a {
 }
 
 .profile-hero {
-  /* 為了處理照片，這兩行一定要加 */
+  /* 2. 背景圖邏輯 */
   background-size: cover;
   background-position: center;
-  overflow: visible; /* 🚀 關鍵：讓大頭貼可以「壓」在邊界上而不被切掉 */
-  background-color: #ddd; /* 圖片還沒載入時的墊底色 */
-  /* 2. 圖片顯示邏輯 (最關鍵) */
-  background-size: cover; /* 🚀 因：確保圖片填滿整個框。果：多餘的部分會被裁切，不會留白或變形。 */
-  background-position: center; /* 🚀 因：圖片以中心為準。果：縮放時最重要的中間內容不會被切掉。 */
-  background-repeat: no-repeat; /* 防止圖片太小時重複出現 */
+  background-repeat: no-repeat;
+  background-color: #ddd;
+  /* 3. 裝飾與佈局 */
+  position: relative;
+  overflow: visible; /* 讓大頭貼可以突破邊界壓在線上 */
 }
 
 .edit-icon {
@@ -3166,6 +3164,7 @@ a {
   color: var(--primary);
   transition: var(--transition);
 }
+.grid .product-creature video,
 .grid .product-creature img {
   width: 100%;
   height: 200px;
@@ -3216,6 +3215,7 @@ a {
     overflow: hidden;
     transition: var(--transition);
   }
+  .grid .product-creature video,
   .grid .product-creature img {
     width: 100%;
     /* 🚀 1. 把高度交給比例計算，不要鎖死在 200px */
@@ -3654,9 +3654,16 @@ a {
 }
 /* 1. 外層容器：限制最大寬度，手機版留邊距 */
 .in-manage-temp {
-  max-width: var(--width);
-  margin: 0 auto;
+  /* 🚀 核心修改：小螢幕、手機時，兩邊自動留空隙，主體佔滿螢幕寬度的 92% */
+  width: 92%;
+  /* 🚀 防爆邊界：在大螢幕上，寬度到 1000px 就鎖死，不會無限制變寬，版面最舒適 */
+  max-width: 75rem;
+  margin: 0 auto; /* 依然保持水平置中 */
   font-family: sans-serif;
+}
+
+.manage-content {
+  padding: 0 1rem;
 }
 
 /* 3. 內容區塊 */
@@ -3859,6 +3866,22 @@ a {
   color: var(--primary); /* 選中後的字色 */
 }
 
+@media (max-width: 768px) {
+  .in-manage-temp {
+    /* 🚀 核心修改：小螢幕、手機時，兩邊自動留空隙，主體佔滿螢幕寬度的 92% */
+    width: 98%;
+    /* 🚀 防爆邊界：在大螢幕上，寬度到 1000px 就鎖死，不會無限制變寬，版面最舒適 */
+    max-width: 75rem;
+    margin: 0 auto; /* 依然保持水平置中 */
+    font-family: sans-serif;
+  }
+  .manage-content {
+    padding: 0 0rem;
+  }
+  .split-right .add-template {
+    margin-right: 1rem;
+  }
+}
 /* 規格內部的 Grid 佈局 */
 .spec-grid-container {
   padding: 0rem 0rem 0.5rem 0rem; /* 上右下左 */
@@ -4356,8 +4379,8 @@ a {
 /* 🚀 讓單獨卡片大一點，但樣式跟批量一致 */
 .single-card-sizing {
   display: flex;
-  width: 37.5rem;
-  max-width: 95vw;
+  width: 95%;
+  max-width: 37.5rem;
   margin: 0.5rem auto 1rem auto;
   flex-direction: column;
   padding: 1.2rem;
@@ -4727,6 +4750,17 @@ a {
   pointer-events: none; /* 因：遮斷瀏覽器訊號。果：卡片內所有連結、三個點點全面物理性死鎖，不可點擊 */
   cursor: not-allowed;
   transition: opacity 0.2s ease;
+}
+
+.main-cover-box img.preview-img[src=""],
+.main-cover-box img.preview-img:not([src]),
+.main-cover-box .viewport-img[src=""],
+.main-cover-box .viewport-img:not([src]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important; /* 物理退到最底層，絕對不准擋住 z-index: 2 的影片 */
 }
 
 /* 🚀 全域 HTMX 轉場動畫：讓刪除或新增不再「閃現」 */

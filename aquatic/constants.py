@@ -7,12 +7,26 @@
 
 # constants.py
 
+AQUATIC_CATEGORIES = {
+    "FISH": "魚類",
+    "SHRIMP": "蝦類",
+    "PLANT": "水草類",
+    "SHELLFISH": "螺蚌類",
+    "OTHER": "其他",
+}
+# 我這樣修改依然只需要改一個
+# 自動把上面的 Value 當 Key，Key 當 Value
+REVERSE_AQUATIC_CATEGORIES = {v: k for k, v in AQUATIC_CATEGORIES.items()}
+
+DEFAULT_CATEGORY = "SHRIMP"
+
 CORE_SPECS_CONFIG = [
     {
         "label": "生物種類",
         "key": "category",
         "type": "select",
-        "options": ["魚類", "蝦類", "水草類", "螺蚌類", "其他"],
+        # 物理魔法：利用 .values() 動態取出 ["魚類", "蝦類", "水草類", "螺蚌類", "其他"]
+        "options": list(AQUATIC_CATEGORIES.values()),
     },
     {"label": "適宜溫度", "key": "temp", "type": "range"},
     {"label": "pH值", "key": "ph", "type": "range"},
@@ -20,11 +34,17 @@ CORE_SPECS_CONFIG = [
     {"label": "建議水量(L)", "key": "min_tank_size", "type": "single"},
 ]
 
+# ⚙️ 動態標籤翻譯機：把 key 變成 label
+# 程式通電瞬間自動產出：{'temp': '適宜溫度', 'ph': 'pH值', 'adult_length': '體長(cm)'...}
+CORE_SPECS_LABEL = {item["key"]: item["label"] for item in CORE_SPECS_CONFIG}
+
+
 # 重新挑選後的次要規格
 # 移除了「活動水層」
 # 保留「水流強度」（因為對蝦缸溶氧很重要）
 # 增加「光照需求」（因為你有在做造景）
 EXTRA_SPECS = ["GH硬度", "KH硬度", "性情", "食性", "比重", "水流強度", "光照需求"]
+
 
 FISH_SPECS_LABELS = [item["label"] for item in CORE_SPECS_CONFIG] + EXTRA_SPECS
 
@@ -411,3 +431,8 @@ TAIWAN_REGIONS = {
     "金門縣": ["金城鎮", "金湖鎮", "金沙鎮", "金寧鄉", "烈嶼鄉", "烏坵鄉"],
     "連江縣": ["南竿鄉", "北竿鄉", "莒光鄉", "東引鄉"],
 }
+
+# 用上面去分離出其他的變數
+TAIWAN_CITIES = list(TAIWAN_REGIONS.keys())
+
+CITY_CHOICES = [("NONE", "無資訊")] + [(city, city) for city in TAIWAN_REGIONS.keys()]
