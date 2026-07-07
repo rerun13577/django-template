@@ -3837,6 +3837,7 @@ a {
   display: inline-flex;
   background: var(--bg-dark);
   border-radius: var(--radius-m);
+  margin-right: 1rem;
   margin-bottom: 20px;
 }
 
