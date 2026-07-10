@@ -12,10 +12,15 @@
         {% include 'header.html' %}
         <div class="grid">
             {% for item in items %}
-                <a class="product-creature"
-                   id="product-card-{{ item.id }}"
-                   href="{% url 'product_detail' item.id %}">
-                    {% if item.video %}
+                <a class="product-creature" href="{% url 'product_detail' item.id %}">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}"
+                             style="width: 100%;
+                                    height: 200px;
+                                    object-fit: cover;
+                                    display: block"
+                             alt="{{ item.name }}">
+                    {% elif item.video %}
                         <video src="{{ item.video.url }}#t=0.001"
                                preload="metadata"
                                muted

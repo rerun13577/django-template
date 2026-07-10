@@ -45,17 +45,17 @@
 //   --width: 41.5rem;
 // }
 /* 批量新增容器 */
-#batchSlotsContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  padding: 1rem;
-  font-family: var(--ff-primary);
+// #batchSlotsContainer {
+//   display: grid;
+//   grid-template-columns: repeat(2, 1fr);
+//   gap: 1.5rem;
+//   padding: 1rem;
+//   font-family: var(--ff-primary);
 
-  @media (max-width: 764px) {
-    grid-template-columns: 1fr;
-  }
-}
+//   @media (max-width: 764px) {
+//     grid-template-columns: 1fr;
+//   }
+// }
 
 /* 單個生物格子卡片 */
 .slot-item {
@@ -609,6 +609,41 @@
   }
 }
 
+@media (max-width: 667px) {
+  .delete-prod-pic-btn {
+    /* ────────────────────────────────────────────────────────
+     🚀 核心因果修正：絕對定位鎖死在左上角
+     ──────────────────────────────────────────────────────── */
+    position: absolute; /* 啟動絕對定位（父層 .custom-upload-box 記得要有 position: relative） */
+    top: 10px;
+    left: 10px;
+
+    /* 拔掉沒用的 margin-left: auto */
+    cursor: pointer;
+    display: flex; /* 讓按鈕內部的 SVG 置中 */
+    align-items: center;
+    justify-content: center; /* 確保 SVG 水平也精準置中 */
+
+    background: transparent;
+    border: none;
+    z-index: 23; /* 物理防線：層級一定要高，才不會被上傳的圖片蓋過去 */
+    padding: 4px; /* 偷偷擴大一點點點擊範圍，比較好按 */
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      background: transparent;
+      color: var(--text-muted);
+      transition: var(--transition);
+
+      &:hover {
+        color: var(--text); /* 滑鼠嚕過去時變亮，提示使用者這顆可以按 */
+        transform: scale(1.1); /* 微動效，增加精品感 */
+      }
+    }
+  }
+}
+
 .b-delete-prod-pic-btn {
   /* ────────────────────────────────────────────────────────
      🚀 核心因果修正：絕對定位鎖死在左上角
@@ -794,4 +829,129 @@
   opacity: 0 !important;
   pointer-events: none !important;
   z-index: -1 !important; /* 物理退到最底層，絕對不准擋住 z-index: 2 的影片 */
+}
+
+#edit-modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* 調整背景黑度 */
+  backdrop-filter: blur(10px); /* 調整背景模糊度 */
+  z-index: 9999; /* 確保絕對置頂 */
+
+  /* 核心因果：利用 Flexbox 讓內層的白盒表單在螢幕正中央置中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 初始狀態：完全隱形且斷電（滑鼠穿透） */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* 🔌 通電狀態：當 JS 加上 .show 時，彈窗顯現並攔截點擊 */
+#edit-modal-container.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 2. 內層實體白盒：控制表單卡片的寬度、背景與邊框 */
+.fissh-modal-box {
+  background-color: var(--bg-dark); /* 這裡控制彈窗本體的底色 */
+  width: 90%;
+  max-width: 1000px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-l);
+
+  /* 因果：初始狀態稍微下沉 20px，準備觸發進場動畫 */
+  transform: translateY(20px);
+  transition: transform 0.2s ease-in-out;
+}
+
+.fissh-modal-inbox {
+  padding: 1rem;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+@media (max-width: 667px) {
+  .fissh-modal-box {
+    background-color: var(--bg-dark);
+    width: 95%;
+    max-width: 1000px;
+
+    border-radius: var(--radius-m);
+    border: 1px solid var(--border-muted);
+    box-shadow: var(--shadow-l);
+    transform: translateY(20px);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .fissh-modal-inbox {
+    padding: 0.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .fissh-card-menu-wrap {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 100; /* 確保權重高於圖片，不被遮擋 */
+  }
+
+  .fissh-card-menu-dots {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-muted);
+    background-color: var(--bg-light);
+    color: var(--text-muted);
+    box-shadow: var(--shadow-s);
+    transition: var(--transition); /* 套用你的彈簧過渡 */
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+  }
+
+  .fissh-card-menu-pane {
+    position: absolute;
+    top: 0%;
+    right: 0;
+    width: 450%;
+    background: var(--bg-light);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-m);
+
+    /* 🔗 動態因果：預設隱形、往上偏移 10px、關閉點擊偵測 */
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: var(--transition);
+  }
+
+  .fissh-card-menu-row {
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: var(--ff-primary);
+    font-weight: var(--fw-regular);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+}
+
+/* 🔌 通電狀態：當外層開啟時，白盒同時往上彈回原位 */
+#edit-modal-container.show .fissh-modal-box {
+  transform: translateY(0);
 }

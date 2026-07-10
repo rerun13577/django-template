@@ -243,9 +243,24 @@
   .in-article-maker {
     align-items: center;
     gap: 0.875qrem;
-    margin: 1rem 0 1rem var(--article-margin-mobile);
+    margin: 0.75rem 0 1rem var(--article-margin-mobile);
     /* 注意：inline-flex 會讓 margin: 0 auto 失效，
      如果你要整塊置中，外層要加 text-align: center */
+  }
+
+  .in-maker-photo {
+    overflow: hidden; /* 確保圖片不超出圓形 */
+    height: 2.5rem;
+    width: 2.5rem;
+    img {
+      object-fit: cover; /* 確保照片不失真 */
+      height: 2.5rem;
+      width: 2.5rem;
+    }
+  }
+
+  .in-maker-name {
+    font-size: 1.2rem;
   }
 
   .in-article-content-block {

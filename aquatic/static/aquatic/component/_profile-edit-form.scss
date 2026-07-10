@@ -54,6 +54,8 @@
   width: 100%;
   overflow-y: auto;
   scrollbar-gutter: stable;
+  /* 🎯 加入這行：強制封鎖滑動力道傳遞 */
+  overscroll-behavior-y: contain;
 
   &::-webkit-scrollbar-track {
     background: transparent;

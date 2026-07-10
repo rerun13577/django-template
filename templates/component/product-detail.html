@@ -28,6 +28,13 @@
                                       height: 100%;
                                       object-fit: cover">
                         </video>
+                    {% elif product.image %}
+                        <img src="{{ product.image.url }}"
+                             style="width: 100%;
+                                    height: 100%;
+                                    object-fit: cover object-fit: cover;
+                                    display: block"
+                             alt="{{ product.name }}">
                     {% else %}
                         <div class="gallery-placeholder"
                              style="display: flex;

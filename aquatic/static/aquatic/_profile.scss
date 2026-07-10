@@ -17,7 +17,7 @@
   /* 1. 尺寸定義 (你剛才說的 16:9) */
   /* 1. 尺寸定義 (決絕寬度坍塌) */
   width: 100%; /* 或者你真的想鎖死寬度，就改成 width: 41.5rem; 把這行刪掉 */
-  max-width: 1200px; /* 加個保險，避免在超大螢幕被拉得太長 */
+  max-width: 2000px; /* 加個保險，避免在超大螢幕被拉得太長 */
   aspect-ratio: 4 / 1;
   min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
   margin: 0 auto;
@@ -438,10 +438,18 @@
 }
 
 /* 內部的地圖圖示（Map-pin SVG）物理微調 */
+// .user-location-tag svg,
+// .user-location-tag i {
+//   width: 1.75rem;
+//   height: 1.75rem;
+//   flex-shrink: 0; /* 鋼鐵防線：文字再長也絕不允許圖示被擠壓變形 */
+//   /* 讓圖示顏色直接繼承父層的 --text-muted，或是你想亮一點可以改成 var(--primary) */
+// }
+
 .user-location-tag svg,
 .user-location-tag i {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0; /* 鋼鐵防線：文字再長也絕不允許圖示被擠壓變形 */
   /* 讓圖示顏色直接繼承父層的 --text-muted，或是你想亮一點可以改成 var(--primary) */
 }
@@ -622,5 +630,11 @@
 
     /* 🚀 動態回饋：綁定你的貝氏曲線轉場動畫 */
     transition: var(--transition);
+  }
+
+  .tab-item {
+    flex: 1; /* 🚀 因：剩餘空間平分。果：三個按鈕寬度一模一樣。 */
+    padding: 14px 0; /* 上下撐開高度，好點擊 */
+    font-size: 0.875rem;
   }
 }

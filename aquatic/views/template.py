@@ -51,17 +51,15 @@ class NoticeAPIView(FisshAPIBase):
         temp_id = request.POST.get("id")
         action = request.POST.get("action")
 
-        # 定義這支 View 的座標系統
+        # 🎯 統一的座標系統（化簡版，精準對齊前端）
         global_var = "GLOBAL_NOTICE_OPTIONS"
-        selector = (
-            'select[name="fish_notice"], select[name="global_notice"], #global_notice'
-        )
+        selector = 'select[name="fish_notice"]'
 
         # --- 1. 刪除分支 (Fast-path) ---
         if action == "delete":
             ShopNotice.objects.filter(id=temp_id, user=request.user).delete()
-            # 直接返回刪除腳本，完事！
             return HttpResponse(get_delete_script(temp_id, global_var, selector))
+
         # --- 2. 儲存/更新分支 (Main-path) ---
         else:
             title = request.POST.get("title", "").strip()
@@ -110,7 +108,6 @@ class NoticeAPIView(FisshAPIBase):
 class SpecAPIView(FisshAPIBase):
     def get(self, request, pk=None, *args, **kwargs):
         if pk:
-            # 找到該規格，並丟給一個編輯表單頁面
             spec = SpecTemplate.objects.get(id=pk, user=request.user)
             return render(request, "component/spec_edit_form.html", {"spec": spec})
         return HttpResponse("找不到範本", status=400)
@@ -121,16 +118,15 @@ class SpecAPIView(FisshAPIBase):
             action = request.POST.get("action")
             name = request.POST.get("name")
 
+            # 🎯 統一規格選單的座標系統（移除多餘的括號與逗號，確保是純字串）
+            global_var = "GLOBAL_SPEC_OPTIONS"
+            selector = (
+                'select[name="fish_spec"], select[name="global_spec"], #global_spec'
+            )
+
             # --- 1. 刪除邏輯 ---
             if action == "delete":
-                # 物理消滅資料庫紀錄
                 SpecTemplate.objects.filter(id=temp_id, user=request.user).delete()
-
-                # 定義規格選單的專屬座標
-                global_var = "GLOBAL_SPEC_OPTIONS"
-                selector = 'select[name="fish_spec[]"], select[name="global_spec"], #global_spec'
-
-                # 🚀 直接呼叫工廠函數產出腳本並回傳，乾淨俐落！
                 return HttpResponse(get_delete_script(temp_id, global_var, selector))
 
             # --- 2. 儲存/更新分支 (Main-path) ---
@@ -140,54 +136,42 @@ class SpecAPIView(FisshAPIBase):
 
                 exclude_keys = ["id", "action", "name", "csrfmiddlewaretoken"]
 
-                # 因為前端送過來的通常是一個很大的post字典
+                # 安全過濾前端送過來的規格字典
                 spec_data = {
                     k: v
                     for k, v in request.POST.items()
                     if k not in exclude_keys and v.strip() != ""
                 }
 
-                # 如果有就修改如果沒有就創造
+                # 有就修改，沒有就創建
                 spec_obj, created = SpecTemplate.objects.update_or_create(
                     id=temp_id if temp_id else None,
                     user=request.user,
                     defaults={"name": name, "data": spec_data},
                 )
 
-                # --- 3. 獲取原有的清單 HTML 回傳（呼叫下方補好的工具） ---
+                # --- 3. 獲取原有的清單 HTML 回傳 ---
                 response = self.render_spec_list(request)
 
-                # 核心因果同步線：利用 JS 強行修改前端記憶體與即時選單
-                global_var = "GLOBAL_SPEC_OPTIONS"
-                selector = (
-                    'select[name="fish_spec"], select[name="global_spec"], #global_spec'
-                )
-
+                # 核心因果同步線：利用修正後的 JS 腳本強行修改前端
                 sync_script = get_update_script(
                     spec_obj.id, spec_obj.name, global_var, selector
                 )
 
-                # 這裡就不會再噴 NoneType 錯誤了，因為 response 拿到了實體物件
                 response.content = response.content + sync_script.encode("utf-8")
                 return response
 
         except Exception as e:
-            # 🚀 對齊 HTMX 標準：把原本的 JsonResponse 換成 HttpResponse
             return HttpResponse(f"系統發生錯誤：{str(e)}", status=500)
 
-    # 🚀 實體修復線：把原本洗掉的渲染代碼刻回來
     def render_spec_list(self, request):
-        # 1. 撈出該用戶的實體規格資料
         spec_templates = SpecTemplate.objects.filter(user=request.user).order_by("-id")
-
-        # 2. 把所有必備零件打包發射給前端 HTML
         return render(
             request,
             "component/spec_list_items.html",
             {
                 "spec_templates": spec_templates,
                 "templates": spec_templates,
-                # 直接吃常數檔裡定義好的底層協議
                 "core_config": CORE_SPECS_CONFIG,
                 "extra_labels": EXTRA_SPECS,
             },

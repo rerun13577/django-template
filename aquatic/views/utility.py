@@ -14,6 +14,7 @@ from aquatic.constants import (
     TAIWAN_REGIONS,
 )
 from aquatic.models import AquaticImage, AquaticLife, Post, ShopNotice, SpecTemplate
+from aquatic.utils import compress_image
 
 
 # 如果你從網址直接輸入需要登入的地方他就會把你踢回去
@@ -111,18 +112,38 @@ def get_bothtype_product(user):
 # 這樣我刪除的邏輯就必定是把原本的抽出來刪掉
 # 然後新增的是把多的丟出去
 def get_delete_script(item_id, global_var, selector):
-    """產出刪除選項的 JavaScript"""
+    """產出刪除選項的 JavaScript (附帶高強度雷達與引號防禦)"""
     return f"""
     <script>
         (function() {{
+            console.log("⚡ [刪除電路通電] 開始執行！準備拔除 ID:", "{item_id}");
             const deletedId = "{item_id}";
+            
+            // 檢查全域變數
             if (typeof {global_var} !== 'undefined') {{
                 const regex = new RegExp('<option value="' + deletedId + '">.*?</option>', 'g');
                 {global_var} = {global_var}.replace(regex, '');
+                console.log("🧹 [1/2] 全域變數", '{global_var}', "清理完成。");
+            }} else {{
+                console.log("ℹ️ [1/2] 沒找到全域變數", '{global_var}', "，跳過。");
             }}
-            document.querySelectorAll('{selector}').forEach(select => {{
-                const opt = select.querySelector('option[value="' + deletedId + '"]');
-                if (opt) opt.remove();
+
+            // 檢查畫面上的下拉選單
+            const selects = document.querySelectorAll('{selector}');
+            
+            // 🚀 修正：用逗號分隔，避免 selector 裡的雙引號把 console.log 炸斷！
+            console.log("🔍 [2/2] 雷達掃描 CSS 選擇器:", '{selector}', "，找到:", selects.length, "個選單");
+            
+            selects.forEach(select => {{
+                // 🚀 順便幫你換成反引號，尋找精準度更高，不怕單雙引號衝突
+                const opt = select.querySelector(`option[value="${{deletedId}}"]`);
+                
+                if (opt) {{
+                    opt.remove();
+                    console.log("✅ 成功從畫面上拔除該選項！");
+                }} else {{
+                    console.log("⚠️ 警告：選單找到了，但裡面沒有 value 是", deletedId, "的選項。");
+                }}
             }});
         }})();
     </script>
@@ -130,24 +151,49 @@ def get_delete_script(item_id, global_var, selector):
 
 
 def get_update_script(item_id, item_name, global_var, selector):
-    """產出新增/修改選項的 JavaScript"""
-    new_opt_html = f'<option value="{item_id}">{item_name}</option>'
+    """產出新增/修改選項的 JavaScript (引號防衝突安全版)"""
     return f"""
     <script>
         (function() {{
             const newId = "{item_id}";
             const newName = "{item_name}";
-            if (typeof {global_var} !== 'undefined' && !{global_var}.includes('value="' + newId + '"')) {{
-                {global_var} += '{new_opt_html}';
+            
+            // 🚀 修正 1：用逗號分隔參數，不把變數硬塞進雙引號字串裡
+            console.log("⚡ [更新電路通電] ID:", newId, "名稱:", newName);
+            
+            const newOptHtml = `<option value="${{newId}}">${{newName}}</option>`;
+
+            if (typeof {global_var} !== 'undefined') {{
+                const regex = new RegExp('<option value="' + newId + '">.*?</option>', 'g');
+                
+                if (regex.test({global_var})) {{
+                    {global_var} = {global_var}.replace(regex, newOptHtml);
+                    console.log("🔄 [1/2] 全域變數已覆寫更新舊選項。");
+                }} else {{
+                    {global_var} += newOptHtml;
+                    console.log("➕ [1/2] 全域變數已新增全新選項。");
+                }}
+            }} else {{
+                console.log("ℹ️ [1/2] 沒找到全域變數", '{global_var}', "，跳過。");
             }}
-            document.querySelectorAll('{selector}').forEach(select => {{
-                const existingOpt = select.querySelector('option[value="' + newId + '"]');
+
+            const selects = document.querySelectorAll('{selector}');
+            
+            // 🚀 修正 2：用逗號分隔，徹底避免 selector 裡面的雙引號把 console.log 炸斷！
+            console.log("🔍 [2/2] 雷達掃描 CSS 選擇器:", '{selector}', "，找到:", selects.length, "個選單");
+
+            selects.forEach(select => {{
+                const existingOpt = select.querySelector(`option[value="${{newId}}"]`);
+                
                 if (!existingOpt) {{
                     const opt = document.createElement('option');
-                    opt.value = newId; opt.textContent = newName;
+                    opt.value = newId; 
+                    opt.textContent = newName;
                     select.appendChild(opt);
+                    console.log("✅ 成功在畫面上新增一筆選項！");
                 }} else {{
                     existingOpt.textContent = newName;
+                    console.log("🔄 成功在畫面上更新舊有選項名稱！");
                 }}
             }});
         }})();
@@ -418,11 +464,34 @@ def apply_fish_specs(the_fish, spec_template_id):
     the_fish.specs_json = new_specs
 
 
+def process_fish_cover(the_fish, cover_file):
+    """
+    物理因果：攔截封面圖 -> 送入轉檔機壓縮、改 UUID -> 將最終包裹綁定到模型上。
+    """
+    # 1. 大閘門防線：沒有新檔案就直接斷電退場
+    if not cover_file:
+        return
+
+    # 2. 🚀 核心因果：把使用者傳來的原始圖片，丟進轉檔機
+    # 出來的 compressed_file 會是一個全新的、WEBP 格式、且檔名是 UUID 的記憶體包裹
+    try:
+        compressed_file = compress_image(cover_file, threshold_kb=500)
+    except Exception as e:
+        print(f"❌ [封面處理] 轉檔機發生物理故障：{e}")
+        # 如果轉檔失敗，為了不讓爛檔案上傳，可以直接拋出錯誤或 return
+        raise ValueError("封面圖片處理失敗，請檢查檔案格式！")
+
+    # 3. 綁定實體檔案
+    # Django 接到這個包裹後，在執行外層的 the_fish.save() 時，
+    # 會自動去 models.py 讀取 upload_to 的路徑，然後發射到 Cloudflare R2。
+    the_fish.image = compressed_file
+
+
 # 組裝上面是個副函式
 def main_process_fish_data(the_fish, post_data, files_data):
     """
     物理因果：一條龍大總管函數。
-    完全捨棄批量陣列邏輯，直線處理單筆生物的 名稱/價格/提醒/規格/影片。
+    完全捨棄批量陣列邏輯，直線處理單筆生物的 名稱/價格/提醒/規格/影片/封面圖。
     """
     # 1. 名字與價格 (呼叫剛改好的單筆提取函數)
     basic_info = extract_fish_name_price(post_data)
@@ -442,9 +511,13 @@ def main_process_fish_data(the_fish, post_data, files_data):
     video_file = files_data.get("video")
     process_fish_video(the_fish, video_file)
 
-    # 5. 終極存檔
-    # 因果防線：就算 process_fish_video 遇到「編輯模式沒換新影片」而直接 return，
-    # 這裡的 save() 依然能確保名字、價格和範本的修改被確實寫入資料庫。
+    # 🚀 5. 封面圖防線處理 (新增這兩行，物理對接前端傳來的圖片)
+    cover_file = files_data.get("fish-cover")
+    process_fish_cover(the_fish, cover_file)
+
+    # 6. 終極存檔
+    # 因果防線：就算 process_fish_video 或 process_fish_cover 遇到「編輯模式沒換新檔案」
+    # 而直接 return，這裡的 save() 依然能確保名字、價格和範本的修改被確實寫入資料庫。
     the_fish.save()
 
     return the_fish

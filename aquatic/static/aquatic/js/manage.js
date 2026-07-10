@@ -2,23 +2,9 @@
 let currentEditingItem = null;
 
 // 通用的「開表單」動畫邏輯
-window.uiShowForm = function (item, form) {
-  if (currentEditingItem) uiReset(); // 如果有人在改，先復原
-  currentEditingItem = item;
+// 🚀 穩定派：永遠把資料「送上去」給最上方的表單，絕不搬移表單本體！
 
-  item.style.opacity = "0";
-  item.style.transform = "scale(0.95)";
-
-  setTimeout(() => {
-    item.style.display = "none";
-    item.insertAdjacentElement("afterend", form);
-    form.style.display = "block";
-    requestAnimationFrame(() => {
-      form.style.opacity = "1";
-      form.style.transform = "translateY(0)";
-    });
-  }, 300);
-};
+// 🚀 穩定派：收合與清空表單
 
 // manage.js
 
@@ -52,14 +38,23 @@ window.uiShowForm = function (item, form) {
   }, 150);
 };
 
-// 🚀 2. 取消：表單淡出，卡片立刻補位
-// manage.js
-
-// manage.js
-
 window.uiReset = function () {
-  const activeForms = document.querySelectorAll(".create-mode");
+  console.log("⚡ 啟動表單歸位與卡片還原程序！");
 
+  // 🚀 核心因果修正：無條件優先還原卡片！不准包在表單迴圈裡！
+  if (currentEditingItem) {
+    currentEditingItem.style.display = "block";
+    // 逼迫瀏覽器瞬間計算體積，避免動畫卡頓
+    void currentEditingItem.offsetHeight;
+    currentEditingItem.style.opacity = "1";
+    currentEditingItem.style.transform = "scale(1)";
+
+    // 釋放記憶體，把插頭拔掉，避免下次錯亂
+    currentEditingItem = null;
+  }
+
+  // 📦 下面的邏輯負責把表單收好、清空
+  const activeForms = document.querySelectorAll(".create-mode, .edit-mode"); // 多加幾個保險
   activeForms.forEach((formWrapper) => {
     if (getComputedStyle(formWrapper).display !== "none") {
       formWrapper.style.opacity = "0";
@@ -68,52 +63,87 @@ window.uiReset = function () {
       setTimeout(() => {
         formWrapper.style.display = "none";
 
-        // 🚀 關鍵修正：同時抓取 input 和 textarea
+        // 物理清空輸入框
         formWrapper.querySelectorAll('input:not([type="hidden"]), textarea').forEach((i) => {
           i.value = "";
         });
 
-        // 清空隱藏的 ID
+        // 物理清空隱藏 ID
         const hiddenId = formWrapper.querySelector("#edit-spec-id, #editTempId");
         if (hiddenId) hiddenId.value = "";
-
-        if (currentEditingItem) {
-          currentEditingItem.style.display = "block";
-          setTimeout(() => {
-            currentEditingItem.style.opacity = "1";
-            currentEditingItem.style.transform = "scale(1)";
-            currentEditingItem = null;
-          }, 10);
-        }
       }, 150);
     }
   });
 };
 
-// manage.js
-
-// 🚀 1. 全域手風琴監聽：不管「購物須知」還是「規格」，點了就展開
 document.addEventListener("click", function (e) {
   const header = e.target.closest(".accordion-header");
-  // 如果點的是標題，且不是處於「不可點擊(no-cursor)」狀態
   if (!header || header.classList.contains("no-cursor")) return;
 
   const item = header.closest(".accordion-item");
   const body = item.querySelector(".accordion-body");
   if (!body) return;
 
+  // ====================================================
+  // 🔍 階段一：排他性掃描 (強制關閉其他正在打開的盒子)
+  // ====================================================
+  const allOpenItems = document.querySelectorAll(".accordion-item.is-open");
+
+  allOpenItems.forEach((openItem) => {
+    // 只要不是你現在點的這個，就通通關起來
+    if (openItem !== item) {
+      openItem.classList.remove("is-open");
+      const openBody = openItem.querySelector(".accordion-body");
+
+      if (openBody) {
+        // 執行標準關門物理學
+        openBody.style.maxHeight = openBody.scrollHeight + "px";
+        void openBody.offsetHeight; // 強制重繪
+        openBody.style.maxHeight = "0";
+        openBody.style.opacity = "0";
+
+        setTimeout(() => {
+          if (!openItem.classList.contains("is-open")) {
+            openBody.style.display = "none";
+          }
+        }, 300); // 配合 CSS 動畫時間
+      }
+    }
+  });
+
+  // ====================================================
+  // ⚙️ 階段二：處理你剛剛點擊的這個盒子的開與關
+  // ====================================================
   const isOpen = item.classList.toggle("is-open");
+
   if (isOpen) {
+    // 【開門物理學】
     body.style.display = "block";
+    void body.offsetHeight; // 逼迫瀏覽器瞬間算出真實體積
+
+    // 設定高度，加 60px 給底下的按鈕留點呼吸空間
+    body.style.maxHeight = body.scrollHeight + 60 + "px";
+    body.style.opacity = "1";
+
+    // 動畫跑完後，拔掉高度限制
     setTimeout(() => {
-      body.style.maxHeight = body.scrollHeight + "px";
-      body.style.opacity = "1";
-    }, 10);
+      if (item.classList.contains("is-open")) {
+        body.style.maxHeight = "none";
+      }
+    }, 500);
   } else {
+    // 【關門物理學】(自己點擊自己來關閉)
+    body.style.maxHeight = body.scrollHeight + "px";
+    void body.offsetHeight; // 鎖定當下高度
+
+    // 瞬間壓扁
     body.style.maxHeight = "0";
     body.style.opacity = "0";
+
     setTimeout(() => {
-      if (!item.classList.contains("is-open")) body.style.display = "none";
+      if (!item.classList.contains("is-open")) {
+        body.style.display = "none";
+      }
     }, 300);
   }
 });

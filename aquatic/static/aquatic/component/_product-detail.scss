@@ -407,10 +407,36 @@
 @media screen and (max-width: 764px) {
   .product-main-name {
     font-size: 1.75rem;
+    font-weight: var(--fw-bold, 900);
+    color: var(--text);
+    line-height: 1.3;
+    letter-spacing: 0.05em; /* 保持你的豪邁寬鬆設定 */
+    margin: 0 0 0.5rem 0; /* 底部推開 0.5rem 物理間距給下方的價格 */
+
+    white-space: normal; /* 🔗 允許正常換行 */
+    word-wrap: break-word; /* 🔗 允許長單字換行 */
+    word-break: break-all; /* 🔗 強制在字元間斷行，絕對不准省略、不准點點點（...） */
+    display: block; /* 🔗 確保它是一整塊完整的物理空間 */
+    height: auto; /* 🔗 高度自適應，有幾行就撐高幾行 */
+  }
+
+  .in-article-city {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: -moz-fit-content;
+    width: fit-content;
+    background-color: var(--info);
+    border-radius: 1rem;
+    padding: 0.2rem 0.75rem;
+    color: var(--text);
+    margin: 0rem;
+    box-shadow: var(--shadow-m);
+    font-size: 1rem;
   }
 
   .price-node {
-    font-size: 2rem; /* 保持你的巨型價格設定 */
+    font-size: 1.75rem; /* 保持你的巨型價格設定 */
     font-weight: 900;
     color: var(--primary);
     line-height: 1;

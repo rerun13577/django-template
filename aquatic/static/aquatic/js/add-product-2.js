@@ -62,6 +62,7 @@ function removeActivePhoto(e) {
   btn.style.setProperty("display", "none", "important");
 }
 
+// 只剩下上架下架刪除 編輯交給htmx代理
 function runFisshCardAction(event, action, itemId) {
   // 因為我標籤是a所以要做這個動作
   // 我如果沒有寫後面的非同步動作還是會導致網頁重新更新
@@ -93,81 +94,7 @@ function runFisshCardAction(event, action, itemId) {
   // 因為array裡面的第二個其實就是第1個因為從0開始 然後他[1]
   // 最後存進csrftoken這個變數裡面 鏈式語法
 
-  if (action === "edit") {
-    console.log(`[ACTION] 乾淨原生異步流：開始引導編輯 ID: ${itemId}`);
-
-    // 加上變暗的css
-    if (card) card.classList.add("fissh-loading");
-
-    // 🎯 核心修正：改用原生 fetch。100% 隔絕 HTMX 與 <a> 標籤的漏電衝突！
-    // 這是非同步 AJAX 技術的核心
-    // 這個itemid是我早早就從前端傳進來的變數，然後現在就去後端找這個生物
-    // 因為我是(get)取得用品 不是刪除或者修改 所以我不需要帶著我的scrf
-    // 這個路徑我早早就在url和view已經接好了你只需要寫對就好了
-    fetch(`/product/${itemId}/edit/`, {
-      method: "GET", // 純淨無瑕的 GET 請求
-    })
-      // 你送出要求 然後他會給回應res(response)
-      .then((res) => {
-        console.log(`[後端響應] 狀態碼: ${res.status}`);
-        // res只要落在200 到 299之間它就會是true
-        // 我抽出裡面html部分然後傳送給後面的東西
-        // res.ok是回應包裹的專屬屬性.ok檢查有沒有成功.status看編號.test()看包裹文字
-        if (res.ok) {
-          // 這個return 他會跳出的就只有這個then，剩下的還會執行
-          // 然後這個就是下一個的htmlData
-          return res.text();
-        }
-        // 如果壞掉就會直接跳進去最後面的err
-        // 這個throw她跳過的不只是這個if剩下的所有then都會跳過
-        // 這個NEW就是創建一個這個ERROR的CLASS
-        // 那至個Error就是這個CLASS的名子然後擴號就是傳入的東西
-        // 然後NEW就為了要產生一個新的實例
-        throw new Error(`後端砸出錯誤碼: ${res.status}`);
-      })
-      // 下面的then輸入會是上一個丟進來的也就是
-      // res.text()的東西在下個then會被叫做htmldata
-      .then((htmlData) => {
-        // 先找到那個空白頁面
-        const modalContainer = document.getElementById("edit-modal-container");
-        if (modalContainer) {
-          // 他會把前面DIV裡面的東西全部模除然後寫新的上去
-          modalContainer.innerHTML = htmlData;
-          console.log("[電路全開] 表單灌入完畢，原地喚醒彈窗。");
-
-          // 如果HTMX不是為定義的話！
-          // 他會先檢查你有沒有引入HTMX函式庫 然後在執行 如果沒有引入就跳過
-          // 如果沒有引入硬要用網站會崩潰
-          if (typeof htmx !== "undefined") {
-            // 讓HTMX重新檢查一次，目的是要把最新送進來的表單HTML裡面的HTMX接上功能
-            htmx.process(modalContainer);
-          }
-
-          // 觸發你的開窗 JS
-          // 保險機制如果沒有就不要做而已
-          // 幹這函數我沒有定義有可能會有問題
-          // typeof openEditModal 他會去找OpenEditModal的性質
-          // 如果是函數他就會是函數 三個等號為嚴格比較 數值要一樣 性質也要一樣
-          // 兩個等號可能會是數值一樣 但性質不一樣
-          if (typeof openEditModal === "function") {
-            openEditModal();
-          }
-        }
-      })
-      // 那個err只是傳入的變數你要取可以
-      // catch就是為了抓住錯誤訊息而生的
-      // console.error跟一般的console log他們只是顯示形式上的不一樣 顏色格式之類的
-      .catch((err) => {
-        // 他是傳統的組合 如果要在跟變數交錯你要使用%{}去接住變數
-        console.error("[斷路點報錯] 編輯加載慘遭中斷:", err);
-        alert("無法讀取商品資料，請檢查後端線路。");
-      })
-      .finally(() => {
-        // 這步驟到後面其實只是卡片關掉 然後生成表單 最後在還原卡片
-        // (就算你的表單開起來了卡片也要還原到可以點擊)
-        if (card) card.classList.remove("fissh-loading");
-      });
-  } else if (action === "delist") {
+  if (action === "delist") {
     // 因：準備向後端發送下架 POST。果：立刻幫卡片上一道鎖，變暗且防連點
     if (card) card.classList.add("fissh-loading");
 
@@ -322,4 +249,59 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+});
+
+// 🚀 核心因果：偵測到檔案改變時，把檔名物理抽出來，塞進旁邊的 span 裡面
+function updateCoverFilename(input) {
+  const displaySpan = document.getElementById("cover-filename-display");
+  if (input.files && input.files.length > 0) {
+    // 瀏覽器基於資安不會給你實體路徑(C:\...)，只會給你檔名，這剛好符合你的需求
+    displaySpan.textContent = input.files[0].name;
+    displaySpan.style.color = "var(--primary)"; // 選完檔案變個顏色提示成功
+  } else {
+    displaySpan.textContent = "尚未選擇檔案";
+    displaySpan.style.color = "var(--secondary)";
+  }
+}
+
+// 🚀 核心因果：監聽 HTMX 的請求完成事件 (專門用來打掃戰場)
+document.body.addEventListener("htmx:afterRequest", function (event) {
+  // 檢查這次請求是不是成功的 (HTTP 狀態碼 200)
+  if (event.detail.successful) {
+    console.log("[HTMX 廣播接收] 上架成功，開始物理清空上傳區塊...");
+
+    // 1. 物理清空「封面圖」的檔名顯示與文字顏色
+    const coverDisplay = document.getElementById("cover-filename-display");
+    if (coverDisplay) {
+      coverDisplay.textContent = "尚未選擇檔案";
+      coverDisplay.style.color = "var(--secondary)"; // 恢復預設顏色
+    }
+
+    // 2. 物理清空隱藏的 input 檔案記錄 (封面圖 + 影片)
+    const coverInput = document.querySelector('input[name="cover_image"]');
+    if (coverInput) coverInput.value = "";
+
+    const videoInput = document.getElementById("fish-video-input");
+    if (videoInput) videoInput.value = "";
+
+    // 3. (防呆) 關閉影片預覽框，恢復原本的「上傳圖示」
+    const videoPreview = document.querySelector(".preview-video");
+    if (videoPreview) {
+      videoPreview.style.display = "none";
+      videoPreview.removeAttribute("src"); // 拔掉電源
+      videoPreview.load(); // 強制釋放記憶體
+    }
+
+    // 4. 隱藏影片框右上角的叉叉按鈕
+    const deleteBtn = document.querySelector(".delete-prod-pic-btn");
+    if (deleteBtn) {
+      deleteBtn.style.setProperty("display", "none", "important");
+    }
+
+    // 5. 恢復上傳提示文字 (點擊選取影片)
+    const videoPlaceholder = document.querySelector(".viewport-placeholder");
+    if (videoPlaceholder) {
+      videoPlaceholder.style.setProperty("display", "flex", "important");
+    }
+  }
 });

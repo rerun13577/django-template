@@ -10,7 +10,9 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string  # 🚀 補上這行，紅燈當場熄滅
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 
 # 🎯 終極防線：直接用 method_decorator 確保不管前端丟什麼 Method
 from aquatic.constants import (
@@ -24,7 +26,6 @@ from aquatic.constants import (
 # 🚀 既然 CORE_SPECS 已經不存在了，就不要 import 它
 # 1. Model 從 models 資料夾抓
 from aquatic.models import (  # 🚀 核心修正：手動補上副圖模型  # 記得引入模型
-    AquaticImage,
     AquaticLife,
     SpecTemplate,
 )
@@ -74,6 +75,7 @@ class IndexView(View):
 # *args所有「沒有名字」的多餘參數，打包成陣列（Tuple）
 # kwargs集所有「有名字」的多餘參數，打包成字典（Dictionary）
 # 例如/product/edit/<int:pk>/
+@method_decorator(never_cache, name="dispatch")
 class DashboardView(FisshPageBase):
     """商品管理頁面展示小魚"""
 
@@ -162,14 +164,13 @@ class EditProductView(FisshPageBase):  # 完美繼承你的基類
         # 打包傳輸給前端表單，鍵值（Key）物理鎖死，完美還原前端變數
         context = {
             "target_user": fish.owner,  # 🎯 鍵值還原：前端只認 target_user
-            "fish": fish,
+            "item": fish,
             "fish_specs": fish_specs,
             "category_display": AQUATIC_CATEGORIES.get(fish.category, "其他"),
             "spec_templates": SpecTemplate.objects.filter(user=fish.owner),
             "notices": ShopNotice.objects.filter(user=fish.owner),
             "core_config": CORE_SPECS_CONFIG,
             "extra_labels": EXTRA_SPECS,
-            "additional_images": AquaticImage.objects.filter(product=fish),
         }
         return render(request, "component/edit-product-form.html", context)
 
@@ -191,7 +192,14 @@ class EditProductView(FisshPageBase):  # 完美繼承你的基類
             )
 
             # 3. 廚房處理完畢，櫃台負責把最新鮮的卡片端給客人 (HTMX 回傳)
-            return render(request, "component/new-creature-card.html", {"item": fish})
+            response = render(
+                request, "component/new-creature-card.html", {"item": fish}
+            )
+
+            # 🚀 物理通電：在封包貼上 HTMX 專屬指令，命令前端「關閉編輯彈窗」
+            response["HX-Trigger"] = "closeEditModal"
+
+            return response
 
         except ValueError as ve:
             # 這裡專門接住大總管內部四個零件（如價格非數字、提醒不可為空）丟出來的警報

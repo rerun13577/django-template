@@ -29,33 +29,46 @@ from .base import BaseModel
 
 
 def get_aquatic_upload_path(instance, filename):
-    """🚀 萬用路徑優化版：讓主圖與副圖落戶在同一個 Cloudflare 資料夾下"""
+    """🚀 萬用路徑：保留原本 UUID 架構，透過副檔名物理分流圖片與影片"""
     date_str = now().strftime("%Y/%m/%d")
 
-    if isinstance(instance, AquaticLife):
+    # 🎯 核心因果：物理抽出副檔名 (例如 webp, mp4, webm)
+    ext = filename.split(".")[-1].lower()
+
+    if (
+        getattr(instance, "__class__", None)
+        and instance.__class__.__name__ == "AquaticLife"
+    ):
         owner_id = instance.owner.id
         category = instance.category
-        sub_folder = "cover"
-        # 主圖拿商品的 UUID
+
+        # 繼承商品 UUID，鎖定在同一個資料夾
         token = (
             instance.folder_uuid
-            if hasattr(instance, "folder_uuid")
+            if hasattr(instance, "folder_uuid") and instance.folder_uuid
             else uuid4().hex[:8]
         )
-        file_name = "main.webp"  # 主圖固定叫 main.webp
+
+        # 🎯 因果分流閘門：看副檔名決定資料夾與檔名
+        if ext in ["mp4", "webm", "mov", "avi"]:
+            sub_folder = "video"
+            file_name = f"main.{ext}"  # 影片就叫 main.mp4
+        else:
+            sub_folder = "cover"
+            file_name = f"main.{ext}"  # 圖片通常經過壓縮會是 main.webp
+
     else:
-        # 🚀 這是副圖 AquaticImage
+        # 如果你未來還有保留副圖 (AquaticImage) 功能，這段邏輯依然能通電
         owner_id = instance.product.owner.id
         category = instance.product.category
-        sub_folder = "gallery"
-        # 🚀 因果補丁：副圖直接去搶它大哥(product)的 UUID！這樣在 Cloudflare 就會鎖在同一個資料夾
         token = (
             instance.product.folder_uuid
-            if hasattr(instance.product, "folder_uuid")
+            if hasattr(instance.product, "folder_uuid") and instance.product.folder_uuid
             else uuid4().hex[:8]
         )
-        # 🚀 因為都在同一個 gallery 資料夾下，檔名絕對不能再死掐 main.webp，否則後面的副圖會把前面的物理覆蓋！改用隨機碼
-        file_name = f"{uuid4().hex[:8]}.webp"
+        sub_folder = "gallery"
+        # 副圖避免覆蓋，加上隨機碼
+        file_name = f"{uuid4().hex[:8]}.{ext}"
 
     return posixpath.join(
         "aquatic", str(owner_id), category, date_str, token, sub_folder, file_name

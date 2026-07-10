@@ -1,5 +1,6 @@
 import os
 from io import BytesIO
+from uuid import uuid4
 
 import requests
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -32,6 +33,7 @@ def purge_cloudflare_cache(url_list):
         print(f"⚠️ [API 異常]：{e}")
 
 
+# 小於500k他會才會變成webp 不然就不會浪費資源了
 def compress_image(uploaded_image, threshold_kb=500):
     print(
         f"\n[轉檔雷達] 📥 收到圖片: {uploaded_image.name}, 大小: {uploaded_image.size / 1024:.2f} KB"
@@ -44,9 +46,8 @@ def compress_image(uploaded_image, threshold_kb=500):
 
     # 🎯 物理防線 2：如果檔案小於 500KB，且「不是 HEIC」，才可以直接退回原檔
     if uploaded_image.size <= threshold_kb * 1024 and not is_heic:
-        print(
-            f"[轉檔雷達] ✅ 安全放行：檔案小於 {threshold_kb}KB 且非 HEIC，不壓縮直接退回原檔。"
-        )
+        ext = uploaded_image.name.split(".")[-1].lower()
+        uploaded_image.name = f"{uuid4().hex}.{ext}"  # 強制貼上乾淨的 UUID 標籤
         return uploaded_image
 
     # 如果是 HEIC，或者檔案大於 500KB，就強迫進入轉檔器
@@ -81,7 +82,7 @@ def compress_image(uploaded_image, threshold_kb=500):
         raise e
 
     output.seek(0)
-    new_filename = f"{uploaded_image.name.rsplit('.', 1)[0]}.webp"
+    new_filename = f"{uuid4().hex}.webp"  # 絕對不能用 rsplit 留原始檔名
     final_size_kb = output.getbuffer().nbytes / 1024
 
     print(

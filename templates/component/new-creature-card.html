@@ -5,7 +5,11 @@
         <div class="fissh-card-menu-dots">{% include "icons/ellipsis-vertical.html" %}</div>
         <div class="fissh-card-menu-pane">
             <div class="fissh-card-menu-row"
-                 onclick="runFisshCardAction(event, 'edit', '{{ item.id }}')">編輯商品</div>
+                 hx-get="{% url 'edit-product' item.id %}"
+                 hx-target="#edit-modal-container"
+                 hx-swap="innerHTML"
+                 hx-on:htmx:after-request="if(event.detail.successful) openEditModal()"
+                 onclick="event.preventDefault(); event.stopPropagation();">編輯商品</div>
             {% if is_inactive %}
                 <div class="fissh-card-menu-row"
                      onclick="runFisshCardAction(event, 'relist', '{{ item.id }}')">上架商品</div>
@@ -17,7 +21,14 @@
                  onclick="runFisshCardAction(event, 'delete', '{{ item.id }}')">刪除商品</div>
         </div>
     </div>
-    {% if item.video %}
+    {% if item.image %}
+        <img src="{{ item.image.url }}"
+             style="width: 100%;
+                    height: 200px;
+                    object-fit: cover;
+                    display: block"
+             alt="{{ item.name }}">
+    {% elif item.video %}
         <video src="{{ item.video.url }}#t=0.001"
                preload="metadata"
                muted

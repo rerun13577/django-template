@@ -1,246 +1,141 @@
-{% load static %}
-<form hx-post="{% url 'edit-product' fish.id %}"
-      hx-target="#product-card-{{ fish.id }}"
-      hx-swap="outerHTML"
-      hx-encoding="multipart/form-data"
-      id="editUploadForm-{{ fish.id }}"
-      style="display: block">
-    {% csrf_token %}
-    <div id="singleUploadContainer">
-        <div class="single-card-sizing">
-            <div class="slot-field1 photo-upload-container">
-                <div class="main-cover-box single-photo-ratio"
-                     data-active-slot="1"
-                     onclick="triggerActiveInput(event)">
-                    <div class="custom-upload-box"
-                         style="position: relative;
-                                width: 100%;
-                                height: 100%">
-                        <div class="upload-placeholder viewport-placeholder"
-                             style="{% if fish and fish.image %}display: none;
-                                    {% endif %}">
-                            {% include 'icons/upload.html' %}
-                            <span style="font-size: 0.85rem;
-                                         color: var(--text-muted);
-                                         margin-top: 0.5rem;
-                                         display: block">點擊選取或多選 4 張照片</span>
-                        </div>
-                        <img class="preview-img viewport-img"
-                             src="{% if fish and fish.image %}{{ fish.image.url }}{% endif %}"
-                             style="{% if fish and fish.image %}display: block;
-                                    {% else %}display: none;
-                                    {% endif %}">
-                        <button class="delete-prod-pic-btn"
-                                type="button"
-                                onclick="removeActivePhoto(event)"
-                                style="{% if fish and fish.image %}display: block;
-                                       {% else %}display: none;
-                                       {% endif %}">{% include "icons/cross.html" %}</button>
-                    </div>
-                </div>
-                <div class="photo-train-slots">
-                    {% for i in "1234" %}
-                        {% with idx=forloop.counter0 %}
-                            <div class="sub-photo-slot {% if forloop.first %}active-focus{% endif %}"
-                                 data-slot-index="{{ forloop.counter }}"
-                                 onclick="handleSlotClick(this, '{{ forloop.counter }}', event)">
-                                <div class="custom-upload-box sub-photo-ratio" style="position: relative;">
-                                    <input type="file"
-                                           name="fish_image[]"
-                                           accept="image/*"
-                                           onchange="handleGalleryUpload(this, '{{ forloop.counter }}')"
-                                           style="display: none"
-                                           multiple>
-                                    {% if idx == 0 %}
-                                        {% if fish.image %}
-                                            <div class="upload-placeholder" style="display: none;">+</div>
-                                            <img class="preview-img slot-thumb"
-                                                 src="{{ fish.image.url }}"
-                                                 style="display: block">
-                                        {% else %}
-                                            <div class="upload-placeholder">+</div>
-                                            <img class="preview-img slot-thumb" src="" style="display: none;">
-                                        {% endif %}
-                                    {% elif idx == 1 and additional_images.0 %}
-                                        <div class="upload-placeholder" style="display: none;">+</div>
-                                        <img class="preview-img slot-thumb"
-                                             src="{{ additional_images.0.image.url }}"
-                                             style="display: block">
-                                    {% elif idx == 2 and additional_images.1 %}
-                                        <div class="upload-placeholder" style="display: none;">+</div>
-                                        <img class="preview-img slot-thumb"
-                                             src="{{ additional_images.1.image.url }}"
-                                             style="display: block">
-                                    {% elif idx == 3 and additional_images.2 %}
-                                        <div class="upload-placeholder" style="display: none;">+</div>
-                                        <img class="preview-img slot-thumb"
-                                             src="{{ additional_images.2.image.url }}"
-                                             style="display: block">
-                                    {% else %}
-                                        <div class="upload-placeholder">+</div>
-                                        <img class="preview-img slot-thumb" src="" style="display: none;">
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endwith %}
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="slot-field1">
-                <input type="text"
-                       name="fish_name[]"
-                       value="{{ fish.name|default:'' }}"
-                       placeholder="品種名稱 (如：極火蝦)"
-                       data-label="品種名稱"
-                       required>
-            </div>
-            <div class="slot-field1">
-                <input type="number"
-                       name="fish_price[]"
-                       value="{{ fish.price|default:'' }}"
-                       placeholder="單價"
-                       data-label="單價"
-                       required>
-            </div>
-            <div class="expand-grid-layout">
-                <div class="slot-field1 template-group">
-                    <div class="split-tool">
-                        <div class="split-left">
-                            <span class="slot-header" style="font-size: 0.9rem;">規格範本</span>
-                        </div>
-                        <div class="split-right">
-                            <div class="mini-toggle-wrapper">
-                                <div class="mini-tab-active" style="left: 0px;"></div>
-                                <button type="button"
-                                        class="mini-tab active"
-                                        onclick="toggleTemplate(this, 'off', 'fish_spec')">關閉</button>
-                                <button type="button"
-                                        class="mini-tab"
-                                        onclick="toggleTemplate(this, 'on', 'fish_spec')">引用</button>
-                            </div>
-                        </div>
-                    </div>
-                    <select name="fish_spec[]" data-label="規格範本" style="display: none;">
-                        <option value="">選擇規格範本...</option>
-                        {% for s in spec_templates %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
-                    </select>
-                    <div class="accordion-body is-visible" style="display: block;">
-                        <div class="spec-inner">
-                            <div class="spec-grid-container">
-                                <div class="spec-group">
-                                    <div class="group-header">核心規格數據</div>
-                                    <div class="spec-grid1">
-                                        {% for item in core_config %}
-                                            {% if item.type == "range" %}
-                                                <div class="spec-item range-group">
-                                                    <label>{{ item.label }} (範圍)</label>
-                                                    <div class="range-inputs">
-                                                        <input type="text"
-                                                               class="e-spec-input-field"
-                                                               name="{{ item.label }}_min"
-                                                               value="{% if item.label == 'pH值' %}{{ fish.ph_min|default:'' }}{% elif item.label == '適宜溫度' %}{{ fish.temp_min|default:'' }}{% endif %}"
-                                                               placeholder="最小">
-                                                        <span>-</span>
-                                                        <input type="text"
-                                                               class="e-spec-input-field"
-                                                               name="{{ item.label }}_max"
-                                                               value="{% if item.label == 'pH值' %}{{ fish.ph_max|default:'' }}{% elif item.label == '適宜溫度' %}{{ fish.temp_max|default:'' }}{% endif %}"
-                                                               placeholder="最大">
-                                                    </div>
-                                                </div>
-                                            {% elif item.type == "select" %}
-                                                <div class="spec-item">
-                                                    <label>{{ item.label }}</label>
-                                                    <select name="{{ item.label }}" class="e-spec-input-field select-field">
-                                                        <option value="">請選擇</option>
-                                                        {% for opt in item.options %}
-                                                            <option value="{{ opt }}" {% if category_display == opt %}selected{% endif %}>{{ opt }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                            {% else %}
-                                                <div class="spec-item">
-                                                    <label>{{ item.label }}</label>
-                                                    <input type="text"
-                                                           class="e-spec-input-field"
-                                                           name="{{ item.label }}"
-                                                           value="{% if item.label == '體長(cm)' %}{{ fish.adult_length|default:'' }}{% elif item.label == '建議水量(L)' %}{{ fish.min_tank_size|default:'' }}{% endif %}"
-                                                           placeholder="填寫數值">
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="spec-group">
-                                    <div class="group-header">次要規格數據</div>
-                                    <div class="spec-grid1">
-                                        {% for label in extra_labels %}
-                                            <div class="spec-item">
-                                                <label>{{ label }}</label>
-                                                <input type="text"
-                                                       class="e-spec-input-field"
-                                                       name="{{ label }}"
-                                                       value="{% if label == 'GH硬度' %}{{ fish_specs.GH硬度|default:'' }}{% elif label == 'KH硬度' %}{{ fish_specs.KH硬度|default:'' }}{% elif label == '性情' %}{{ fish_specs.性情|default:'' }}{% elif label == '食性' %}{{ fish_specs.食性|default:'' }}{% elif label == '比重' %}{{ fish_specs.比重|default:'' }}{% elif label == '水流強度' %}{{ fish_specs.水流強度|default:'' }}{% elif label == '光照需求' %}{{ fish_specs.光照需求|default:'' }}{% elif label == '成魚體長' %}{{ fish_specs.成魚體長|default:'' }}{% elif label == '建議水量' %}{{ fish_specs.建議水量|default:'' }}{% endif %}"
-                                                       placeholder="選填">
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="slot-field1 template-group">
-                    <div class="split-tool">
-                        <div class="split-left">
-                            <span class="slot-header" style="font-size: 0.9rem;">提醒範本</span>
-                        </div>
-                        <div class="split-right">
-                            <div class="mini-toggle-wrapper">
-                                <div class="mini-tab-active"
-                                     style="left: {% if fish.notice_template %}52px{% else %}0px{% endif %}"></div>
-                                <button type="button"
-                                        class="mini-tab {% if not fish.notice_template %}active{% endif %}"
-                                        onclick="toggleTemplate(this, 'off', 'fish_notice')">關閉</button>
-                                <button type="button"
-                                        class="mini-tab {% if fish.notice_template %}active{% endif %}"
-                                        onclick="toggleTemplate(this, 'on', 'fish_notice')">引用</button>
-                            </div>
-                        </div>
-                    </div>
-                    <select name="global_notice"
-                            data-label="提醒範本"
-                            style="display: {% if fish.notice_template %}block{% else %}none{% endif %}">
-                        <option value="">選擇提醒範本...</option>
-                        {% for n in notices %}
-                            <option value="{{ n.id }}"
-                                    {% if fish.notice_template_id == n.id %}selected{% endif %}>{{ n.title }}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="accordion-body is-visible"
-                         style="display: {% if fish.notice_template %}none{% else %}block{% endif %}">
-                        <div class="spec-inner">
-                            <textarea name="content"
-                                      id="newNoticeContent"
-                                      class="input-content-area"
-                                      placeholder="輸入內容...">{{ fish.description|default:'' }}</textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="batch-actions">
-                <div class="split-tool">
-                    <div class="split-left">
-                        <button type="button"
-                                class="template-btn delete-template"
-                                style="margin: 0.5rem 0rem 1.25rem 1.25rem"
-                                onclick="document.getElementById('edit-modal-container').innerHTML = '';">取消</button>
-                    </div>
-                    <div class="split-right">
-                        <button type="submit" class="template-btn">修改</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="fissh-modal-box">
+    <div class="modal-header"
+         style="display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-muted)">
+        <h3 style="margin: 0; font-size: 1.1rem;">編輯小魚資料</h3>
+        <button type="button"
+                onclick="closeEditModal()"
+                style="background: transparent;
+                       border: none;
+                       cursor: pointer;
+                       color: var(--text-muted)">{% include "icons/cross.html" %}</button>
     </div>
-</form>
+    <div class="fissh-modal-inbox">
+        <form hx-post="{% url 'edit-product' item.pk %}"
+              hx-target="#product-card-{{ item.pk }}"
+              hx-swap="outerHTML"
+              id="editFishForm"
+              enctype="multipart/form-data"
+              style="display: block">
+            {% csrf_token %}
+            <div class="single-card-sizing">
+                <div class="slot-field1 photo-upload-container">
+                    <div class="main-cover-box single-photo-ratio"
+                         data-active-slot="1"
+                         onclick="triggerActiveInput(event)">
+                        <div class="custom-upload-box"
+                             style="position: relative;
+                                    width: 100%;
+                                    height: 100%">
+                            <div class="upload-placeholder viewport-placeholder"
+                                 {% if item.video %}style="display: none;"{% endif %}>
+                                {% include 'icons/upload.html' %}
+                                <span style="font-size: 0.85rem;
+                                             color: var(--text-muted);
+                                             margin-top: 0.5rem;
+                                             display: block">點擊更換影片</span>
+                            </div>
+                            <input type="file"
+                                   id="fish-video-input"
+                                   name="video"
+                                   accept="video/mp4,video/webm"
+                                   onchange="handleVideoUpload(this)"
+                                   style="display: none">
+                            <video class="preview-video viewport-video"
+                                   {% if item.video %} src="{{ item.video.url }}" style="display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2" {% else %} style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2" {% endif %}
+                                   loop
+                                   playsinline
+                                   autoplay>
+                            </video>
+                            <button class="delete-prod-pic-btn"
+                                    type="button"
+                                    onclick="removeActivePhoto(event)"
+                                    {% if item.video %}style="display: block; z-index: 10;"{% else %}style="display: none; z-index: 10;"{% endif %}>
+                                {% include "icons/cross.html" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slot-field1">
+                    <label class="cover-upload-box"
+                           style="display: flex;
+                                  align-items: center;
+                                  justify-content: space-between;
+                                  padding: 0.6rem;
+                                  border: 1px solid var(--border-muted);
+                                  border-radius: var(--radius-s);
+                                  cursor: pointer;
+                                  background-color: var(--bg-dark)">
+                        <span style="color: var(--text-muted); font-size:0.9rem">更換封面圖</span>
+                        <span id="cover-filename-display"
+                              style="font-size: 0.85rem;
+                                     color: var(--secondary);
+                                     max-width: 60%;
+                                     overflow: hidden;
+                                     text-overflow: ellipsis;
+                                     white-space: nowrap">
+                            {% if item.image %}
+                                已有封面，點擊可替換
+                            {% else %}
+                                尚未選擇封面檔案
+                            {% endif %}
+                        </span>
+                        <input type="file"
+                               name="fish-cover"
+                               accept="image/*"
+                               style="display: none"
+                               onchange="updateCoverFilename(this)">
+                    </label>
+                </div>
+                <div class="slot-field1">
+                    <input type="text"
+                           name="fish_name"
+                           placeholder="品種名稱 (如：極火蝦)"
+                           data-label="品種名稱"
+                           value="{{ item.name }}"
+                           required>
+                </div>
+                <div class="slot-field1">
+                    <input type="number"
+                           name="fish_price"
+                           placeholder="單價"
+                           data-label="單價"
+                           value="{{ item.price }}"
+                           required>
+                </div>
+                <div class="expand-grid-layout">
+                    <div class="slot-field1 template-group">
+                        <select name="fish_spec" data-label="規格範本">
+                            <option value="">選擇規格範本...</option>
+                            {% for s in spec_templates %}
+                                <option value="{{ s.id }}" {% if item.spec.id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="slot-field1 template-group">
+                        <select name="fish_notice" data-label="提醒範本">
+                            <option value="">選擇提醒範本...</option>
+                            {% for n in notices %}
+                                <option value="{{ n.id }}"
+                                        {% if item.notice_template_id == n.id %}selected{% endif %}>
+                                    {{ n.title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="batch-actions">
+                    <div class="split-tool">
+                        <div class="split-left"></div>
+                        <div class="split-right">
+                            <button type="submit" class="template-btn">儲存修改</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

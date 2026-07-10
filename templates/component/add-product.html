@@ -51,6 +51,31 @@
                     </div>
                 </div>
                 <div class="slot-field1">
+                    <label class="cover-upload-box"
+                           style="display: flex;
+                                  align-items: center;
+                                  justify-content: space-between;
+                                  padding: 0.6rem;
+                                  border: 1px solid var(--border-muted);
+                                  border-radius: var(--radius-s);
+                                  cursor: pointer;
+                                  background-color: var(--bg-dark)">
+                        <span style=" color: var(--text-muted); font-size:0.9rem ">上傳封面圖</span>
+                        <span id="cover-filename-display"
+                              style="font-size: 0.85rem;
+                                     color: var(--secondary);
+                                     max-width: 60%;
+                                     overflow: hidden;
+                                     text-overflow: ellipsis;
+                                     white-space: nowrap">尚未選擇封面檔案</span>
+                        <input type="file"
+                               name="fish-cover"
+                               accept="image/*"
+                               style="display: none"
+                               onchange="updateCoverFilename(this)">
+                    </label>
+                </div>
+                <div class="slot-field1">
                     <input type="text"
                            name="fish_name"
                            placeholder="品種名稱 (如：極火蝦)"
@@ -109,6 +134,7 @@
     </div>
     <div id="edit-modal-container"></div>
 </div>
+<div id="edit-modal-container" class="fissh-modal-backdrop"></div>
 {% comment %}
  你必須寫在script裡面，
 因為這樣才能在 JS 裡面使用這兩個變數（GLOBAL_SPEC_OPTIONS 和 GLOBAL_NOTICE_OPTIONS）來生成下拉選單的內容。這樣做的好處是，你只需要在 HTML 模板裡面定義一次選項，然後在 JS 裡面就可以重複使用，避免了重複的 HTML 代碼，也讓你的 JS 更加靈活和易於維護。 {% endcomment %}

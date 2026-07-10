@@ -16,13 +16,14 @@
         {% comment %} <script src="{% static 'aquatic/js/add-product.js' %}?v=2026" defer></script> {% endcomment %}
         {% comment %} 生物上傳 {% endcomment %}
         <script src="{% static 'aquatic/js/add-product-2.js' %}?v=2026" defer></script>
+        <script src="{% static 'aquatic/js/template.js' %}" defer></script>
         <script src="{% static 'aquatic/js/htmx.js' %}" defer></script>
     </head>
     <body>
         {% include 'header.html' %}
         <div class="in-manage-temp">
             <nav class="profile-tabs">
-                <button class="tab-item active" onclick="switchTab(this, 'notices')">購物須知</button>
+                <button class="tab-item active" onclick="switchTab(this, 'notices')">提醒範本</button>
                 <button class="tab-item" onclick="switchTab(this, 'specs')">規格範本</button>
                 <button class="tab-item" onclick="switchTab(this, 'products')">新增生物</button>
             </nav>
