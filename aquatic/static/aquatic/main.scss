@@ -22,8 +22,8 @@
 /* 確保網頁佔滿版 */
 html,
 body {
-  width: 100%;
-  overflow-x: hidden; /* 防止出現討厭的橫向捲軸 */
+  width: 100%; /* 🚀 正確寫法：現代 CSS 魔法！一樣能防止畫面左右亂晃跑版，但絕對不會破壞 sticky 的吸附功能 */
+  overflow-x: clip;
 }
 
 body {
