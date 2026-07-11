@@ -89,62 +89,94 @@
         </div>
       </div>
       <div class="section-s">
-        <a class="section" href="{% url 'blog' %}">
+        <div class="section">
           <h2 class="section-title">近期最熱門的魚友</h2>
           <p class="section-subtitle">看看那些令人驚嘆的水族造景...</p>
-          <div class="hot-article-s">
-            <div class="hot-article" href="/">
-              <img src="https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-ben-phillips-3129726-4781925.webp"
-                   alt="hot-article-1" />
-              <h3 class="hot-article-title">？？？買了條金魚來了條鯨魚</h3>
-              <p class="hot-article-subtitle">原來你點進來了阿？ 那留個言吧</p>
+          <div class="carousel-wrapper">
+            <!-- 左按鈕 -->
+            <button class="slide-btn left-btn">❮</button>
+            <div class="hot-article-s scroll-container">
+              <!-- 👇 原本的滑動容器，多加一個 class 叫 scroll-container 讓 JS 識別 👇 -->
+              {% for post in hot_posts %}
+                <!-- 🚀 物理修正：把 div 改成 a 標籤，保留原本的 class 讓 CSS 不變，並呼叫 get_absolute_url 產生連結 -->
+                <a class="hot-article"
+                   href="{{ post.get_absolute_url }}"
+                   style="text-decoration: none;
+                          display: block">
+                  <!-- 🚀 物理升維：換成新的左上角定位外框 -->
+                  <div class="hot-article-avatar-wrap">
+                    {# 這裡沿用你的 fissh-card-avatar，完全沒問題 #}
+                    {% include 'component/user-photo-outclass.html' with custom_class="fissh-card-avatar" target_user=post.author %}
+                  </div>
+                  <!-- 呼叫你寫好的預防防呆圖片 URL -->
+                  <img src="{{ post.get_image_url }}"
+                       alt="{{ post.title }}"
+                       onerror=" this.src = 'https://media.fisshshop.com/media/default-photo/IMG_2842.webp'; this.onerror = null; " />
+                  <!-- 帶入文章標題 -->
+                  <h3 class="hot-article-title">{{ post.title }}</h3>
+                  <!-- 副標題可以帶入一點動態數據，例如作者與點讚數，讓畫面比較活 -->
+                  <p class="hot-article-subtitle">
+                    由
+                    {# 🚀 物理通電：判斷是否有暱稱 #}
+                    {% if post.author.profile.nickname %}
+                      {{ post.author.profile.nickname }}
+                    {% else %}
+                      {{ post.author.username }}
+                    {% endif %}
+                    發表 • {{ post.like_count }} 個讚
+                  </p>
+                </a>
+              {% empty %}
+                <!-- 如果資料庫還沒有半篇文章，顯示防呆提示 -->
+                <p>目前還沒有熱門文章喔！</p>
+              {% endfor %}
             </div>
+            <button class="slide-btn right-btn">❯</button>
           </div>
-        </a>
+        </div>
         <div class="section">
           <h2 class="section-title">為魚缸增加點色彩</h2>
           <p class="section-subtitle">下面是我們的超級賣場</p>
-          <div class="hot-creature-s">
-            {% for item in items %}
-              <a class="hot-creature" href="{% url 'product_detail' item.id %}">
-                {% if item.image %}
-                  <img src="{{ item.image.url }}"
-                       style="width: 100%;
-                              height: 250px;
-                              object-fit: cover;
-                              display: block"
-                       alt="{{ item.name }}">
-                {% elif item.video %}
-                  <video src="{{ item.video.url }}#t=0.001"
-                         preload="metadata"
-                         muted
-                         playsinline
-                         style="width: 100%;
-                                height: 250px;
-                                object-fit: cover;
-                                display: block">
-                  </video>
-                {% else %}
-                  <div style="width: 100%;
-                              height: 250px;
-                              background-color: var(--bg-light);
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                              color: var(--text-muted)">尚無影片</div>
-                {% endif %}
-                <h3 class="hot-creature-title">{{ item.name }}</h3>
-                {% if item.price_status == 'NOT_FOR_SALE' %}
-                  <p class="hot-creature-subtitle non-sale">無價珍寶</p>
-                {% else %}
-                  <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
-                {% endif %}
-                <span class="hot-creature-city">{{ item.get_city_display }}</span>
-              </a>
-            {% endfor %}
+          <div class="carousel-wrapper">
+            <!-- 🚀 第一實體：左按鈕 (在外層) -->
+            <button class="slide-btn left-btn">❮</button>
+            <!-- 🚀 第二實體：真正的滑動軌道本體 (直接把 scroll-container 加給 hot-creature-s) -->
+            <div class="hot-creature-s scroll-container">
+              {% for item in items %}
+                {% include 'component/shop-creature-card.html' %}
+              {% endfor %}
+            </div>
+            <!-- 👈 軌道在這裡乾淨俐落地結束 -->
+            <!-- 🚀 第三實體：右按鈕 (把它放在軌道的外面、carousel-wrapper 的裡面！) -->
+            <button class="slide-btn right-btn">❯</button>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      document.body.addEventListener("click", (event) => {
+        // 1. 檢查點擊的是不是滑動按鈕
+        const btn = event.target.closest(".slide-btn");
+        if (!btn) return;
+
+        // 2. 因：往上尋找這顆按鈕所屬的外框 (carousel-wrapper)，再往下找到專屬的滑動軌道 (scroll-container)
+        const wrapper = btn.closest(".carousel-wrapper");
+        const container = wrapper.querySelector(".scroll-container");
+
+        if (container) {
+          const scrollAmount = 350; 
+          
+          // 🚀 加上這行，按 F12 打開開發者工具的 Console 面板看有沒有印出字
+          console.log("按鈕通電了！準備推動軌道...", btn.className);
+          console.log("目前軌道位置：", container.scrollLeft);
+          
+          if (btn.classList.contains("left-btn")) {
+            container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+          } else if (btn.classList.contains("right-btn")) {
+            container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+          }
+        }
+      });
+    </script>
   </body>
 </html>

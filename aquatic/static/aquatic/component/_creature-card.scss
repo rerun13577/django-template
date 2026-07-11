@@ -60,8 +60,7 @@
       transition: var(--transition);
     }
 
-    video,
-    img {
+    .product-source {
       width: 100%; // 寬度跟隨卡片
       height: 200px; // 固定一個高度
       object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
@@ -191,4 +190,27 @@
       }
     }
   }
+}
+
+/* 🚀 1. 外部結界 (你傳進去的 class) */
+.fissh-card-avatar {
+  width: 2.5rem; /* 實體寬度，依你選單需求調整 */
+  height: 2.5rem; /* 實體高度 */
+  border-radius: 50%; /* 物理裁切：強制把方形變成正圓形 */
+  overflow: hidden; /* 物理死鎖：任何超出這個圓形結界的圖片，一律無情切掉 */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-l);
+  border: 2px solid var(--bg); /* 可選：加個淡淡的邊框 */
+  flex-shrink: 0; /* 防呆：在 flex 排版中絕對不准被擠壓變形 */
+}
+
+/* 🚀 2. 暴力鎖定裡面的圖片 */
+.fissh-card-avatar img {
+  width: 100%; /* 強制圖片縮小到跟外框一樣寬 */
+  height: 100%; /* 強制圖片縮小到跟外框一樣高 */
+  object-fit: cover; /* 物理防變形：讓圖片等比例填滿，多餘的邊角會被切掉，臉絕對不會拉長 */
+  margin: 0px;
 }

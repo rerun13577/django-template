@@ -503,9 +503,8 @@ body {
 
 .section {
   width: 100%;
-  padding: 1.25rem 5.25rem;
+  padding: 1.25rem 0rem 1.25rem 5.25rem;
   width: 100%;
-  margin-bottom: 4rem;
 }
 
 .section-title {
@@ -532,19 +531,37 @@ body {
   flex-direction: row;
   flex-wrap: nowrap;
   border: 1px solid;
-  gap: 2rem;
   padding: 1rem 0 1rem 1rem;
-  flex: 0 0 350px;
+  /* 🚀 物理死鎖解除 1：把原本的 flex: 0 0 350px; 刪掉，改成撐滿全螢幕 */
+  width: 100%;
+  /* 🚀 物理死鎖解除 2：強制開啟橫向捲動軌道，讓 JS 可以推動 */
+  overflow-x: auto;
+  scroll-behavior: smooth; /* 加入平滑慣性 */
   min-height: 480px;
+  /* 隱藏原生醜醜的捲軸 */
+  scrollbar-width: none;
+}
+.hot-article-s::-webkit-scrollbar {
+  display: none;
 }
 
 .hot-article {
+  position: relative;
   display: flex;
   flex-direction: column;
+  margin-right: 1rem;
+  /* 卡片的寬度限制保留在這裡就對了 */
   flex: 0 0 350px;
-  border: 1px solid; /* 關鍵設定：最小高度 */
+  border: 1px solid;
   min-height: 450px;
   scroll-snap-align: center;
+}
+
+.hot-article-avatar-wrap {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10; /* 確保浮在封面圖片的最上方，不被蓋住 */
 }
 
 /* _index.scss */
@@ -557,11 +574,17 @@ body {
 }
 
 .hot-article-title {
-  display: flex;
-  flex-wrap: wrap;
   font-size: 1rem;
-  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  padding: 1rem 1rem 0.5rem 1rem;
   width: 100%;
+  line-height: 1.5;
+  /* 🚀 物理死鎖：2行字 (1.5rem * 2 = 3rem) + 上下內距 (1.5rem) = 4.5rem */
+  height: 4.5rem; /* 👈 把 min-height 換成絕對 height，直接鎖死高度 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hot-article-subtitle {
@@ -579,20 +602,30 @@ body {
   border: 1px solid;
   gap: 2rem;
   padding: 1rem 0 1rem 1rem;
-  flex: 0 0 350px;
+  /* 🚀 物理死鎖解除一：把 flex: 0 0 350px 改成 width: 100%，讓軌道撐滿畫面 */
+  width: 100%;
+  /* 🚀 物理死鎖解除二：開啟橫向捲動軌道，JS 才有辦法推動 */
+  overflow-x: auto;
   min-height: 480px;
   scroll-behavior: smooth;
+  /* 🚀 隱形防呆：隱藏下方醜醜的原生捲軸 */
+  scrollbar-width: none;
+}
+
+.hot-creature-s::-webkit-scrollbar {
+  display: none;
 }
 
 .hot-creature {
   display: flex;
   flex-direction: column;
+  /* 這裡的卡片寬度鎖死是正確的，保留不動 */
   flex: 0 0 350px;
   border: 1px solid;
   min-height: 450px;
   box-sizing: border-box;
   scroll-snap-align: center;
-  position: relative; /* 🚀 核心因果修正：開啟絕對定位容器空間 */
+  position: relative;
 }
 
 .hot-creature img {
@@ -774,6 +807,57 @@ p {
   font-weight: bold;
 }
 
+/* 🚀 基準點鎖定 */
+.carousel-wrapper {
+  position: relative; /* 因：相對定位。果：按鈕的 absolute 會以此為邊界，不會飛到網頁外 */
+  width: 100%;
+}
+
+/* 確保滑動容器具備平滑物理慣性 */
+.scroll-container {
+  scroll-behavior: smooth; /* 點擊按鈕滑動時的平順過渡 */
+  /* 你原本的 overflow-x: auto; gap: 1rem; 等等保留即可 */
+}
+
+/* 🚀 按鈕本體的物理實體 */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); /* 垂直置中 */
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15); /* 半透明黑底/白底，視你的主題而定 */
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px); /* 毛玻璃特效 */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.slide-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 按鈕往兩側推擠 */
+.left-btn {
+  left: 20px;
+}
+
+.right-btn {
+  right: 20px;
+}
+
+/* 🚀 手機版物理消除：手機可以用手指滑，不需要實體按鈕 */
+@media (max-width: 746px) {
+  .slide-btn {
+    display: none !important;
+  }
+}
 @media screen and (max-width: 785px) {
   .hero {
     background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-chevanon-325044%20-%20%E8%A4%87%E8%A3%BD.webp");
@@ -819,15 +903,14 @@ p {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    gap: 1rem;
     padding: 1rem 1.5rem;
-    flex: 0 0 350px;
-    min-height: 300px;
-    max-height: 480px;
-    overflow-y: hidden;
-    touch-action: pan-x pan-y;
+    width: 100%;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
   }
   .hot-article-s::-webkit-scrollbar {
     display: none;
@@ -835,6 +918,12 @@ p {
   .hot-article {
     flex: 0 0 326px;
     scroll-snap-align: center;
+    margin-right: 1rem;
+    /* 🚀 確保卡片本體有能力被內容撐高 */
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 👈 防止內容撐爆 */
   }
   .hot-creature-s {
     display: flex;
@@ -3403,8 +3492,7 @@ a {
   color: var(--primary);
   transition: var(--transition);
 }
-.grid .product-creature video,
-.grid .product-creature img {
+.grid .product-creature .product-source {
   width: 100%;
   height: 200px;
   -o-object-fit: cover;
@@ -3516,6 +3604,29 @@ a {
     font-size: 1rem;
   }
 }
+/* 🚀 1. 外部結界 (你傳進去的 class) */
+.fissh-card-avatar {
+  width: 2.5rem; /* 實體寬度，依你選單需求調整 */
+  height: 2.5rem; /* 實體高度 */
+  border-radius: 50%; /* 物理裁切：強制把方形變成正圓形 */
+  overflow: hidden; /* 物理死鎖：任何超出這個圓形結界的圖片，一律無情切掉 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-l);
+  border: 2px solid var(--bg); /* 可選：加個淡淡的邊框 */
+  flex-shrink: 0; /* 防呆：在 flex 排版中絕對不准被擠壓變形 */
+}
+
+/* 🚀 2. 暴力鎖定裡面的圖片 */
+.fissh-card-avatar img {
+  width: 100%; /* 強制圖片縮小到跟外框一樣寬 */
+  height: 100%; /* 強制圖片縮小到跟外框一樣高 */
+  -o-object-fit: cover;
+     object-fit: cover; /* 物理防變形：讓圖片等比例填滿，多餘的邊角會被切掉，臉絕對不會拉長 */
+  margin: 0px;
+}
+
 .pet-creature {
   display: flex;
   position: relative;

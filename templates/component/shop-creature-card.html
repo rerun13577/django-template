@@ -1,0 +1,41 @@
+<a class="hot-creature" href="{% url 'product_detail' item.id %}">
+    <div class="fissh-card-menu-wrap">
+        {# ⚡ 物理轉換：把 target_user 從觀眾(user) 換成這隻魚的主人(item.author) #}
+        {% include 'component/user-photo-outclass.html' with custom_class="fissh-card-avatar" target_user=item.owner %}
+    </div>
+    {% if item.image %}
+        <img src="{{ item.image.url }}"
+             class="product-source"
+             style="width: 100%;
+                    height: 250px;
+                    object-fit: cover;
+                    display: block"
+             alt="{{ item.name }}">
+    {% elif item.video %}
+        <video src="{{ item.video.url }}#t=0.001"
+               preload="metadata"
+               class="product-source"
+               muted
+               playsinline
+               style="width: 100%;
+                      height: 250px;
+                      object-fit: cover;
+                      display: block">
+        </video>
+    {% else %}
+        <div style="width: 100%;
+                    height: 250px;
+                    background-color: var(--bg-light);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-muted)">尚無影片</div>
+    {% endif %}
+    <h3 class="hot-creature-title">{{ item.name }}</h3>
+    {% if item.price_status == 'NOT_FOR_SALE' %}
+        <p class="hot-creature-subtitle non-sale">無價珍寶</p>
+    {% else %}
+        <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+    {% endif %}
+    <span class="hot-creature-city">{{ item.get_city_display }}</span>
+</a>

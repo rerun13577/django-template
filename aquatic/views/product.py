@@ -27,6 +27,7 @@ from aquatic.constants import (
 # 1. Model 從 models 資料夾抓
 from aquatic.models import (  # 🚀 核心修正：手動補上副圖模型  # 記得引入模型
     AquaticLife,
+    Post,
     SpecTemplate,
 )
 from aquatic.models.shop_notice import ShopNotice
@@ -57,16 +58,22 @@ class ShopView(View):
         return render(request, "shop.html", context)
 
 
+# 因為我需要文章跟小魚
 class IndexView(View):
-    """首頁展示小魚(只有前10隻)"""
+    """首頁展示小魚與熱門文章"""
 
     def get(self, request):
-        # 我只拿前10個 例如：[10:20] 拿第 11~20 筆
-        # 1. 先接住工具打包好的包裹
+        # 1. 先接住工具打包好的小魚包裹
         context = get_active_product()
-        # 我們需要把字典的某個東西拉出來 後續作切片
-        # 2. 把裡面的 "items" 拿出來切片 (LIMIT 10)，然後塞回原來的位子
+
+        # 2. 把裡面的 "items" 拿出來切片 (LIMIT 10)
         context["items"] = context["items"][:10]
+
+        # 🚀 3. 新增：抓取前 10 篇文章塞進 context
+        # 因：這是 "熱門文章" (hot-article)
+        # 果：所以我用 order_by('-like_count') 按點讚數由高到低排，再切片 [:10] 拿前十名
+        # (如果你想拿最新文章，可以改成 order_by('-id') 或 '-created_at')
+        context["hot_posts"] = Post.objects.order_by("-like_count")[:10]
 
         return render(request, "index.html", context)
 

@@ -116,10 +116,9 @@
 
 .section {
   width: 100%;
-  padding: 1.25rem 5.25rem;
+  padding: 1.25rem 0rem 1.25rem 5.25rem;
 
   width: 100%; // 強制每個小節撐滿寬度
-  margin-bottom: 4rem; // 節與節之間的距離
 }
 
 .section-title {
@@ -153,20 +152,53 @@
   flex-direction: row;
   flex-wrap: nowrap; // 絕對不換行，讓它能橫向捲動
   border: 1px solid;
-  gap: 2rem; // 卡片之間的間距
-  padding: 1rem 0 1rem 1rem; // 留空間給卡片陰影，才不會被切掉
-  flex: 0 0 350px; // 電腦版寬度，不准縮小
-  min-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
+  padding: 1rem 0 1rem 1rem;
+
+  /* 🚀 物理死鎖解除 1：把原本的 flex: 0 0 350px; 刪掉，改成撐滿全螢幕 */
+  width: 100%;
+
+  /* 🚀 物理死鎖解除 2：強制開啟橫向捲動軌道，讓 JS 可以推動 */
+  overflow-x: auto;
+  scroll-behavior: smooth; /* 加入平滑慣性 */
+
+  min-height: 480px;
+
+  /* 隱藏原生醜醜的捲軸 */
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .hot-article {
+  position: relative;
   display: flex;
   flex-direction: column;
-  flex: 0 0 350px; // 電腦版寬度，不准縮小
-  border: 1px solid; /* 關鍵設定：最小高度 */
+  margin-right: 1rem;
+
+  /* 卡片的寬度限制保留在這裡就對了 */
+  flex: 0 0 350px;
+  border: 1px solid;
   min-height: 450px;
   scroll-snap-align: center;
 }
+
+.hot-article-avatar-wrap {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10; /* 確保浮在封面圖片的最上方，不被蓋住 */
+}
+
+// .hot-article {
+//   flex: 0 0 326px; // 這個寫在卡片身上才是對的，鎖死卡片寬度
+//   scroll-snap-align: center;
+//   /* 🚀 確保卡片本體有能力被內容撐高 */
+//   height: auto;
+//   display: flex;
+//   flex-direction: column; // 讓裡面的圖片、標題、內文可以由上往下自然推擠
+//   overflow: hidden; /* 👈 防止內容撐爆 */
+// }
 
 /* _index.scss */
 .hot-article {
@@ -179,11 +211,19 @@
 }
 
 .hot-article-title {
-  display: flex;
-  flex-wrap: wrap;
   font-size: 1rem;
-  margin: 1rem 1rem 0.5rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
+  padding: 1rem 1rem 0.5rem 1rem;
   width: 100%;
+  line-height: 1.5;
+
+  /* 🚀 物理死鎖：2行字 (1.5rem * 2 = 3rem) + 上下內距 (1.5rem) = 4.5rem */
+  height: 4.5rem; /* 👈 把 min-height 換成絕對 height，直接鎖死高度 */
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hot-article-subtitle {
@@ -205,21 +245,35 @@
   border: 1px solid;
   gap: 2rem; // 卡片之間的間距
   padding: 1rem 0 1rem 1rem; // 留空間給卡片陰影，才不會被切掉
-  flex: 0 0 350px; // 電腦版寬度，不准縮小
-  min-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
-  scroll-behavior: smooth; // 讓按鈕點擊時也是平滑的
+
+  /* 🚀 物理死鎖解除一：把 flex: 0 0 350px 改成 width: 100%，讓軌道撐滿畫面 */
+  width: 100%;
+
+  /* 🚀 物理死鎖解除二：開啟橫向捲動軌道，JS 才有辦法推動 */
+  overflow-x: auto;
+
+  min-height: 480px;
+  scroll-behavior: smooth;
+
+  /* 🚀 隱形防呆：隱藏下方醜醜的原生捲軸 */
+  scrollbar-width: none;
+}
+.hot-creature-s::-webkit-scrollbar {
+  display: none;
 }
 
 .hot-creature {
   display: flex;
   flex-direction: column;
+
+  /* 這裡的卡片寬度鎖死是正確的，保留不動 */
   flex: 0 0 350px;
+
   border: 1px solid;
   min-height: 450px;
   box-sizing: border-box;
   scroll-snap-align: center;
-
-  position: relative; /* 🚀 核心因果修正：開啟絕對定位容器空間 */
+  position: relative;
 }
 
 .hot-creature {
@@ -419,6 +473,58 @@ p {
   font-weight: bold;
 }
 
+/* 🚀 基準點鎖定 */
+.carousel-wrapper {
+  position: relative; /* 因：相對定位。果：按鈕的 absolute 會以此為邊界，不會飛到網頁外 */
+  width: 100%;
+}
+
+/* 確保滑動容器具備平滑物理慣性 */
+.scroll-container {
+  scroll-behavior: smooth; /* 點擊按鈕滑動時的平順過渡 */
+  /* 你原本的 overflow-x: auto; gap: 1rem; 等等保留即可 */
+}
+
+/* 🚀 按鈕本體的物理實體 */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); /* 垂直置中 */
+  z-index: 10;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15); /* 半透明黑底/白底，視你的主題而定 */
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px); /* 毛玻璃特效 */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.slide-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 按鈕往兩側推擠 */
+.left-btn {
+  left: 20px;
+}
+.right-btn {
+  right: 20px;
+}
+
+/* 🚀 手機版物理消除：手機可以用手指滑，不需要實體按鈕 */
+@media (max-width: 746px) {
+  .slide-btn {
+    display: none !important;
+  }
+}
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // 下面所是傳說中的rwd--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -477,30 +583,35 @@ p {
   .hot-article-s {
     display: flex;
     flex-wrap: nowrap;
-    // 開啟橫向捲軸與磁吸效果
+
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch; // iOS 滑動慣性
-
-    // 調整間距與內距
-    gap: 1rem;
-    padding: 1rem 1.5rem; // 左右留一點空間給第一張和最後一張
-
-    flex: 0 0 350px; // 手機版寬度，不准縮小
-    min-height: 300px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
-    max-height: 480px; // 確保基本的高度，但允許內容撐開 不要寫 height: 400px
-
     overflow-y: hidden;
-    touch-action: pan-x pan-y;
 
-    // 隱藏捲軸 (讓畫面更乾淨)
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    padding: 1rem 1.5rem;
+
+    width: 100%;
+
+    touch-action: pan-x;
+
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+
     &::-webkit-scrollbar {
       display: none;
     }
   }
   .hot-article {
-    flex: 0 0 326px; // 手機版寬度，不准縮小
+    flex: 0 0 326px; // 這個寫在卡片身上才是對的，鎖死卡片寬度
     scroll-snap-align: center;
+    margin-right: 1rem;
+    /* 🚀 確保卡片本體有能力被內容撐高 */
+    height: auto;
+    display: flex;
+    flex-direction: column; // 讓裡面的圖片、標題、內文可以由上往下自然推擠
+    overflow: hidden; /* 👈 防止內容撐爆 */
   }
   .hot-creature-s {
     display: flex;
