@@ -318,9 +318,14 @@ body {
     height: 4rem; /* 鎖死高度 */
     padding: 0 1rem; /* 左右留一點安全邊距，才不會貼死螢幕邊框 */
     background-color: var(--bg-light); /* 預設背景色 */
+    /* 🚀 物理升維 1：加入平滑的移動軌跡 (0.3秒的滑順感) */
+    transition: transform 0.3s ease-in-out;
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
     z-index: 200;
+  }
+  .mobile-header.is-hidden {
+    transform: translateY(-100%);
   }
   /* 🚀 左側 Logo 防呆限制 */
   .header-l .logo-mobile {
