@@ -30,7 +30,7 @@
 .modal-content-card {
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 95%;
   max-width: 41.5rem;
   height: 90dvh;
   padding: 2rem; /* 🚀 維持 2rem 大內襯，確保大氣呼吸感 */
@@ -206,10 +206,10 @@
     display: inline-block;
 
     .image-preview {
-      max-width: 120px;
-      max-height: 120px;
+      width: 200px;
+      height: 200px;
+      border-radius: var(--radius-l);
       object-fit: cover;
-      border-radius: var(--radius-m);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-m);
     }
@@ -240,6 +240,93 @@
       }
     }
   }
+
+  .image-preview-avatar {
+    position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+    display: inline-block;
+
+    .image-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-m);
+    }
+
+    .remove-image-btn {
+      position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+      top: -0.5rem;
+      right: -0.5rem;
+      background-color: var(--bg-big-light);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--shadow-s);
+      transition: var(--transition);
+
+      &:hover {
+        background-color: var(--text);
+        color: var(--bg);
+        border-color: var(--text);
+      }
+    }
+  }
+}
+
+/* 預覽佔位符的容器 */
+.profile-placeholder {
+  display: flex;
+  flex-direction: column; /* 垂直排列圖示與文字 */
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 120%;
+  padding: 20px;
+  border: 2px dashed var(--border-muted); /* 虛線框提醒使用者可上傳 */
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+}
+/* 確保外層的 label 點擊區不會自己亂拉伸，跟著內容走 */
+.avatar-click-zone,
+.bg-click-zone {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 圖示容器：確保它不會過大，並保持與文字的間距 */
+.upload-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60%;
+  height: auto;
+  margin-bottom: 0.5rem; /* 與文字的間距 */
+  color: var(--text-muted);
+}
+
+/* SVG 本身的屬性調整 */
+.upload-icon-wrapper svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  stroke: currentColor; /* 繼承父元素的顏色 */
+}
+
+/* 文字設定 */
+.upload-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 // 🗺️ 地點彈性網格
@@ -293,14 +380,6 @@
   padding-left: 8px;
 }
 
-@media (max-width: 667px) {
-  .profile-form-container {
-    max-width: 100%;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
-
 .save-profile-btn {
   width: 60%;
   padding: 1.1rem;
@@ -319,6 +398,208 @@
   @include hover-device {
     box-shadow: var(--shadow-l);
     background: var(--secondary);
+  }
+}
+
+@media (max-width: 746px) {
+  .profile-form-container {
+    max-width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .modal-content-card {
+    display: flex;
+    flex-direction: column;
+    width: 98%;
+    max-width: 60rem;
+    height: 95dvh;
+    padding: 1rem 0.5rem 0.75rem 1rem; /* 🚀 維持 2rem 大內襯，確保大氣呼吸感 */
+    background: var(--bg-light);
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-l);
+    transform: scale(0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &[style*="display: flex"] {
+      transform: scale(1);
+    }
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 3rem;
+    width: 100%;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0rem;
+  }
+
+  .profile-title {
+    margin: auto;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .image-preview-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 🚀 核心：預覽照片同步絕對置中 */
+    margin-top: 10px;
+
+    .image-preview-wrapper {
+      position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+      display: inline-block;
+
+      .image-preview {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--radius-l);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-m);
+      }
+
+      .remove-image-btn {
+        position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+        top: -0.5rem;
+        right: -0.5rem;
+        background-color: var(--bg-big-light);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: var(--shadow-s);
+        transition: var(--transition);
+
+        &:hover {
+          background-color: var(--text);
+          color: var(--bg);
+          border-color: var(--text);
+        }
+      }
+    }
+
+    .image-preview-avatar {
+      position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+      display: inline-block;
+
+      .image-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-m);
+      }
+
+      .remove-image-btn {
+        position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+        top: -0.5rem;
+        right: -0.5rem;
+        background-color: var(--bg-big-light);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: var(--shadow-s);
+        transition: var(--transition);
+
+        &:hover {
+          background-color: var(--text);
+          color: var(--bg);
+          border-color: var(--text);
+        }
+      }
+    }
+  }
+
+  .field-label {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .save-profile-btn {
+    width: 50%;
+    padding: 0.5rem;
+    background: var(--primary);
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-l);
+    transition: var(--transition);
+    margin: 1rem auto 0 auto;
+    display: block;
+
+    @include hover-device {
+      box-shadow: var(--shadow-l);
+      background: var(--secondary);
+    }
+  }
+
+  /* 預覽佔位符的容器 */
+  .profile-placeholder {
+    display: flex;
+    flex-direction: column; /* 垂直排列圖示與文字 */
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    height: 100%;
+    padding: 20px;
+    border: 2px dashed var(--border-muted); /* 虛線框提醒使用者可上傳 */
+    border-radius: var(--radius-m);
+    color: var(--text-muted);
+  }
+
+  /* 圖示容器：確保它不會過大，並保持與文字的間距 */
+  .upload-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+    height: auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem; /* 與文字的間距 */
+    color: var(--text-muted);
+  }
+
+  /* SVG 本身的屬性調整 */
+  .upload-icon-wrapper svg {
+    width: 2rem;
+    height: 2rem;
+
+    stroke: currentColor; /* 繼承父元素的顏色 */
+  }
+
+  /* 文字設定 */
+  .upload-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
   }
 }
 

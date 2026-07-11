@@ -73,7 +73,7 @@ body {
   --profile-width: 90%;
 
   --profile-margin: 55px;
-  --profile-margin-mobile: 25px;
+  --profile-margin-mobile: 15px;
 
   --card-margin-mobile: 0.5rem;
   --width: 41.5rem;
@@ -95,6 +95,7 @@ a {
 } // 醜底線
 
 %center {
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -104,6 +105,33 @@ a {
     &:hover {
       @content;
     }
+  }
+}
+
+/* =========================================
+   手機版優先 (預設：Header 在上面)
+   ========================================= */
+
+body {
+  display: flex;
+  flex-direction: column; /* 物理流向：由上往下 */
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--bg-dark);
+}
+
+.main-content {
+  flex: 1; /* 剩下的高度全包 */
+  padding: 1rem;
+}
+
+/* =========================================
+   電腦版覆蓋 (當螢幕寬度大於 1024px 時觸發)
+   ========================================= */
+
+@media (min-width: 1024px) {
+  body {
+    flex-direction: row; /* 🚀 物理流向逆轉：變成由左往右！ */
   }
 }
 

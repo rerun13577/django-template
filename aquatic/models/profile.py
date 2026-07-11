@@ -53,6 +53,16 @@ class Profile(BaseModel):
     )
     bio = models.TextField(max_length=500, blank=True)
 
+    # 🚀 新增：LINE 連結欄位
+    contact_link = models.URLField(max_length=200, blank=True, verbose_name="聯絡連結")
+
+    # 1. 紀錄誰追蹤了他 (關聯到 User 表)
+    followers = models.ManyToManyField(
+        User, related_name="following_profiles", blank=True, verbose_name="追蹤者名單"
+    )
+    # 2. 獨立的數字快取欄位 (避免每次都要 count() 拖慢效能)
+    follower_count = models.PositiveIntegerField(default=0, verbose_name="追蹤總數")
+
     def save(self, *args, **kwargs):
         print("\n[防線 1] 🟢 進入 models.py 的 Profile.save() 準備儲存！")
 

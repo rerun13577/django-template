@@ -13,6 +13,7 @@ from aquatic.views.product import (
 from aquatic.views.profile import (
     EditProfileView,
     ProfileView,
+    ToggleFollowView,
     UpdateProfileView,
 )
 from aquatic.views.template import (
@@ -51,6 +52,11 @@ urlpatterns = [
     ),
     # 上架小魚
     path("api/add-product/", AddProductView.as_view(), name="add-product"),
+    path(
+        "profile/<str:username>/toggle_follow/",
+        ToggleFollowView.as_view(),
+        name="toggle_follow",
+    ),
     # ---------------------------------------------
     path("api/manage-spec/", SpecAPIView.as_view(), name="api-spec"),
     path(

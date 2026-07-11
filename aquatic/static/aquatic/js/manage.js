@@ -76,7 +76,7 @@ window.uiReset = function () {
   });
 };
 
-document.addEventListener("click", function (e) {
+document.addEventListener("click", async function (e) {
   const header = e.target.closest(".accordion-header");
   if (!header || header.classList.contains("no-cursor")) return;
 
@@ -117,15 +117,22 @@ document.addEventListener("click", function (e) {
   const isOpen = item.classList.toggle("is-open");
 
   if (isOpen) {
-    // 【開門物理學】
+    // 【階段 1：顯示空殼】
     body.style.display = "block";
-    void body.offsetHeight; // 逼迫瀏覽器瞬間算出真實體積
+    body.style.maxHeight = "0"; // 先設 0，保證不會閃爍
+    body.style.opacity = "0";
 
-    // 設定高度，加 60px 給底下的按鈕留點呼吸空間
-    body.style.maxHeight = body.scrollHeight + 60 + "px";
-    body.style.opacity = "1";
+    // 🚀 階段 2：排程等待 (這讓幾千字的排版能先完成)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // 現在計算高度，瀏覽器已經完成文字渲染了
+        body.style.transition = "max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease";
+        body.style.maxHeight = body.scrollHeight + 60 + "px";
+        body.style.opacity = "1";
+      });
+    });
 
-    // 動畫跑完後，拔掉高度限制
+    // 階段 3：動畫結束後釋放高度，避免幾千字溢出
     setTimeout(() => {
       if (item.classList.contains("is-open")) {
         body.style.maxHeight = "none";

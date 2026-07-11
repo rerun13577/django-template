@@ -3,7 +3,7 @@
 <header class="header">
   <div class="header-l">
     <a href="/" class="logo">
-      <img src="https://media.fisshshop.com/media/default-photo/10.webp"
+      <img src="https://media.fisshshop.com/media/default-photo/%E6%9C%AA%E5%91%BD%E5%90%8D%E8%A8%AD%E8%A8%88%20(1).png"
            class="logo-desktop"
            alt="FisshShop Desktop" />
       <img src="https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/%E6%9C%AA%E5%91%BD%E5%90%8D%E8%A8%AD%E8%A8%88%20(1).png"
@@ -14,126 +14,141 @@
   <div class="header-m">
     <ul>
       <li class="navber-list">
-        <a href="{% url 'index' %}">首頁</a>
+        <a href="{% url 'index' %}">
+          {% include 'icons/home.html' %}
+          <span class="nav-text">首頁</span></a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'shop' %}">賣場</a>
+        <a href="{% url 'shop' %}">
+          {% include 'icons/shop.html' %}
+          <span class="nav-text">賣場</span></a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'blog' %}">社群</a>
+        <a href="{% url 'blog' %}">
+          {% include 'icons/community.html' %}
+          <span class="nav-text">社群</span></a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'profile' %}">個人</a>
+        <a href="{% url 'profile' %}">
+          {% include 'icons/profile.html' %}
+          <span class="nav-text">個人</span></a>
       </li>
       <li class="navber-list">
-        <a href="{% url 'dashboard' %}">管理</a>
+        <a href="{% url 'dashboard' %}">
+          {% include 'icons/dashboard.html' %}
+          <span class="nav-text">管理</span></a>
       </li>
     </ul>
   </div>
   <div class="header-r">
     <div class="login-btn-case">
-      <!-- 漢堡選單 傳   送訊號（權力轉移）靠的是 id 和 for 的綁定 class跟id一樣純屬好玩-->
-      <input type="checkbox" id="menu-control" class="menu-control" />
-      <label for="menu-control" class="hb-icon">
-        <span></span>
-        <span></span>
-        <span></span>
-      </label>
-      <!-- 漢堡選單 -->
-      <ul class="navber-list-case">
-        <li class="navber-list">
-          <a href="{% url 'index' %}">首頁</a>
-        </li>
-        <li class="navber-list">
-          <a href="{% url 'blog' %}">社群</a>
-        </li>
-        <li class="navber-list">
-          <a href="{% url 'shop' %}">賣場</a>
-        </li>
-        <li class="navber-list">
-          <a href="{% url 'profile' %}">個人</a>
-        </li>
-        <li class="navber-list">
-          <a href="{% url 'dashboard' %}">管理</a>
-        </li>
-        <li class="navber-list">
-          {% if user.is_authenticated %}
-            <a href="{% url 'account_logout' %}">登出</a>
-          {% else %}
-            <a href="{% url 'account_login' %}">登入</a>
-          {% endif %}
-        </li>
+      <ul>
+        {% if user.is_authenticated %}
+          <li class="navber-list">
+            <a href="{% url 'index' %}">
+              {% include 'icons/login.html' %}
+              <span class="nav-text">登入</span></a>
+          </li>
+        {% else %}
+          <li class="navber-list">
+            <a href="{% url 'shop' %}">
+              {% include 'icons/logout.html' %}
+              <span class="nav-text">登出</span></a>
+          </li>
+        {% endif %}
       </ul>
-      {% if user.is_authenticated %}
-        <div class="user-case">
-          <div class="user-photo-link"
-               id="user-photo-trigger"
-               style="cursor: pointer">
-            <div class="user-photo-wrapper">
-              {% if user.profile.avatar %}
-                <img src="{{ user.profile.avatar.url }}"
-                     class="user-photo"
-                     alt="作者"
-                     loading="lazy"
-                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-              {% elif social.get_avatar_url %}
-                <img src="{{ social.get_avatar_url }}"
-                     class="user-photo"
-                     alt="作者"
-                     loading="lazy"
-                     referrerpolicy="no-referrer"
-                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-              {% elif social.extra_data.picture.data.url %}
-                <img src="{{ social.extra_data.picture.data.url }}"
-                     class="user-photo"
-                     alt="作者"
-                     loading="lazy"
-                     referrerpolicy="no-referrer"
-                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-              {% elif social.extra_data.picture %}
-                <img src="{{ social.extra_data.picture }}"
-                     class="user-photo"
-                     alt="作者"
-                     loading="lazy"
-                     onerror="this.src='{{ default_avatar_url }}'; this.onerror=null;">
-              {% else %}
-                <img src="{{ default_avatar_url }}"
-                     class="user-photo"
-                     alt="預設頭貼"
-                     loading="lazy">
-              {% endif %}
-            </div>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu">
-            <a href="{% url 'account_logout' %}" class="logout-btn">登出</a>
-          </div>
-        </div>
-      {% else %}
-        <a href="{% url 'account_login' %}" class="login-btn">登入</a>
-      {% endif %}
     </div>
   </div>
+</header>
+<header class="mobile-header">
+  <!-- 左極點：Logo -->
+  <div class="header-l">
+    <a href="/" class="logo">
+      <img src="https://media.fisshshop.com/media/default-photo/%E6%9C%AA%E5%91%BD%E5%90%8D%E8%A8%AD%E8%A8%88%20(1).png"
+           class="logo-mobile"
+           alt="FisshShop" />
+    </a>
+  </div>
+  <!-- 右極點：漢堡按鈕 -->
+  <div class="header-r">
+    <!-- 物理結構：用三根 span 疊成的漢堡 -->
+    <div class="hamburger-menu" id="hamburger-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <!-- 🚀 新增：被折疊的下拉選單實體 -->
+  <nav class="mobile-nav-menu" id="mobile-menu">
+    <ul>
+      <li class="navber-list">
+        <a href="{% url 'index' %}" class="index-tab">
+          {% include 'icons/home.html' %}
+          <span class="nav-text">首頁</span></a>
+      </li>
+      <li class="navber-list">
+        <a href="{% url 'shop' %}" class="index-tab">
+          {% include 'icons/shop.html' %}
+          <span class="nav-text">賣場</span></a>
+      </li>
+      <li class="navber-list">
+        <a href="{% url 'blog' %}" class="index-tab">
+          {% include 'icons/community.html' %}
+          <span class="nav-text">社群</span></a>
+      </li>
+      <li class="navber-list">
+        <a href="{% url 'profile' %}" class="index-tab">
+          {% include 'icons/profile.html' %}
+          <span class="nav-text">個人</span></a>
+      </li>
+      <li class="navber-list">
+        <a href="{% url 'dashboard' %}" class="index-tab">
+          {% include 'icons/dashboard.html' %}
+          <span class="nav-text">管理</span></a>
+      </li>
+      <!-- 登入/登出邏輯 -->
+      {% if user.is_authenticated %}
+        <li class="navber-list">
+          <a href="{% url 'account_logout' %}" class="index-tab">
+            {% include 'icons/logout.html' %}
+            <span class="nav-text">登出</span>
+          </a>
+        </li>
+      {% else %}
+        <li class="navber-list">
+          <a href="{% url 'account_login' %}" class="index-tab">
+            {% include 'icons/login.html' %}
+            <span class="nav-text">登入</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
   <script>
-    // 使用 DOMContentLoaded 確保 Header 載入後才執行 JS
-    document.addEventListener("DOMContentLoaded", () => {
-      const userTrigger = document.querySelector(".user-case");
-      const dropdownMenu = document.querySelector(".dropdown-menu");
+    document.body.addEventListener("click", (event) => {
+  const hamburgerBtn = event.target.closest("#hamburger-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
 
-      // 只有在「已登入」且元素存在時才執行，避免在未登入頁面噴錯
-      if (userTrigger && dropdownMenu) {
-        // 點擊頭像區塊：切換選單
-        userTrigger.addEventListener("click", (event) => {
-          event.stopPropagation(); // 防止事件傳到 window 導致選單秒關
-          dropdownMenu.classList.toggle("show");
-        });
+  if (!mobileMenu) return;
 
-        // 點擊網頁任何地方：關閉選單
-        window.addEventListener("click", () => {
-          if (dropdownMenu.classList.contains("show")) {
-            dropdownMenu.classList.remove("show");
-          }
-        });
-      }
-    });
+  // 點 hamburger → toggle
+  if (hamburgerBtn) {
+    hamburgerBtn.classList.toggle("is-open");
+    mobileMenu.classList.toggle("is-open");
+    return;
+  }
+
+  // 🚀 關鍵：點在 menu 裡面 → 不做事
+  if (event.target.closest("#mobile-menu")) {
+    return;
+  }
+
+  // 點外面 → 關閉
+  if (mobileMenu.classList.contains("is-open")) {
+    const btn = document.getElementById("hamburger-btn");
+    if (btn) btn.classList.remove("is-open");
+    mobileMenu.classList.remove("is-open");
+  }
+});
   </script>
 </header>

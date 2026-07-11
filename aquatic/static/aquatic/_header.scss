@@ -1,327 +1,355 @@
 @charset "UTF-8";
 // 讓中文註解可以正確編碼
 
-// 這裡定義的是頂部導覽列的顏色
-
-header {
-  background-color: var(--bg); // 純白色的 Header
-
-  // 如果你希望 Header 固定在上面
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
+/* =========================================
+   1. 手機版與共用基礎設定 (Mobile First)
+   ========================================= */
+.header {
   display: flex;
   align-items: center;
-  padding: 0 5%; /* 給 header 一些左右內邊距 */
-  height: 5rem; /* 給它一個高度 */
+  justify-content: space-between; /* 左右區塊自動靠向兩側 */
+  width: 100%;
+  height: 5rem;
+  background-color: var(--bg-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-// .header-l {
-//   flex: 1;
-//   display: flex; /* 移除圖片下方的微小間隙 */
-//   align-items: center; /* 讓圖片跟文字「垂直中心線」對齊 */
-//   gap: 0.5rem; /* 圖片和文字之間的間距 */
-// }
+.header-l {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
 
-.logo-mobile {
-  height: 2.75rem;
+  img {
+    height: 2.75rem;
+    width: auto;
+  }
 }
-
-.logo-desktop {
-  height: 2.75rem;
-}
-
-.header-l img {
-  height: 2.75rem; /* 根據你的 header 高度 (4rem) 調整，這大約是 60% */
-  width: auto; /* 重要：讓寬度自動縮放，圖片才不會變形 */
-}
-
-// .header-m {
-//   flex: 1;
-//   display: flex;
-//   justify-content: center;
-
-// }
 
 .header-m ul {
   display: flex;
-  gap: 2rem; /* 每個選項之間的間距 */
-  list-style: none; /* 拿掉討人厭的黑點 */
+  flex-direction: row; /* 手機版預設橫向 */
+  list-style: none;
+  gap: 1.5rem; /* 手機版的間距 */
   margin: 0;
   padding: 0;
 }
 
-.header-l {
-  flex: 1;
-  display: flex; /* 移除圖片下方的微小間隙 */
-  align-items: center; /* 讓圖片跟文字「垂直中心線」對齊 */
-  gap: 0.5rem; /* 圖片和文字之間的間距 */
+/* 🎯 統一的發光中樞：放在共用區，確保手機跟電腦按鈕都會亮 */
+.navber-list {
+  white-space: nowrap;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* 手機版圖示與文字的距離 */
+    color: var(--text-muted); /* 預設顏色 */
+    text-decoration: none;
+    transition: var(--transition);
+
+    /* 🚀 物理連動核心：摸到 a 的任何地方，裡面的東西全部一起變色 */
+    &:hover {
+      color: var(--text);
+    }
+  }
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+    stroke: currentColor; /* 乖乖聽 a 的話變色 */
+  }
 }
 
-.header-m {
-  flex: 1;
+.nav-text {
+  font-size: 1.25rem;
+  line-height: 1; /* 抽乾預設行高水分 */
+  color: inherit; /* 🚀 因：設定為 inherit。果：絕對服從 a 的顏色，達成同步發光 */
+  /* 手機版不需要透明度，預設就是看得到的 */
+}
+
+.header-r,
+.login-btn-case,
+.user-case {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .header-r {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.login-btn-case {
-  display: flex;
-  justify-content: flex-end;
-  width: 250px;
+  padding: 0 1rem;
+  .user-photo {
+    border-radius: 50%;
+    height: 2.75rem;
+  }
 }
 
 .user-case {
-  position: relative; /* 核心：讓內部的 absolute 有參考點 */
+  position: relative;
+  cursor: pointer;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  cursor: pointer;
+  width: 2.75rem;
+  height: 2.75rem;
 }
 
-.user-photo {
-  &:hover {
-    border-color: var(--primary); /* 滑鼠移上去有個綠圈圈，很帥 */
-  }
-}
-
-.dropdown-menu {
-  display: none; /* 預設隱藏 */
-  position: absolute; /* 核心：脫離文件流，不佔空間 */
-  top: 110%; /* 出現在頭像下方 10% 的距離 */
-  right: 0; /* 靠右對齊 */
-
-  min-width: 120px;
-  z-index: 1000; /* 確保它浮在鯨魚圖上面 */
-  overflow: hidden; /* 讓內部的 hover 效果不會超出圓角 */
-  box-shadow: var(--shadow-m);
-  background-color: var(--bg-light);
-  border: 1px solid var(--border-muted);
-  border-radius: 0.5rem;
-
-  &.show {
-    display: block; /* 強制顯示 */
-    border: 1px solid var(--border);
-  }
-}
-
-.logout-btn {
-  display: block;
-  padding: 12px 16px;
-  color: var(--text); /* 登出按鈕用紅色比較醒目 */
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
-
-  &:hover {
-    background-color: var(--bg-light);
-    color: #ff4444;
-    box-shadow: var(--shadow-m);
-  }
-}
-
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
-// 下面所有裝飾品 很會裝嘛？--------------------------------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-body {
-  background-color: var(--bg-dark);
-}
-
-span {
-  color: var(--text);
-}
-
-p {
-  color: var(--text-muted);
-}
-
-.navber-list {
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  margin: 0.5rem;
-  white-space: nowrap;
-  &:hover {
-    color: var(--text);
-    transition: var(--transition);
-  }
-}
-
-.login-btn {
-  background-color: var(--primary);
-  color: var(--text);
-  border-radius: 1.5rem;
-  padding: 0.5rem 2rem;
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--secondary);
-    color: var(--text);
-    transition: var(--transition);
-  }
-}
-
-// 漢堡圖那三條線
-.hb-icon span {
-  width: 30px;
-  height: 3px;
-  background-color: var(--primary); /* 配合你 Logo 的綠色 */
-  margin: 3.8px 0;
-  display: block;
-  transition: var(--transition); /* 之後做動畫用 */
-}
-
-.user-photo {
-  border-radius: 6rem;
-  height: 3rem;
-}
-
-.dropdown-menu {
-}
-
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
-// 下面所是傳說中的rwd--------------------------------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-/* 漢堡圖示樣式 (三條線) */
-.hb-icon {
-  display: none; /* 電腦版先隱藏 */
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  /* 讓三條線垂直置中 */
-  flex-direction: column;
+/* 2. 你的 Custom Class 容器：給定一個固定的畫布大小 */
+.user-photo-wrapper {
+  display: flex;
+  justify-content: center;
   align-items: center;
-}
+  width: 2.75rem; /* 跟你的 Logo 差不多大 */
+  height: 2.75rem;
 
-// 很單純的logo切換
-.logo-desktop {
-  display: block; /* 顯示電腦版 */
-}
-
-.logo-mobile {
-  display: none; /* 隱藏手機版 */
-}
-
-// 電腦版 開navber & login-btn  關navber(含登入)   關hb-icon(因為你icon也關了 你也進不去)
-//2.手機板 關navber & login-btn  開hb-icon 靠判斷icon進入navber(含登入)
-//-------------------------------------------------------------------------------------------------------------------------------
-// 電腦板------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-
-// navber 跟 login-btn本來就是開的
-// 關navber(含登入) ，除非hb-icon被點擊
-.header-r ul {
-  display: none; /* 隱藏電腦版 */
-}
-//下面是在電腦版關hb-icon
-.hb-icon {
-  display: none; /* 電腦版先隱藏 */
-}
-
-/* 把真正的 checkbox 藏起來 */
-.menu-control {
-  display: none;
-}
-
-@media screen and (max-width: 902px) {
-  .login-btn {
-    display: none; /* 隱藏電腦版 */
+  img {
+    width: 100%; /* 強制圖片縮小到跟外框一樣寬 */
+    height: 100%; /* 強制圖片縮小到跟外框一樣高 */
+    object-fit: cover; /* 🚀 物理防變形：讓圖片等比例填滿，多餘的邊角會被外框的 overflow: hidden 切掉，臉絕對不會被拉長或壓扁 */
   }
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
-// 手機板------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------
-
-@media screen and (max-width: 902px) {
-  /* 關 navber */
-  .header-m {
+/* =========================================
+   2. 電腦版側邊欄 (Desktop Override)
+   ========================================= */
+@media (min-width: 746px) {
+  .mobile-header {
     display: none;
   }
-
-  /* 關 login-btn */
-  .logo-desktop {
-    display: none; /* 隱藏電腦版 */
-  }
-  .logo-mobile {
-    display: block; /* 顯示手機版 */
-  }
-  // 取消原本在上面的大頭照大頭照
-  .user-photo {
-    display: none;
-  }
-
-  /* 開 icon */
-  .hb-icon {
-    display: flex; /* 手機版顯示漢堡 */
-    justify-content: center; /* 關鍵：讓內容在容器內「上下置中」 */
-    align-items: center; /* 讓內容在容器內「左右置中」 */
-  }
-
-  /* 先關navber(含登入)，等點hb-icon後打開 */
-  .header-r ul {
-    padding: 20px 0;
-
-    /* 基礎排版 */
-    display: flex;
+  .header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 80px; /* 窄管狀態 */
     flex-direction: column;
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    transition: width 0.3s ease;
+
+    &:hover {
+      width: 200px;
+    }
+  }
+
+  /* 終極物理鎖定：絕對定位釘死 */
+  .header-l {
     position: absolute;
-    top: 100%; /* 從 Header 底部開始出現 */
+    top: 0;
+    left: 0;
+    height: 8rem;
+    padding-left: 0rem;
+    .logo {
+      padding-left: 18px;
+    }
+  }
+
+  .header-r {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 8rem;
+    padding-left: 0rem;
+  }
+
+  /* 中間選單：改為直向 */
+  .header-m {
+    width: 100%;
+    ul {
+      flex-direction: column;
+      gap: 1.75rem; /* 電腦版間距拉大 */
+    }
+  }
+
+  /* 覆蓋電腦版的 a 標籤設定 */
+  .navber-list a {
+    width: 200px;
+    padding-left: 1.75rem;
+    gap: 2.5rem; /* 電腦版圖示與文字的距離 */
+  }
+
+  /* 電腦版的文字隱身術與視覺校準 */
+  .nav-text {
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  /* 側邊欄變寬時，文字浮現 */
+  .header:hover .nav-text {
+    opacity: 1;
+  }
+
+  .logo-mobile {
+    display: none;
+  }
+
+  .login-btn-case {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: nowrap; /* 🚀 物理防線一：強制頭貼跟按鈕絕對不准換行 */
+  }
+
+  .logout-text {
+    font-size: 1.25rem;
+    line-height: 1;
+    color: inherit;
+    white-space: nowrap; /* 🚀 物理防線二：文字死都不准換行 */
+  }
+
+  .logout-btn {
+    display: flex; /* 因：啟動 Flex 排版。果：圖示跟文字自動變成左右橫向排列 */
+    align-items: center; /* 因：垂直置中。果：圖示跟文字的中線會對齊，不會一高一低 */
+    gap: 0.25rem; /* 圖示跟文字之間的距離 (建議跟你上面的 .navber-list a 保持一致) */
+
+    color: var(--text-muted); /* 預設暗色 */
+    text-decoration: none; /* 拔除超連結預設的底線 */
+    transition: var(--transition); /* 漸變動畫 */
+    flex-shrink: 0; /* 🚀 物理防線三：整個按鈕絕對不准被擠壓變形 */
+  }
+
+  /* 🚀 物理連動：Hover 時一起發光 */
+  .logout-btn:hover {
+    color: var(--text);
+  }
+
+  /* 防呆：確保 SVG 圖示乖乖聽話 */
+  .logout-btn svg {
+    display: block;
+    flex-shrink: 0;
+    stroke: currentColor; /* 因：強制使用 currentColor。果：會乖乖跟著外層的 a 標籤一起變色 */
+  }
+}
+
+/* =========================================
+   3. 手機版隱藏控制 (小於 1024px)
+   ========================================= */
+@media (max-width: 746px) {
+  .header {
+    display: none;
+  }
+
+  /* 🚀 頁首主體：將兩側物理推開 */
+  .mobile-header {
+    overflow: visible !important;
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* 因：設定 space-between。果：左邊 Logo 和右邊漢堡會被無情推向螢幕的最左與最右側 */
+    align-items: center; /* 因：垂直置中。果：不會有人往上飄或往下沉 */
+
+    width: 100%;
+    height: 4rem; /* 鎖死高度 */
+    padding: 0 1rem; /* 左右留一點安全邊距，才不會貼死螢幕邊框 */
+    background-color: var(--bg-light); /* 預設背景色 */
+
+    position: sticky; /* 往下滾動時吸頂 */
+    top: 0;
+    z-index: 200;
+  }
+
+  /* 🚀 左側 Logo 防呆限制 */
+  .header-l .logo-mobile {
+    height: 2.75rem;
+    width: auto;
+    display: block;
+  }
+
+  /* 🚀 右側漢堡按鈕的物理組裝 */
+  .hamburger-menu {
+    display: flex;
+    flex-direction: column; /* 因：設定直向排列。果：裡面的三根 span 會從上往下疊起來，變成漢堡形狀 */
+    justify-content: center;
+    gap: 6px; /* 麵包跟肉排之間的物理空隙 */
+    width: 36px; /* 觸控範圍 */
+    height: 40px;
+    cursor: pointer;
+  }
+
+  /* 🚀 漢堡的三條線本體 */
+  .hamburger-menu span {
+    display: block;
+    width: 100%;
+    height: 3px; /* 線的物理粗細 */
+    background-color: var(--text); /* 線的顏色，吃你全域的變數 */
+    border-radius: 2px; /* 稍微導圓角，視覺比較舒服 */
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease; /* 預留以後做動畫的彈性 */
+  }
+
+  .navber-list,
+  .index-tab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* 🚀 消失的關鍵：下拉選單的「初始隱藏」與「物理出竅」狀態 */
+  .mobile-nav-menu {
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  /* 👇 這是你原本已經有的，接在下面就好 👇 */
+  /* 🚀 當 JS 加上 .is-open 後的物理展開狀態 */
+  .mobile-nav-menu.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-menu {
+    position: absolute;
+    top: 100%; /* 👈 改這個 */
     left: 0;
     width: 100%;
-    background-color: var(--bg);
+    z-index: 999;
 
-    /* 動態效果設定 */
-    opacity: 0; /* 完全透明 */
-    visibility: hidden; /* 確保點不到隱藏的選單 */
-    transform: translateY(-20px); /* 向上偏移 20px，營造下滑感 */
-    transition: var(--transition); /* 關鍵：平滑過渡曲線 */
+    background-color: var(--bg-light);
 
-    z-index: 100;
+    /* 初始狀態 */
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+
+    transition: all 0.25s ease;
   }
 
-  // .logout-btn {
-  //   display: flex;
-  //   padding: 0px;
-  //   color: #ff4444;
-  //   text-decoration: none;
-  //   font-size: 15px;
-
-  //   transition: var(--transition);
-  // }
-
-  .navber-list-case {
+  /* 選單內部的直向排版 */
+  .mobile-nav-menu ul {
     display: flex;
-    align-items: center; /* 關鍵：水平方向置中 */
-
-    background-color: var(--bg);
-    padding: 0; /* 移除預設內距，避免置中偏移 */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    list-style: none;
     margin: 0;
-    list-style: none; /* 移除黑點 */
-    width: 100%; /* 確保寬度撐滿，基準點才會對 */
-    z-index: 9999 !important;
   }
 
-  // menu-control有沒有被點
-  #menu-control:checked ~ .navber-list-case {
-    opacity: 1; /* 變回不透明 */
-    z-index: 9999 !important;
+  /* =========================================
+   🚀 漢堡按鈕的「變叉叉」物理變形
+   ========================================= */
+  /* 因：加上 is-open。果：第一條線往下平移並順時針旋轉 45 度 */
+  .hamburger-menu.is-open span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
 
-    background-color: var(--bg);
-    visibility: visible; /* 變回可見並可點擊 */
-    transform: translateY(0); /* 回到原始位置 */
+  /* 因：加上 is-open。果：第二條線透明度歸零，直接物理消失 */
+  .hamburger-menu.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  /* 因：加上 is-open。果：第三條線往上平移並逆時針旋轉 45 度，與第一條線交叉 */
+  .hamburger-menu.is-open span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
   }
 }

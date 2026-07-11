@@ -48,7 +48,7 @@ body {
   --article-margin-mobile: 1.2rem;
   --profile-width: 90%;
   --profile-margin: 55px;
-  --profile-margin-mobile: 25px;
+  --profile-margin-mobile: 15px;
   --card-margin-mobile: 0.5rem;
   --width: 41.5rem;
   --accordion-item-margin: 0.75rem;
@@ -67,258 +67,351 @@ a {
   color: inherit;
 }
 
-.photo-upload, .photo-item, .no-comment {
+.contact-link-btn, .followed-btn, .follow-btn, .photo-upload, .photo-item, .no-comment {
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
-header {
-  background-color: var(--bg);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+/* =========================================
+   手機版優先 (預設：Header 在上面)
+   ========================================= */
+body {
+  display: flex;
+  flex-direction: column; /* 物理流向：由上往下 */
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--bg-dark);
+}
+
+.main-content {
+  flex: 1; /* 剩下的高度全包 */
+  padding: 1rem;
+}
+
+/* =========================================
+   電腦版覆蓋 (當螢幕寬度大於 1024px 時觸發)
+   ========================================= */
+@media (min-width: 1024px) {
+  body {
+    flex-direction: row; /* 🚀 物理流向逆轉：變成由左往右！ */
+  }
+}
+/* =========================================
+   1. 手機版與共用基礎設定 (Mobile First)
+   ========================================= */
+.header {
   display: flex;
   align-items: center;
-  padding: 0 5%; /* 給 header 一些左右內邊距 */
-  height: 5rem; /* 給它一個高度 */
+  justify-content: space-between; /* 左右區塊自動靠向兩側 */
+  width: 100%;
+  height: 5rem;
+  background-color: var(--bg-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo-mobile {
-  height: 2.75rem;
+.header-l {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
 }
-
-.logo-desktop {
-  height: 2.75rem;
-}
-
 .header-l img {
-  height: 2.75rem; /* 根據你的 header 高度 (4rem) 調整，這大約是 60% */
-  width: auto; /* 重要：讓寬度自動縮放，圖片才不會變形 */
+  height: 2.75rem;
+  width: auto;
 }
 
 .header-m ul {
   display: flex;
-  gap: 2rem; /* 每個選項之間的間距 */
-  list-style: none; /* 拿掉討人厭的黑點 */
+  flex-direction: row; /* 手機版預設橫向 */
+  list-style: none;
+  gap: 1.5rem; /* 手機版的間距 */
   margin: 0;
   padding: 0;
 }
 
-.header-l {
-  flex: 1;
-  display: flex; /* 移除圖片下方的微小間隙 */
-  align-items: center; /* 讓圖片跟文字「垂直中心線」對齊 */
-  gap: 0.5rem; /* 圖片和文字之間的間距 */
+/* 🎯 統一的發光中樞：放在共用區，確保手機跟電腦按鈕都會亮 */
+.navber-list {
+  white-space: nowrap;
+}
+.navber-list a {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 手機版圖示與文字的距離 */
+  color: var(--text-muted); /* 預設顏色 */
+  text-decoration: none;
+  transition: var(--transition);
+  /* 🚀 物理連動核心：摸到 a 的任何地方，裡面的東西全部一起變色 */
+}
+.navber-list a:hover {
+  color: var(--text);
+}
+.navber-list svg {
+  display: block;
+  flex-shrink: 0;
+  stroke: currentColor; /* 乖乖聽 a 的話變色 */
 }
 
-.header-m {
-  flex: 1;
+.nav-text {
+  font-size: 1.25rem;
+  line-height: 1; /* 抽乾預設行高水分 */
+  color: inherit; /* 🚀 因：設定為 inherit。果：絕對服從 a 的顏色，達成同步發光 */
+  /* 手機版不需要透明度，預設就是看得到的 */
+}
+
+.header-r,
+.login-btn-case,
+.user-case {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .header-r {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
+  padding: 0 1rem;
 }
-
-.login-btn-case {
-  display: flex;
-  justify-content: flex-end;
-  width: 250px;
+.header-r .user-photo {
+  border-radius: 50%;
+  height: 2.75rem;
 }
 
 .user-case {
-  position: relative; /* 核心：讓內部的 absolute 有參考點 */
+  position: relative;
+  cursor: pointer;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  cursor: pointer;
+  width: 2.75rem;
+  height: 2.75rem;
 }
 
-.user-photo:hover {
-  border-color: var(--primary); /* 滑鼠移上去有個綠圈圈，很帥 */
-}
-
-.dropdown-menu {
-  display: none; /* 預設隱藏 */
-  position: absolute; /* 核心：脫離文件流，不佔空間 */
-  top: 110%; /* 出現在頭像下方 10% 的距離 */
-  right: 0; /* 靠右對齊 */
-  min-width: 120px;
-  z-index: 1000; /* 確保它浮在鯨魚圖上面 */
-  overflow: hidden; /* 讓內部的 hover 效果不會超出圓角 */
-  box-shadow: var(--shadow-m);
-  background-color: var(--bg-light);
-  border: 1px solid var(--border-muted);
-  border-radius: 0.5rem;
-}
-.dropdown-menu.show {
-  display: block; /* 強制顯示 */
-  border: 1px solid var(--border);
-}
-
-.logout-btn {
-  display: block;
-  padding: 12px 16px;
-  color: var(--text); /* 登出按鈕用紅色比較醒目 */
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
-}
-.logout-btn:hover {
-  background-color: var(--bg-light);
-  color: #ff4444;
-  box-shadow: var(--shadow-m);
-}
-
-body {
-  background-color: var(--bg-dark);
-}
-
-span {
-  color: var(--text);
-}
-
-p {
-  color: var(--text-muted);
-}
-
-.navber-list {
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  margin: 0.5rem;
-  white-space: nowrap;
-}
-.navber-list:hover {
-  color: var(--text);
-  transition: var(--transition);
-}
-
-.login-btn {
-  background-color: var(--primary);
-  color: var(--text);
-  border-radius: 1.5rem;
-  padding: 0.5rem 2rem;
-  border: none;
-  cursor: pointer;
-}
-.login-btn:hover {
-  background-color: var(--secondary);
-  color: var(--text);
-  transition: var(--transition);
-}
-
-.hb-icon span {
-  width: 30px;
-  height: 3px;
-  background-color: var(--primary); /* 配合你 Logo 的綠色 */
-  margin: 3.8px 0;
-  display: block;
-  transition: var(--transition); /* 之後做動畫用 */
-}
-
-.user-photo {
-  border-radius: 6rem;
-  height: 3rem;
-}
-
-/* 漢堡圖示樣式 (三條線) */
-.hb-icon {
-  display: none; /* 電腦版先隱藏 */
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  /* 讓三條線垂直置中 */
-  flex-direction: column;
+/* 2. 你的 Custom Class 容器：給定一個固定的畫布大小 */
+.user-photo-wrapper {
+  display: flex;
+  justify-content: center;
   align-items: center;
+  width: 2.75rem; /* 跟你的 Logo 差不多大 */
+  height: 2.75rem;
+}
+.user-photo-wrapper img {
+  width: 100%; /* 強制圖片縮小到跟外框一樣寬 */
+  height: 100%; /* 強制圖片縮小到跟外框一樣高 */
+  -o-object-fit: cover;
+     object-fit: cover; /* 🚀 物理防變形：讓圖片等比例填滿，多餘的邊角會被外框的 overflow: hidden 切掉，臉絕對不會被拉長或壓扁 */
 }
 
-.logo-desktop {
-  display: block; /* 顯示電腦版 */
-}
-
-.logo-mobile {
-  display: none; /* 隱藏手機版 */
-}
-
-.header-r ul {
-  display: none; /* 隱藏電腦版 */
-}
-
-.hb-icon {
-  display: none; /* 電腦版先隱藏 */
-}
-
-/* 把真正的 checkbox 藏起來 */
-.menu-control {
-  display: none;
-}
-
-@media screen and (max-width: 902px) {
-  .login-btn {
-    display: none; /* 隱藏電腦版 */
-  }
-}
-@media screen and (max-width: 902px) {
-  /* 關 navber */
-  .header-m {
+/* =========================================
+   2. 電腦版側邊欄 (Desktop Override)
+   ========================================= */
+@media (min-width: 746px) {
+  .mobile-header {
     display: none;
   }
-  /* 關 login-btn */
-  .logo-desktop {
-    display: none; /* 隱藏電腦版 */
+  .header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 80px; /* 窄管狀態 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    transition: width 0.3s ease;
+  }
+  .header:hover {
+    width: 200px;
+  }
+  /* 終極物理鎖定：絕對定位釘死 */
+  .header-l {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8rem;
+    padding-left: 0rem;
+  }
+  .header-l .logo {
+    padding-left: 18px;
+  }
+  .header-r {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 8rem;
+    padding-left: 0rem;
+  }
+  /* 中間選單：改為直向 */
+  .header-m {
+    width: 100%;
+  }
+  .header-m ul {
+    flex-direction: column;
+    gap: 1.75rem; /* 電腦版間距拉大 */
+  }
+  /* 覆蓋電腦版的 a 標籤設定 */
+  .navber-list a {
+    width: 200px;
+    padding-left: 1.75rem;
+    gap: 2.5rem; /* 電腦版圖示與文字的距離 */
+  }
+  /* 電腦版的文字隱身術與視覺校準 */
+  .nav-text {
+    opacity: 0;
+    transition: var(--transition);
+  }
+  /* 側邊欄變寬時，文字浮現 */
+  .header:hover .nav-text {
+    opacity: 1;
   }
   .logo-mobile {
-    display: block; /* 顯示手機版 */
-  }
-  .user-photo {
     display: none;
   }
-  /* 開 icon */
-  .hb-icon {
-    display: flex; /* 手機版顯示漢堡 */
-    justify-content: center; /* 關鍵：讓內容在容器內「上下置中」 */
-    align-items: center; /* 讓內容在容器內「左右置中」 */
-  }
-  /* 先關navber(含登入)，等點hb-icon後打開 */
-  .header-r ul {
-    padding: 20px 0;
-    /* 基礎排版 */
+  .login-btn-case {
     display: flex;
-    flex-direction: column;
+    gap: 1.5rem;
     align-items: center;
-    position: absolute;
-    top: 100%; /* 從 Header 底部開始出現 */
-    left: 0;
-    width: 100%;
-    background-color: var(--bg);
-    /* 動態效果設定 */
-    opacity: 0; /* 完全透明 */
-    visibility: hidden; /* 確保點不到隱藏的選單 */
-    transform: translateY(-20px); /* 向上偏移 20px，營造下滑感 */
-    transition: var(--transition); /* 關鍵：平滑過渡曲線 */
-    z-index: 100;
+    flex-wrap: nowrap; /* 🚀 物理防線一：強制頭貼跟按鈕絕對不准換行 */
   }
-  .navber-list-case {
-    display: flex;
-    align-items: center; /* 關鍵：水平方向置中 */
-    background-color: var(--bg);
-    padding: 0; /* 移除預設內距，避免置中偏移 */
-    margin: 0;
-    list-style: none; /* 移除黑點 */
-    width: 100%; /* 確保寬度撐滿，基準點才會對 */
-    z-index: 9999 !important;
+  .logout-text {
+    font-size: 1.25rem;
+    line-height: 1;
+    color: inherit;
+    white-space: nowrap; /* 🚀 物理防線二：文字死都不准換行 */
   }
-  #menu-control:checked ~ .navber-list-case {
-    opacity: 1; /* 變回不透明 */
-    z-index: 9999 !important;
-    background-color: var(--bg);
-    visibility: visible; /* 變回可見並可點擊 */
-    transform: translateY(0); /* 回到原始位置 */
+  .logout-btn {
+    display: flex; /* 因：啟動 Flex 排版。果：圖示跟文字自動變成左右橫向排列 */
+    align-items: center; /* 因：垂直置中。果：圖示跟文字的中線會對齊，不會一高一低 */
+    gap: 0.25rem; /* 圖示跟文字之間的距離 (建議跟你上面的 .navber-list a 保持一致) */
+    color: var(--text-muted); /* 預設暗色 */
+    text-decoration: none; /* 拔除超連結預設的底線 */
+    transition: var(--transition); /* 漸變動畫 */
+    flex-shrink: 0; /* 🚀 物理防線三：整個按鈕絕對不准被擠壓變形 */
+  }
+  /* 🚀 物理連動：Hover 時一起發光 */
+  .logout-btn:hover {
+    color: var(--text);
+  }
+  /* 防呆：確保 SVG 圖示乖乖聽話 */
+  .logout-btn svg {
+    display: block;
+    flex-shrink: 0;
+    stroke: currentColor; /* 因：強制使用 currentColor。果：會乖乖跟著外層的 a 標籤一起變色 */
   }
 }
+/* =========================================
+   3. 手機版隱藏控制 (小於 1024px)
+   ========================================= */
+@media (max-width: 746px) {
+  .header {
+    display: none;
+  }
+  /* 🚀 頁首主體：將兩側物理推開 */
+  .mobile-header {
+    overflow: visible !important;
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* 因：設定 space-between。果：左邊 Logo 和右邊漢堡會被無情推向螢幕的最左與最右側 */
+    align-items: center; /* 因：垂直置中。果：不會有人往上飄或往下沉 */
+    width: 100%;
+    height: 4rem; /* 鎖死高度 */
+    padding: 0 1rem; /* 左右留一點安全邊距，才不會貼死螢幕邊框 */
+    background-color: var(--bg-light); /* 預設背景色 */
+    position: sticky; /* 往下滾動時吸頂 */
+    top: 0;
+    z-index: 200;
+  }
+  /* 🚀 左側 Logo 防呆限制 */
+  .header-l .logo-mobile {
+    height: 2.75rem;
+    width: auto;
+    display: block;
+  }
+  /* 🚀 右側漢堡按鈕的物理組裝 */
+  .hamburger-menu {
+    display: flex;
+    flex-direction: column; /* 因：設定直向排列。果：裡面的三根 span 會從上往下疊起來，變成漢堡形狀 */
+    justify-content: center;
+    gap: 6px; /* 麵包跟肉排之間的物理空隙 */
+    width: 36px; /* 觸控範圍 */
+    height: 40px;
+    cursor: pointer;
+  }
+  /* 🚀 漢堡的三條線本體 */
+  .hamburger-menu span {
+    display: block;
+    width: 100%;
+    height: 3px; /* 線的物理粗細 */
+    background-color: var(--text); /* 線的顏色，吃你全域的變數 */
+    border-radius: 2px; /* 稍微導圓角，視覺比較舒服 */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* 預留以後做動畫的彈性 */
+  }
+  .navber-list,
+  .index-tab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  /* 🚀 消失的關鍵：下拉選單的「初始隱藏」與「物理出竅」狀態 */
+  .mobile-nav-menu {
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  /* 👇 這是你原本已經有的，接在下面就好 👇 */
+  /* 🚀 當 JS 加上 .is-open 後的物理展開狀態 */
+  .mobile-nav-menu.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mobile-nav-menu {
+    position: absolute;
+    top: 100%; /* 👈 改這個 */
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background-color: var(--bg-light);
+    /* 初始狀態 */
+    transform: translateY(-10px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+  /* 選單內部的直向排版 */
+  .mobile-nav-menu ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+  }
+  /* =========================================
+   🚀 漢堡按鈕的「變叉叉」物理變形
+   ========================================= */
+  /* 因：加上 is-open。果：第一條線往下平移並順時針旋轉 45 度 */
+  .hamburger-menu.is-open span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+  /* 因：加上 is-open。果：第二條線透明度歸零，直接物理消失 */
+  .hamburger-menu.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  /* 因：加上 is-open。果：第三條線往上平移並逆時針旋轉 45 度，與第一條線交叉 */
+  .hamburger-menu.is-open span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+}
+.index-page {
+  width: 100%;
+}
+
 .hero {
   width: 100%;
   background-image: url("https://pub-1cd8c9472e4e4e4aa06b0ae1baed7d55.r2.dev/media/default-photo/pexels-ben-phillips-3129726-4781925.webp");
@@ -2633,11 +2726,22 @@ a {
   /* 1. 尺寸定義 (決絕寬度坍塌) */
   width: 100%; /* 或者你真的想鎖死寬度，就改成 width: 41.5rem; 把這行刪掉 */
   max-width: 2000px; /* 加個保險，避免在超大螢幕被拉得太長 */
-  aspect-ratio: 4/1;
-  min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
+  aspect-ratio: 4/1.5;
   margin: 0 auto;
   /* 3. 裝飾與佈局 */
   position: relative; /* 作為裡面大頭貼絕對定位的基準點 */
+}
+
+.profile-hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%; /* 因：設定高度 60%。果：只有圖片中下半部會變暗，上方保持原圖亮度 */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, var(--bg-main, #000) 100%); /* 漸變魔法 */
+  pointer-events: none; /* 物理防線：這層膜是虛擬的，滑鼠點擊會直接穿透，不會擋住裡面的任何按鈕 */
+  z-index: 1; /* 確保這層膜蓋在背景圖上方，但在大頭貼下方 */
 }
 
 .edit-icon {
@@ -2827,7 +2931,7 @@ a {
   -o-object-fit: cover;
      object-fit: cover; /* 🚀 確保圖片完全填滿圓形，保持比例，不會變形 */
   border-radius: 50%; /* 🚀 圓形 */
-  border: 8px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
+  border: 4px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
   box-shadow: var(--shadow-l); /* 🚀 給頭像一點陰影，增加層次感 */
 }
 
@@ -2982,6 +3086,7 @@ a {
 }
 
 .location-text {
+  font-size: 1rem;
   color: var(--text-muted); /* 字體點亮成主標題顏色 */
   transition: var(--transition);
 }
@@ -2991,7 +3096,64 @@ a {
   }
 }
 
-@media screen and (max-width: 768px) {
+/* 2. 追蹤按鈕 (實心主色調) */
+.follow-btn {
+  width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+  height: 40px; /* 固定高度讓左右按鈕對齊 */
+  background-color: var(--primary); /* 假設你的主色是深色 */
+  color: var(--text);
+  border: var(--bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.follow-btn:active {
+  transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+  background-color: var(--secondary); /* 假設你的主色是深色 */
+}
+
+.followed-btn {
+  width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+  height: 40px; /* 固定高度讓左右按鈕對齊 */
+  background-color: var(--secondary); /* 假設你的主色是深色 */
+  color: var(--text);
+  border: var(--bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.followed-btn:active {
+  transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+  background-color: var(--primary); /* 假設你的主色是深色 */
+}
+
+/* 3. LINE 群組連結按鈕 (LINE 官方標準綠) */
+.contact-link-btn {
+  width: 100%;
+  height: 40px;
+  background-color: var(--info); /* LINE 的靈魂色碼 */
+  color: var(--text);
+  text-decoration: none; /* 物理因果：因為它是 <a> 標籤，必須拔掉醜醜的預設底線 */
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: var(--transition);
+}
+.contact-link-btn:active {
+  transform: scale(0.995);
+}
+
+@media screen and (max-width: 746px) {
   .in-profile {
     /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
     width: 100%;
@@ -3004,7 +3166,7 @@ a {
   }
   .customer-avatar {
     position: absolute; /* 🚀 脫離隊伍，開始漂浮 */
-    width: 4rem; /* 🚀 寬度固定，保證視覺重量一致 */
+    width: 23%; /* 🚀 寬度固定，保證視覺重量一致 */
     aspect-ratio: 1/1; /* 🚀 強制 1:1，確保永遠是正方形（圓形的地基） */
     bottom: -35px !important; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
     left: var(--profile-margin-mobile) !important; /* 距離左邊 50px */
@@ -3112,7 +3274,7 @@ a {
     /* 📐 佈局與排版 */
     width: -moz-fit-content;
     width: fit-content; /* 寬度剛好包裹住字數即可，不盲目撐滿 */
-    margin: 1.25rem var(--profile-margin-mobile) 1rem var(--profile-margin-mobile);
+    margin: 0.5rem var(--profile-margin-mobile) 0.75rem var(--profile-margin-mobile);
     color: var(--text-muted);
     font-family: var(--ff-primary);
     font-size: 1.25rem;
@@ -3123,10 +3285,68 @@ a {
     /* 🚀 動態回饋：綁定你的貝氏曲線轉場動畫 */
     transition: var(--transition);
   }
+  .user-location-tag svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
   .tab-item {
     flex: 1; /* 🚀 因：剩餘空間平分。果：三個按鈕寬度一模一樣。 */
     padding: 14px 0; /* 上下撐開高度，好點擊 */
     font-size: 0.875rem;
+  }
+  /* 2. 追蹤按鈕 (實心主色調) */
+  .follow-btn {
+    width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+    height: 32px; /* 固定高度讓左右按鈕對齊 */
+    background-color: var(--primary); /* 假設你的主色是深色 */
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .follow-btn:active {
+    transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+    background-color: var(--secondary); /* 假設你的主色是深色 */
+  }
+  .followed-btn {
+    width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+    height: 32px; /* 固定高度讓左右按鈕對齊 */
+    background-color: var(--secondary); /* 假設你的主色是深色 */
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .followed-btn:active {
+    transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+    background-color: var(--primary); /* 假設你的主色是深色 */
+  }
+  /* 3. LINE 群組連結按鈕 (LINE 官方標準綠) */
+  .contact-link-btn {
+    width: 100%;
+    height: 32px;
+    background-color: var(--info); /* LINE 的靈魂色碼 */
+    color: var(--text);
+    text-decoration: none; /* 物理因果：因為它是 <a> 標籤，必須拔掉醜醜的預設底線 */
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 1rem;
+    transition: var(--transition);
+  }
+  .contact-link-btn:active {
+    transform: scale(0.995);
   }
 }
 .grid {
@@ -3476,6 +3696,23 @@ a {
   justify-content: flex-end; /* 內容靠右對齊 */
 }
 
+.n-split-tool {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* 左側與右側統一設定：平分天下 */
+.n-split-left,
+.n-split-right {
+  flex: 1; /* 🚀 因：兩邊都是 1。果：空間絕對精準 50/50 平分 */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 讓按鈕在各自的半區置中 */
+}
+
 .accordion-item {
   width: 92.5%;
   margin: 1rem auto 0.25rem auto;
@@ -3658,7 +3895,7 @@ a {
 
 @media screen and (max-width: 768px) {
   .temp-title {
-    font-size: 1rem; /* 手機版標題稍微縮小 */
+    font-size: 1.1rem; /* 手機版標題稍微縮小 */
   }
   .temp-content-text {
     display: block; /* 手機版內文改成獨占一行，避免太擠 */
@@ -3775,11 +4012,6 @@ a {
 /* 修正：預設隱藏內容 */
 .accordion-item .accordion-body {
   display: none; /* 原本是 .notice-card .card-body */
-}
-
-/* 修正：當有 active 類別時才顯示 (JS 切換的是 active) */
-.accordion-item.active .accordion-body {
-  display: block;
 }
 
 /* 修正：旋轉箭頭 */
@@ -4909,7 +5141,7 @@ a {
     position: absolute;
     top: 0%;
     right: 0;
-    width: 450%;
+    width: 400%;
     background: var(--bg-light);
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-muted);
@@ -5457,7 +5689,7 @@ a {
 .modal-content-card {
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 95%;
   max-width: 41.5rem;
   height: 90dvh;
   padding: 2rem; /* 🚀 維持 2rem 大內襯，確保大氣呼吸感 */
@@ -5625,11 +5857,11 @@ a {
   display: inline-block;
 }
 .image-preview-container .image-preview-wrapper .image-preview {
-  max-width: 120px;
-  max-height: 120px;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-l);
   -o-object-fit: cover;
      object-fit: cover;
-  border-radius: var(--radius-m);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-m);
 }
@@ -5656,6 +5888,91 @@ a {
   background-color: var(--text);
   color: var(--bg);
   border-color: var(--text);
+}
+.image-preview-container .image-preview-avatar {
+  position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+  display: inline-block;
+}
+.image-preview-container .image-preview-avatar .image-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-m);
+}
+.image-preview-container .image-preview-avatar .remove-image-btn {
+  position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+  top: -0.5rem;
+  right: -0.5rem;
+  background-color: var(--bg-big-light);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-s);
+  transition: var(--transition);
+}
+.image-preview-container .image-preview-avatar .remove-image-btn:hover {
+  background-color: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* 預覽佔位符的容器 */
+.profile-placeholder {
+  display: flex;
+  flex-direction: column; /* 垂直排列圖示與文字 */
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 120%;
+  padding: 20px;
+  border: 2px dashed var(--border-muted); /* 虛線框提醒使用者可上傳 */
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+}
+
+/* 確保外層的 label 點擊區不會自己亂拉伸，跟著內容走 */
+.avatar-click-zone,
+.bg-click-zone {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 圖示容器：確保它不會過大，並保持與文字的間距 */
+.upload-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60%;
+  height: auto;
+  margin-bottom: 0.5rem; /* 與文字的間距 */
+  color: var(--text-muted);
+}
+
+/* SVG 本身的屬性調整 */
+.upload-icon-wrapper svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  stroke: currentColor; /* 繼承父元素的顏色 */
+}
+
+/* 文字設定 */
+.upload-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .clean-location-grid {
@@ -5704,13 +6021,6 @@ a {
   padding-left: 8px;
 }
 
-@media (max-width: 667px) {
-  .profile-form-container {
-    max-width: 100%;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-}
 .save-profile-btn {
   width: 60%;
   padding: 1.1rem;
@@ -5733,6 +6043,192 @@ a {
   }
 }
 
+@media (max-width: 746px) {
+  .profile-form-container {
+    max-width: 100%;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .modal-content-card {
+    display: flex;
+    flex-direction: column;
+    width: 98%;
+    max-width: 60rem;
+    height: 95dvh;
+    padding: 1rem 0.5rem 0.75rem 1rem; /* 🚀 維持 2rem 大內襯，確保大氣呼吸感 */
+    background: var(--bg-light);
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-l);
+    transform: scale(0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .modal-content-card[style*="display: flex"] {
+    transform: scale(1);
+  }
+  .profile-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 3rem;
+    width: 100%;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0rem;
+  }
+  .profile-title {
+    margin: auto;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .image-preview-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 🚀 核心：預覽照片同步絕對置中 */
+    margin-top: 10px;
+  }
+  .image-preview-container .image-preview-wrapper {
+    position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+    display: inline-block;
+  }
+  .image-preview-container .image-preview-wrapper .image-preview {
+    width: 120px;
+    height: 120px;
+    -o-object-fit: cover;
+       object-fit: cover;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-m);
+  }
+  .image-preview-container .image-preview-wrapper .remove-image-btn {
+    position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+    top: -0.5rem;
+    right: -0.5rem;
+    background-color: var(--bg-big-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-s);
+    transition: var(--transition);
+  }
+  .image-preview-container .image-preview-wrapper .remove-image-btn:hover {
+    background-color: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .image-preview-container .image-preview-avatar {
+    position: relative; /* 🚀 核心：開啟相對定位，作為叉叉按鈕的絕對座標參考點 */
+    display: inline-block;
+  }
+  .image-preview-container .image-preview-avatar .image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    -o-object-fit: cover;
+       object-fit: cover;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-m);
+  }
+  .image-preview-container .image-preview-avatar .remove-image-btn {
+    position: absolute; /* 🚀 核心：絕對定位，釘在相片右上角，不擠壓排版 */
+    top: -0.5rem;
+    right: -0.5rem;
+    background-color: var(--bg-big-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-s);
+    transition: var(--transition);
+  }
+  .image-preview-container .image-preview-avatar .remove-image-btn:hover {
+    background-color: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .field-label {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .save-profile-btn {
+    width: 50%;
+    padding: 0.5rem;
+    background: var(--primary);
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-l);
+    transition: var(--transition);
+    margin: 1rem auto 0 auto;
+    display: block;
+  }
+}
+@media (max-width: 746px) and (hover: hover) {
+  .save-profile-btn:hover {
+    box-shadow: var(--shadow-l);
+    background: var(--secondary);
+  }
+}
+@media (max-width: 746px) {
+  /* 預覽佔位符的容器 */
+  .profile-placeholder {
+    display: flex;
+    flex-direction: column; /* 垂直排列圖示與文字 */
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    height: 100%;
+    padding: 20px;
+    border: 2px dashed var(--border-muted); /* 虛線框提醒使用者可上傳 */
+    border-radius: var(--radius-m);
+    color: var(--text-muted);
+  }
+  /* 圖示容器：確保它不會過大，並保持與文字的間距 */
+  .upload-icon-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+    height: auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem; /* 與文字的間距 */
+    color: var(--text-muted);
+  }
+  /* SVG 本身的屬性調整 */
+  .upload-icon-wrapper svg {
+    width: 2rem;
+    height: 2rem;
+    stroke: currentColor; /* 繼承父元素的顏色 */
+  }
+  /* 文字設定 */
+  .upload-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
+  }
+}
 @keyframes spin {
   0% {
     transform: rotate(0deg);

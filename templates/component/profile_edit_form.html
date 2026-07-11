@@ -24,51 +24,60 @@
                            class="clean-underlined-input"
                            placeholder="你的專屬暱稱...">
                 </div>
-                <!-- 1. 更換大頭貼區塊 -->
                 <div class="input-field-group">
-                    <label class="field-label">更換大頭貼</label>
+                    <label class="field-label">點照片更換大頭貼</label>
                     <div class="clean-file-box">
-                        <label for="modal-avatar-input" class="custom-file-upload">選擇大頭貼檔案</label>
+                        <label for="modal-avatar-input" class="avatar-click-zone">
+                            <div id="avatar-preview" class="image-preview-container">
+                                {% if profile.avatar %}
+                                    <div class="image-preview-avatar">
+                                        <img src="{{ profile.avatar.url }}" class="image-preview" alt="舊圖">
+                                        <button type="button" class="remove-image-btn">&times;</button>
+                                    </div>
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        <div class="upload-icon-wrapper">{% include "icons/upload.html" %}</div>
+                                        <span class="upload-text">點擊上傳頭貼</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </label>
                         <input type="file"
                                name="avatar"
                                id="modal-avatar-input"
                                accept="image/*"
                                class="profile-image-input"
-                               data-preview="#avatar-preview">
-                        <!-- 🎯 鎖定外層容器 ID -->
-                    </div>
-                    <!-- 🎯 專業防線：一打開彈窗，如果資料庫有舊圖，就先塞進預覽容器內；沒有就是空的 -->
-                    <div id="avatar-preview" class="image-preview-container">
-                        {% if profile.avatar %}
-                            <div class="image-preview-wrapper">
-                                <img src="{{ profile.avatar.url }}" class="image-preview" alt="現有頭貼">
-                                <!-- 💡 這裡先不手動塞叉叉按鈕，因為這張是資料庫的舊圖，除非使用者重新選擇新檔案，否則點擊送出本來就不會變動它 -->
-                            </div>
-                        {% endif %}
+                               data-preview="#avatar-preview"
+                               style="display: none">
                     </div>
                 </div>
-                <!-- 2. 更換背景圖區塊 -->
                 <div class="input-field-group">
-                    <label class="field-label">更換背景圖</label>
+                    <label class="field-label">點照片更換背景圖</label>
                     <div class="clean-file-box">
-                        <label for="background-input" class="custom-file-upload">選擇背景圖檔案</label>
+                        <label for="background-input" class="bg-click-zone">
+                            <div id="background-preview" class="image-preview-container">
+                                {% if profile.background_image %}
+                                    <div class="image-preview-wrapper">
+                                        <img src="{{ profile.background_image.url }}"
+                                             class="image-preview"
+                                             alt="現有背景">
+                                        <button type="button" class="remove-image-btn">&times;</button>
+                                    </div>
+                                {% else %}
+                                    <div class="profile-placeholder">
+                                        <div class="upload-icon-wrapper">{% include "icons/upload.html" %}</div>
+                                        <span class="upload-text">點擊上傳背景</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </label>
                         <input type="file"
                                name="background_image"
                                id="background-input"
                                accept="image/*"
                                class="profile-image-input"
-                               data-preview="#background-preview">
-                        <!-- 🎯 鎖定外層容器 ID -->
-                    </div>
-                    <!-- 🎯 專業防線：一打開彈窗，如果資料庫有舊背景，直接吐出來展示 -->
-                    <div id="background-preview" class="image-preview-container">
-                        {% if profile.background_image %}
-                            <div class="image-preview-wrapper">
-                                <img src="{{ profile.background_image.url }}"
-                                     class="image-preview"
-                                     alt="現有背景">
-                            </div>
-                        {% endif %}
+                               data-preview="#background-preview"
+                               style="display: none">
                     </div>
                 </div>
                 <div class="input-field-group">
@@ -108,6 +117,15 @@
                               rows="1"
                               class="clean-underlined-textarea"
                               placeholder="聊聊你的魚缸或蝦缸吧...">{{ profile.bio }}</textarea>
+                </div>
+                <div class="input-field-group">
+                    <label class="field-label">聯絡連結 例如：群組</label>
+                    <!-- 💡 物理變更：網址不需要換行，所以用 input type="url" 最精準 -->
+                    <input type="url"
+                           name="contact_link"
+                           class="clean-underlined-input"
+                           placeholder="請貼上你的 聯絡連結 (https://line.me/...)"
+                           value="{{ profile.contact_link }}">
                 </div>
                 <button type="submit" class="save-profile-btn">送出</button>
             </form>

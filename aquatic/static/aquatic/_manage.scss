@@ -94,11 +94,6 @@
   // padding-top: 15px;
 }
 
-/* 修正：當有 active 類別時才顯示 (JS 切換的是 active) */
-.accordion-item.active .accordion-body {
-  display: block;
-}
-
 /* 修正：旋轉箭頭 */
 .accordion-item.active .temp-arrow {
   transform: rotate(90deg);

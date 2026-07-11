@@ -22,3 +22,20 @@
   align-items: center;
   justify-content: flex-end; /* 內容靠右對齊 */
 }
+
+.n-split-tool {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* 左側與右側統一設定：平分天下 */
+.n-split-left,
+.n-split-right {
+  flex: 1; /* 🚀 因：兩邊都是 1。果：空間絕對精準 50/50 平分 */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 讓按鈕在各自的半區置中 */
+}

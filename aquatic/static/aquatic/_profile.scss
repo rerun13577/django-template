@@ -18,11 +18,23 @@
   /* 1. 尺寸定義 (決絕寬度坍塌) */
   width: 100%; /* 或者你真的想鎖死寬度，就改成 width: 41.5rem; 把這行刪掉 */
   max-width: 2000px; /* 加個保險，避免在超大螢幕被拉得太長 */
-  aspect-ratio: 4 / 1;
-  min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
+  aspect-ratio: 4 / 1.5;
+  // min-height: 250px; /* 🚀 救命保險絲：就算寬度坍塌算不出比例，也絕對硬撐出 250px 的高度！ */
   margin: 0 auto;
   /* 3. 裝飾與佈局 */
   position: relative; /* 作為裡面大頭貼絕對定位的基準點 */
+}
+
+.profile-hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%; /* 因：設定高度 60%。果：只有圖片中下半部會變暗，上方保持原圖亮度 */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, var(--bg-main, #000) 100%); /* 漸變魔法 */
+  pointer-events: none; /* 物理防線：這層膜是虛擬的，滑鼠點擊會直接穿透，不會擋住裡面的任何按鈕 */
+  z-index: 1; /* 確保這層膜蓋在背景圖上方，但在大頭貼下方 */
 }
 
 .edit-icon {
@@ -276,7 +288,7 @@
   img {
     object-fit: cover; /* 🚀 確保圖片完全填滿圓形，保持比例，不會變形 */
     border-radius: 50%; /* 🚀 圓形 */
-    border: 8px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
+    border: 4px solid var(--bg); /* 🚀 環繞頭像的邊框，讓它從背景中跳出來 */
     box-shadow: var(--shadow-l); /* 🚀 給頭像一點陰影，增加層次感 */
   }
 }
@@ -461,10 +473,78 @@
 }
 
 .location-text {
+  font-size: 1rem;
   color: var(--text-muted); /* 字體點亮成主標題顏色 */
   transition: var(--transition);
   @include hover-device {
     color: var(--text); /* 字體點亮成主標題顏色 */
+  }
+}
+
+/* 2. 追蹤按鈕 (實心主色調) */
+.follow-btn {
+  @extend %center;
+  width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+  height: 40px; /* 固定高度讓左右按鈕對齊 */
+  background-color: var(--primary); /* 假設你的主色是深色 */
+  color: var(--text);
+  border: var(--bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:active {
+    transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+
+    background-color: var(--secondary); /* 假設你的主色是深色 */
+  }
+}
+
+.followed-btn {
+  @extend %center;
+  width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+  height: 40px; /* 固定高度讓左右按鈕對齊 */
+  background-color: var(--secondary); /* 假設你的主色是深色 */
+  color: var(--text);
+  border: var(--bg);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:active {
+    transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+
+    background-color: var(--primary); /* 假設你的主色是深色 */
+  }
+}
+
+/* 3. LINE 群組連結按鈕 (LINE 官方標準綠) */
+.contact-link-btn {
+  @extend %center;
+  width: 100%;
+  height: 40px;
+  background-color: var(--info); /* LINE 的靈魂色碼 */
+  color: var(--text);
+  text-decoration: none; /* 物理因果：因為它是 <a> 標籤，必須拔掉醜醜的預設底線 */
+  border-radius: var(--radius-m);
+
+  box-shadow: var(--shadow-l);
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  margin-top: 1rem;
+  transition: var(--transition);
+
+  &:active {
+    transform: scale(0.995);
   }
 }
 
@@ -474,7 +554,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------------------
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 746px) {
   .in-profile {
     /* ⚠️ 重要：加這行，不然手機版會爆開出現橫向卷軸 */
     width: 100%;
@@ -489,7 +569,7 @@
 
   .customer-avatar {
     position: absolute; /* 🚀 脫離隊伍，開始漂浮 */
-    width: 4rem; /* 🚀 寬度固定，保證視覺重量一致 */
+    width: 23%; /* 🚀 寬度固定，保證視覺重量一致 */
     aspect-ratio: 1 / 1; /* 🚀 強制 1:1，確保永遠是正方形（圓形的地基） */
     bottom: -35px !important; /* 🚀 因：負值。果：頭像會往下掉，壓在邊框上 (Discord/FB 風格) */
     left: var(--profile-margin-mobile) !important; /* 距離左邊 50px */
@@ -617,7 +697,7 @@
 
     /* 📐 佈局與排版 */
     width: fit-content; /* 寬度剛好包裹住字數即可，不盲目撐滿 */
-    margin: 1.25rem var(--profile-margin-mobile) 1rem var(--profile-margin-mobile);
+    margin: 0.5rem var(--profile-margin-mobile) 0.75rem var(--profile-margin-mobile);
 
     color: var(--text-muted);
     font-family: var(--ff-primary);
@@ -630,11 +710,82 @@
 
     /* 🚀 動態回饋：綁定你的貝氏曲線轉場動畫 */
     transition: var(--transition);
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 
   .tab-item {
     flex: 1; /* 🚀 因：剩餘空間平分。果：三個按鈕寬度一模一樣。 */
     padding: 14px 0; /* 上下撐開高度，好點擊 */
     font-size: 0.875rem;
+  }
+
+  /* 2. 追蹤按鈕 (實心主色調) */
+  .follow-btn {
+    @extend %center;
+    width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+    height: 32px; /* 固定高度讓左右按鈕對齊 */
+    background-color: var(--primary); /* 假設你的主色是深色 */
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+
+    &:active {
+      transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+
+      background-color: var(--secondary); /* 假設你的主色是深色 */
+    }
+  }
+
+  .followed-btn {
+    @extend %center;
+    width: 100%; /* 物理因果：撐滿你外層的 split-left 容器 */
+    height: 32px; /* 固定高度讓左右按鈕對齊 */
+    background-color: var(--secondary); /* 假設你的主色是深色 */
+    color: var(--text);
+    border: var(--bg);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+
+    &:active {
+      transform: scale(0.995); /* 點擊時的物理微縮回饋感 */
+
+      background-color: var(--primary); /* 假設你的主色是深色 */
+    }
+  }
+
+  /* 3. LINE 群組連結按鈕 (LINE 官方標準綠) */
+  .contact-link-btn {
+    @extend %center;
+    width: 100%;
+    height: 32px;
+    background-color: var(--info); /* LINE 的靈魂色碼 */
+    color: var(--text);
+    text-decoration: none; /* 物理因果：因為它是 <a> 標籤，必須拔掉醜醜的預設底線 */
+    border-radius: var(--radius-m);
+
+    box-shadow: var(--shadow-l);
+    font-size: 0.95rem;
+    font-weight: 400;
+
+    margin-top: 1rem;
+    transition: var(--transition);
+
+    &:active {
+      transform: scale(0.995);
+    }
   }
 }

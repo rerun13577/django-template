@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="{% static 'aquatic/main.css' %}?v=1.0.2">
         <script src="https://unpkg.com/htmx.org@1.9.12"></script>
         <script src="{% static 'aquatic/js/profile.js' %}" defer></script>
+        <script src="{% static 'aquatic/js/edit-profile.js' %}" defer></script>
         <script src="{% static 'aquatic/js/like-btn.js' %}" defer></script>
     </head>
     <body>
@@ -16,20 +17,6 @@
             <section class="profile-hero"
                      id="profile-hero"
                      {% if target_user.profile.background_image %} style="background-image: url('{{ target_user.profile.background_image.url }}');" {% endif %}>
-                {% if user == target_user %}
-                    <div class="edit-dropdown-container">
-                        <button class="edit-icon" id="edit-menu-btn">{% include "icons/ellipsis-vertical.html" %}</button>
-                        <div class="dropdown-content" id="edit-dropdown">
-                            <a href="javascript:void(0);"
-                               class="dropdown-item"
-                               hx-get="{% url 'edit_profile_form' username=target_user.username %}"
-                               hx-target="#profile-modal-container"
-                               hx-swap="innerHTML"
-                               hx-indicator="#loading-shield"
-                               hx-trigger="click">編輯個人檔案</a>
-                        </div>
-                    </div>
-                {% endif %}
                 {% if user == target_user %}
                     <label for="avatar-input" class="avatar-label">
                         {% include "component/user-photo-outclass.html" with target_user=target_user custom_class="customer-avatar" %}
@@ -48,19 +35,17 @@
                             {{ target_user.username }}
                         {% endif %}
                     </h1>
-                    <span class="user-category"
-                          style="margin-top: 0.5rem;
-                                 display: inline-block">
+                    {% comment %} <span class="user-category" style="margin-top: 0.5rem; display: inline-block">
                         {% if post.author.profile.category %}
                             {{ post.author.profile.get_category_display }}
                         {% else %}
                             熱血魚友
                         {% endif %}
-                    </span>
+                    </span> {% endcomment %}
                 </div>
                 <div class="info-right">
-                    <span class="follower-count">
-                        <strong>{{ target_user.followers.count|default:"0" }}</strong> 粉絲
+                    <span class="follower-count" id="follower-count-{{ target_user.username }}">
+                        <strong>{{ target_user.profile.follower_count|default:"0" }}</strong> 粉絲
                     </span>
                 </div>
             </div>
@@ -80,6 +65,54 @@
             {% endif %}
             <section class="bio-section">
                 <p class="profile-bio">{{ target_user.profile.bio|default:"這位魚友很神秘，也許他/她知道藍鯨在哪裡..."|linebreaks }}</p>
+            </section>
+            <section class="bio-section">
+                <div class="n-split-tool">
+                    <!-- ========================================== -->
+                    <!-- 左邊區塊：根據身分與追蹤狀態動態切換 -->
+                    <!-- ========================================== -->
+                    <div class="n-split-left">
+                        {% if is_me %}
+                            <!-- 狀態 A 因：看自己。果：切換為編輯按鈕 -->
+                            <!-- 💡 這裡記得換成你用來叫出「編輯彈窗」的屬性 (例如 hx-get 或 onclick) -->
+                            <button type="button"
+                                    class="action-btn follow-btn"
+                                    hx-get="{% url 'edit_profile_form' username=target_user.username %}"
+                                    hx-target="#profile-modal-container"
+                                    hx-swap="innerHTML"
+                                    hx-indicator="#loading-shield">編輯個人檔案</button>
+                        {% else %}
+                            <!-- 狀態 B 因：看別人。果：進一步檢查追蹤狀態 -->
+                            {% if is_following %}
+                                <!-- 狀態：已追蹤 -->
+                                <button type="button"
+                                        class="action-btn followed-btn"
+                                        hx-post="{% url 'toggle_follow' target_user.username %}"
+                                        hx-target="this"
+                                        hx-swap="outerHTML">已追蹤</button>
+                            {% else %}
+                                <!-- 狀態：未追蹤 -->
+                                <button type="button"
+                                        class="action-btn follow-btn"
+                                        hx-post="{% url 'toggle_follow' target_user.username %}"
+                                        hx-target="this"
+                                        hx-swap="outerHTML">追蹤</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <!-- ========================================== -->
+                    <!-- 右邊區塊：群組連結 (共用邏輯) -->
+                    <!-- ========================================== -->
+                    <!-- 🎯 物理細節：把 if 判斷包在 `n-split-right` 這個 div 的「外面」 -->
+                    {% if target_user.profile.contact_link %}
+                        <div class="n-split-right">
+                            <a href="{{ target_user.profile.contact_link }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="contact-link-btn">加入群組</a>
+                        </div>
+                    {% endif %}
+                </div>
             </section>
             <nav class="profile-tabs">
                 <button class="tab-item active" data-index="0">商品</button>
@@ -136,3 +169,9 @@
         </div>
     </body>
 </html>
+<script>
+  // 🎯 物理因果：攔截所有 HTMX 的請求，在封包發送前，硬塞入 Django 的 CSRF 鑰匙
+  document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+  });
+</script>
