@@ -87,9 +87,9 @@ class AquaticLife(BaseModel):
         blank=True,
     )
     is_active = models.BooleanField(
-        default=True, db_index=True, verbose_name="是否有效"
+        default=True, db_index=True, verbose_name="是否上架"
     )
-    PRICE_STATUS_CHOICES = [("NORMAL", "正常顯示價格"), ("NOT_FOR_SALE", "非賣品")]
+    # PRICE_STATUS_CHOICES = [("NORMAL", "正常顯示價格"), ("NOT_FOR_SALE", "非賣品")]
 
     # --- 欄位定義 ---
     name = models.CharField(max_length=100, verbose_name="品種名稱")
@@ -107,12 +107,12 @@ class AquaticLife(BaseModel):
         verbose_name="所在地點",
     )
     price = models.IntegerField(default=0, verbose_name="價格")
-    price_status = models.CharField(
-        max_length=20,
-        choices=PRICE_STATUS_CHOICES,
-        default="NORMAL",
-        verbose_name="價格狀態",
-    )
+    # price_status = models.CharField(
+    #     max_length=20,
+    #     choices=PRICE_STATUS_CHOICES,
+    #     default="NORMAL",
+    #     verbose_name="價格狀態",
+    # )
 
     video = models.FileField(
         upload_to=get_aquatic_upload_path,  # 🚀 直接沿用你寫的超讚路徑機制
@@ -151,10 +151,10 @@ class AquaticLife(BaseModel):
     )
 
     # --- 小工具 ---
-    def get_display_price(self):
-        if self.price_status == "NOT_FOR_SALE":
-            return "無價珍寶"
-        return f"NT$ {self.price}"
+    # def get_display_price(self):
+    #     if self.price_status == "NOT_FOR_SALE":
+    #         return "無價珍寶"
+    #     return f"NT$ {self.price}"
 
     # 如果沒有寫跟有寫
     # 有寫product.sale_price()
@@ -193,43 +193,68 @@ class AquaticLife(BaseModel):
         else:
             self.city = "NONE"
 
-    def _handle_category_image_move(self):
-        """當分類變更時，自動將舊圖片搬移至新分類資料夾"""
-        if not self.pk or not self.image:
+    def _handle_category_media_move(self):
+        """當分類變更時，自動將舊圖片與影片搬移至新分類資料夾"""
+        # 安全防線：如果是剛建立還沒存進資料庫 (沒有pk)，就不需要搬家
+        if not self.pk:
             return
 
         try:
             old_instance = AquaticLife.objects.get(pk=self.pk)
-            if old_instance.category != self.category:
-                old_path = self.image.name.replace("\\", "/")
-                new_path = get_aquatic_upload_path(self, os.path.basename(old_path))
 
-                if default_storage.exists(old_path) and old_path != new_path:
-                    with default_storage.open(old_path) as f:
-                        default_storage.save(new_path, f)
-                    default_storage.delete(old_path)
-                    self.image.name = new_path
-                    print(f"🚚 搬家成功: {old_path} -> {new_path}")
+            # 因：分類根本沒改。果：提早結束，節省伺服器效能
+            if old_instance.category == self.category:
+                return
+
+            # 🚀 物理擴充：建立需要檢查搬家的媒體清單
+            media_fields = ["image", "video"]
+
+            for field in media_fields:
+                old_media = getattr(old_instance, field)  # 抓出舊檔案實體
+                current_media = getattr(self, field)  # 抓出當前(新)檔案實體
+
+                # 如果這個欄位以前有檔案，而且現在也還有檔案，才進行搬家
+                if old_media and old_media.name and current_media:
+                    old_path = old_media.name.replace("\\", "/")
+                    # 重新計算新分類底下的路徑
+                    new_path = get_aquatic_upload_path(self, os.path.basename(old_path))
+
+                    # 物理搬移與覆寫
+                    if default_storage.exists(old_path) and old_path != new_path:
+                        with default_storage.open(old_path) as f:
+                            default_storage.save(new_path, f)
+                        default_storage.delete(old_path)
+
+                        # 讓當前的欄位指向新路徑
+                        current_media.name = new_path
+                        print(f"🚚 搬家成功 ({field}): {old_path} -> {new_path}")
+
         except Exception as e:
-            print(f"⚠️ 搬家失敗預警: {e}")
+            print(f"⚠️ 媒體搬家失敗預警: {e}")
 
     # --- 核心 Save 邏輯 ---
     def save(self, *args, **kwargs):
         # 1. 🚀 鋼鐵防線：自動跟 owner 的 Profile 地址同步
         self._sync_owner_city()
 
-        # 2. 搬家邏輯：如果分類變了，自動搬照片
-        self._handle_category_image_move()
+        # 2. 🚀 媒體搬家：圖片與影片一起處理
+        self._handle_category_media_move()
 
-        # 3. 壓縮轉檔（必須在 super().save() 之前，確保新檔名寫入資料庫）
+        # 3. 圖片壓縮轉檔 (保持原樣不動)
         handle_model_image_upload(self, "image")
 
-        # 4. 呼叫 BaseModel 的 save 真正寫入資料庫
+        # 4. 真正寫入資料庫
         super().save(*args, **kwargs)
 
-        # 5. 清除 Cloudflare 快取
+        # 5. 🚀 擴大快取打擊範圍：把有更新的圖片和影片網址都搜集起來，一次發給 Cloudflare 殺掉
+        cache_urls = []
         if self.image:
-            purge_cloudflare_cache([self.image.url])
+            cache_urls.append(self.image.url)
+        if self.video:
+            cache_urls.append(self.video.url)
+
+        if cache_urls:
+            purge_cloudflare_cache(cache_urls)
 
     def __str__(self):
         return f"[{self.get_city_display()}] {self.name}"

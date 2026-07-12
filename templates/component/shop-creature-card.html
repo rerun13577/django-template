@@ -32,10 +32,34 @@
                     color: var(--text-muted)">尚無影片</div>
     {% endif %}
     <h3 class="hot-creature-title">{{ item.name }}</h3>
-    {% if item.price_status == 'NOT_FOR_SALE' %}
+    {% comment %} {% if item.price_status == 'NOT_FOR_SALE' %}
         <p class="hot-creature-subtitle non-sale">無價珍寶</p>
     {% else %}
         <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+    {% endif %} {% endcomment %}
+    <!-- 🚀 物理替換開始：隱私權防護罩邏輯 -->
+    {% if item.owner.profile.hide_price %}
+        <!-- 🛡️ 防線零：根本沒登入？直接上鎖！不用往下比對了 -->
+        {% if not request.user.is_authenticated %}
+            <p class="hot-creature-subtitle non-sale"
+               style="font-size: 1rem;
+                      margin-top:0.25rem">追蹤解鎖價格</p>
+            <!-- 🛡️ 防線一：看的人是不是老闆本人？ (自己看自己不用鎖) -->
+        {% elif request.user == item.owner %}
+            <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+            <!-- 🛡️ 防線二：看的人有沒有在追蹤名單裡？ -->
+        {% elif item.owner.id in followed_user_ids %}
+            <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+            <!-- 💥 防線三：有登入，但就是沒追蹤：果斷上鎖！ -->
+        {% else %}
+            <p class="hot-creature-subtitle non-sale"
+               style="font-size: 1rem;
+                      margin-top:0.25rem">追蹤解鎖價格</p>
+        {% endif %}
+        <!-- 因：老闆根本沒開防護罩。果：直接顯示 -->
+    {% else %}
+        <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
     {% endif %}
+    <!-- 🚀 物理替換結束 -->
     <span class="hot-creature-city">{{ item.get_city_display }}</span>
 </a>

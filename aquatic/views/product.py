@@ -28,6 +28,7 @@ from aquatic.constants import (
 from aquatic.models import (  # 🚀 核心修正：手動補上副圖模型  # 記得引入模型
     AquaticLife,
     Post,
+    Profile,
     SpecTemplate,
 )
 from aquatic.models.shop_notice import ShopNotice
@@ -52,8 +53,21 @@ class ShopView(View):
     """賣場頁面展示小魚"""
 
     def get(self, request):
-        # 🚀 因：呼叫共用工具。果：拿到完美優化過的 QuerySet
+        # 1. 🚀 因：呼叫共用工具。果：拿到完美優化過的 QuerySet (包含所有的魚)
         context = get_active_product()
+
+        # 2. 🚀 新增防線：準備「我的追蹤名單」彈藥包
+        followed_user_ids = []
+        if request.user.is_authenticated:
+            # 去資料庫查出「我」有在哪些 Profile 的 followers 名單裡，並把他們的老闆 ID 抽出來
+            followed_user_ids = list(
+                Profile.objects.filter(followers=request.user).values_list(
+                    "user_id", flat=True
+                )
+            )
+
+        # 3. 🚀 物理接軌：把這包清單塞進 context 裡面，一起送給前端
+        context["followed_user_ids"] = followed_user_ids
 
         return render(request, "shop.html", context)
 

@@ -56,6 +56,9 @@ class Profile(BaseModel):
     # 🚀 新增：LINE 連結欄位
     contact_link = models.URLField(max_length=200, blank=True, verbose_name="聯絡連結")
 
+    # 🚀 新增：價格防護罩總開關 (預設 False：不隱藏，大家都能看)
+    hide_price = models.BooleanField(default=False, verbose_name="對未追蹤者隱藏價格")
+
     # 1. 紀錄誰追蹤了他 (關聯到 User 表)
     followers = models.ManyToManyField(
         User, related_name="following_profiles", blank=True, verbose_name="追蹤者名單"
