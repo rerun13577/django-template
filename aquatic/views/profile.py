@@ -9,6 +9,7 @@ from django.http import (
     HttpResponseForbidden,  # 🛡️ 引入禁止存取的物理訊號
 )
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse  # 記得在上方 import 這個
 from django.views import View
 
 from aquatic.constants import (
@@ -193,8 +194,17 @@ class EditProfileView(FisshPageBase):
 
 
 # 🚀 專職處理追蹤開關的 API (必須登入才能按)
-class ToggleFollowView(FisshPageBase, View):
+# 因為他會塞整個登入頁面回去 所以我不能讓他繼承基類
+class ToggleFollowView(View):
     def post(self, request, username, *args, **kwargs):
+
+        # 🚀 0. 物理防線第一關：未登入者強制整頁轉向
+        if not request.user.is_authenticated:
+            # 建立一個空的 HttpResponse
+            response = HttpResponse()
+            # 塞入 HTMX 專用的轉向標頭，告訴它「不要替換 HTML，直接幫我跳轉網頁」
+            response["HX-Redirect"] = reverse("account_login")
+            return response
 
         # 1. 抓出目標使用者與他的 profile
         target_user = get_object_or_404(User, username=username)

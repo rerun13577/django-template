@@ -45,15 +45,15 @@
       <ul>
         {% if user.is_authenticated %}
           <li class="navber-list">
-            <a href="{% url 'index' %}">
-              {% include 'icons/login.html' %}
-              <span class="nav-text">登入</span></a>
+            <a href="{% url 'account_logout' %}">
+              {% include 'icons/logout.html' %}
+              <span class="nav-text">登出</span></a>
           </li>
         {% else %}
           <li class="navber-list">
-            <a href="{% url 'shop' %}">
-              {% include 'icons/logout.html' %}
-              <span class="nav-text">登出</span></a>
+            <a href="{% url 'account_login' %}">
+              {% include 'icons/login.html' %}
+              <span class="nav-text">登入</span></a>
           </li>
         {% endif %}
       </ul>
