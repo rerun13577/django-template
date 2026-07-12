@@ -13,12 +13,17 @@
         <div class="grid">
             {% for item in items %}
                 <a class="product-creature" href="{% url 'product_detail' item.id %}">
+                    <div class="fissh-card-menu-wrap">
+                        {# ⚡ 物理轉換：把 target_user 從觀眾(user) 換成這隻魚的主人(item.author) #}
+                        {% include 'component/user-photo-outclass.html' with custom_class="fissh-card-avatar" target_user=item.owner %}
+                    </div>
                     {% if item.image %}
                         <img src="{{ item.image.url }}"
                              style="width: 100%;
                                     height: 200px;
                                     object-fit: cover;
-                                    display: block"
+                                    display: block;
+                                    margin-bottom: 0.5rem"
                              alt="{{ item.name }}">
                     {% elif item.video %}
                         <video src="{{ item.video.url }}#t=0.001"
@@ -28,7 +33,8 @@
                                style="width: 100%;
                                       height: 200px;
                                       object-fit: cover;
-                                      display: block">
+                                      display: block;
+                                      margin-bottom: 0.5rem">
                         </video>
                     {% else %}
                         <div style="width: 100%;

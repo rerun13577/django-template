@@ -8,7 +8,8 @@
 # constants.py
 
 AQUATIC_CATEGORIES = {
-    "FISH": "魚類",
+    "DOUYU": "鬥魚",
+    "FISH": "觀賞魚",
     "SHRIMP": "蝦類",
     "PLANT": "水草類",
     "SHELLFISH": "螺蚌類",

@@ -249,6 +249,7 @@
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
     z-index: 200;
+    margin-bottom: 0.5rem;
   }
 
   .mobile-header.is-hidden {
