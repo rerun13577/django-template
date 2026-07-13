@@ -243,7 +243,7 @@
   flex-direction: row;
   flex-wrap: nowrap; // 絕對不換行，讓它能橫向捲動
   border: 1px solid;
-  gap: 2rem; // 卡片之間的間距
+  gap: 1rem; // 卡片之間的間距
   padding: 1rem 0 1rem 1rem; // 留空間給卡片陰影，才不會被切掉
 
   /* 🚀 物理死鎖解除一：把 flex: 0 0 350px 改成 width: 100%，讓軌道撐滿畫面 */
