@@ -3,6 +3,8 @@ import posixpath
 from django.contrib.auth.models import User
 from django.db import models
 
+from aquatic.constants import PRICE_VISIBILITY_CHOICES
+
 from ..utils import handle_model_image_upload, purge_cloudflare_cache
 from .base import BaseModel
 
@@ -57,7 +59,12 @@ class Profile(BaseModel):
     contact_link = models.URLField(max_length=200, blank=True, verbose_name="聯絡連結")
 
     # 🚀 新增：價格防護罩總開關 (預設 False：不隱藏，大家都能看)
-    hide_price = models.BooleanField(default=False, verbose_name="對未追蹤者隱藏價格")
+    price_visibility = models.CharField(
+        max_length=20,
+        choices=PRICE_VISIBILITY_CHOICES,
+        default="PUBLIC",
+        verbose_name="價格顯示方式",
+    )
 
     # 1. 紀錄誰追蹤了他 (關聯到 User 表)
     followers = models.ManyToManyField(

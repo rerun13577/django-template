@@ -20,7 +20,7 @@
           </h1>
         </div>
         {% if user.is_authenticated %}
-          <a href="{% url 'blog' %}" class="hero-btn">看看部落格</a>
+          <a href="{% url 'shop' %}" class="hero-btn">看看賣場</a>
         {% else %}
           <a href="{% url 'account_login' %}" class="hero-btn">點我登入</a>
         {% endif %}

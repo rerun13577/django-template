@@ -58,16 +58,18 @@ class FisshAPIBase(View):
 
 # 這是抓多種小魚的瀏覽資訊(所有人的小魚 包含自己)
 def get_active_product():
-    """因為我使用者是外鍵 所以他不會主動去查詢我需要叫他順便查詢"""
-    # select_related("owner")他可以順便抓其他東西
-    # 這裡的意思就是順便抓使用者的名子
+    """取得所有有效商品，並一起取得發布者和 Profile。"""
 
     products = (
-        AquaticLife.objects.filter(is_active=True)
-        .select_related("owner")
+        AquaticLife.objects.filter(
+            is_active=True,
+            owner__isnull=False,
+            owner__profile__isnull=False,
+        )
+        .select_related("owner__profile")
         .order_by("-created_at")
     )
-    # 鍵值對必須裝在大擴號裡面
+
     return {
         "items": products,
     }

@@ -127,6 +127,18 @@
                            placeholder="請貼上你的 聯絡連結 (https://line.me/...)"
                            value="{{ profile.contact_link }}">
                 </div>
+                <div class="input-field-group">
+                    <label for="hide-price-select" class="field-label">商品價格顯示方式</label>
+                    <p class="field-hint">此設定會套用到你目前及未來上架的所有商品。</p>
+                    <div class="clean-select-wrapper">
+                        <select name="price_visibility"
+                                id="hide-price-select"
+                                class="clean-profile-select">
+                            <option value="0" {% if not profile.price_visibility %}selected{% endif %}>公開顯示價格</option>
+                            <option value="1" {% if profile.price_visibility %}selected{% endif %}>追蹤商家後顯示價格</option>
+                        </select>
+                    </div>
+                </div>
                 <button type="submit" class="save-profile-btn">送出</button>
             </form>
         </div>

@@ -10,11 +10,15 @@
 AQUATIC_CATEGORIES = {
     "DOUYU": "鬥魚",
     "FISH": "觀賞魚",
+    "GOLDFISH": "金魚",
+    "RATFISH": "鼠魚",
     "SHRIMP": "蝦類",
     "PLANT": "水草類",
     "SHELLFISH": "螺蚌類",
     "OTHER": "其他",
 }
+
+
 # 我這樣修改依然只需要改一個
 # 自動把上面的 Value 當 Key，Key 當 Value
 REVERSE_AQUATIC_CATEGORIES = {v: k for k, v in AQUATIC_CATEGORIES.items()}
@@ -437,3 +441,10 @@ TAIWAN_REGIONS = {
 TAIWAN_CITIES = list(TAIWAN_REGIONS.keys())
 
 CITY_CHOICES = [("NONE", "無資訊")] + [(city, city) for city in TAIWAN_REGIONS.keys()]
+
+
+PRICE_VISIBILITY_CHOICES = [
+    ("PUBLIC", "公開顯示"),
+    ("FOLLOWERS", "追蹤後顯示"),
+    ("HIDDEN", "隱藏價格"),
+]
