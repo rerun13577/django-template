@@ -86,14 +86,12 @@
                         {% else %}
                             <!-- 狀態 B 因：看別人。果：進一步檢查追蹤狀態 -->
                             {% if is_following %}
-                                <!-- 狀態：已追蹤 -->
                                 <button type="button"
                                         class="action-btn followed-btn"
                                         hx-post="{% url 'toggle_follow' target_user.username %}"
                                         hx-target="this"
                                         hx-swap="outerHTML">已追蹤</button>
                             {% else %}
-                                <!-- 狀態：未追蹤 -->
                                 <button type="button"
                                         class="action-btn follow-btn"
                                         hx-post="{% url 'toggle_follow' target_user.username %}"
@@ -122,7 +120,13 @@
             </nav>
             <div class="tabs-window">
                 <div class="tabs-slider" id="tabs-slider">
-                    <section class="tab-content" id="content-products">
+                    <section class="tab-content"
+                             id="content-products"
+                             hx-get="{% url 'user_profile' target_user.username %}"
+                             hx-trigger="refreshProducts from:body"
+                             hx-target="this"
+                             hx-select="#content-products"
+                             hx-swap="outerHTML">
                         <div class="grid">
                             {% for item in items %}
                                 {% include "component/creature-card.html" with item=item %}

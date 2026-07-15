@@ -31,23 +31,25 @@
                     color: var(--text-muted)">尚無影片</div>
     {% endif %}
     <h3 class="hot-creature-title">{{ item.name }}</h3>
-    {% if item.owner.profile.price_visibility == "PUBLIC" %}
+    {# 商家本人永遠可以看到自己的商品價格 #}
+    {% if request.user.is_authenticated and request.user == item.owner %}
         <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+        {# 公開顯示價格 #}
+    {% elif item.owner.profile.price_visibility == "PUBLIC" %}
+        <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
+        {# 追蹤者可見 #}
     {% elif item.owner.profile.price_visibility == "FOLLOWERS" %}
-        {% if request.user.is_authenticated and request.user == item.owner %}
-            <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
-        {% elif request.user.is_authenticated and item.owner_id in followed_user_ids %}
+        {% if request.user.is_authenticated and item.owner_id in followed_user_ids %}
             <p class="hot-creature-subtitle">NT$ {{ item.price }}</p>
         {% else %}
-            <p class="hot-creature-subtitle non-sale"
-               style="font-size: 1rem;
-                      margin-top: 0.25rem">追蹤解鎖價格</p>
+            <p class="hot-creature-subtitle non-sale">追蹤解鎖價格</p>
         {% endif %}
+        {# 商家完全隱藏價格 #}
+    {% elif item.owner.profile.price_visibility == "HIDDEN" %}
+        <p class="hot-creature-subtitle non-sale">價格詢問官方</p>
+        {# 資料異常時採取保守處理 #}
     {% else %}
-        {# 異常值時保守處理，不公開價格 #}
-        <p class="hot-creature-subtitle non-sale"
-           style="font-size: 1rem;
-                  margin-top: 0.25rem">追蹤解鎖價格</p>
+        <p class="hot-creature-subtitle non-sale">價格詢問官方</p>
     {% endif %}
     <span class="hot-creature-city">{{ item.get_city_display }}</span>
 </a>

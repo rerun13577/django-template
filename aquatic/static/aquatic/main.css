@@ -109,7 +109,7 @@ body {
   background-color: var(--bg-light);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 500000;
 }
 
 .header-l {
@@ -220,8 +220,10 @@ body {
     align-items: flex-start;
     overflow: hidden;
     transition: width 0.3s ease;
+    z-index: 500000;
   }
   .header:hover {
+    z-index: 1000000000000000000000000000000000000000;
     width: 200px;
   }
   /* 終極物理鎖定：絕對定位釘死 */
@@ -322,7 +324,8 @@ body {
     transition: transform 0.3s ease-in-out;
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
-    z-index: 200;
+    z-index: 500001;
+    margin-bottom: 0.5rem;
   }
   .mobile-header.is-hidden {
     transform: translateY(-100%);
@@ -605,7 +608,7 @@ body {
   flex-direction: row;
   flex-wrap: nowrap;
   border: 1px solid;
-  gap: 2rem;
+  gap: 1rem;
   padding: 1rem 0 1rem 1rem;
   /* 🚀 物理死鎖解除一：把 flex: 0 0 350px 改成 width: 100%，讓軌道撐滿畫面 */
   width: 100%;
@@ -6157,6 +6160,15 @@ a {
     box-shadow: var(--shadow-l);
     background: var(--secondary);
   }
+}
+
+.field-hint {
+  margin: 0rem 0 1.5rem;
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: 0.82rem;
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
 }
 
 @media (max-width: 746px) {

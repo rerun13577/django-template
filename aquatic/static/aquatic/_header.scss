@@ -13,7 +13,7 @@
   background-color: var(--bg-light);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 500000;
 }
 
 .header-l {
@@ -129,7 +129,10 @@
     overflow: hidden;
     transition: width 0.3s ease;
 
+    z-index: 500000;
+
     &:hover {
+      z-index: 999999999999999999999999999999999999999;
       width: 200px;
     }
   }
@@ -248,7 +251,7 @@
 
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
-    z-index: 200;
+    z-index: 500001;
     margin-bottom: 0.5rem;
   }
 

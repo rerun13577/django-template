@@ -403,7 +403,7 @@
 
 //----------------------------------------------------------------
 .field-hint {
-  margin: 0.35rem 0 0.75rem;
+  margin: 0rem 0 1.5rem;
   color: var(--text-muted);
   font-family: var(--ff-primary);
   font-size: 0.82rem;
@@ -411,72 +411,6 @@
   line-height: 1.5;
 }
 
-.clean-select-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-/* 自訂下拉箭頭 */
-.clean-select-wrapper::after {
-  content: "⌄";
-  position: absolute;
-  top: 50%;
-  right: 0.75rem;
-  color: var(--primary);
-  font-size: 1.25rem;
-  font-weight: var(--fw-bold);
-  pointer-events: none;
-  transform: translateY(-58%);
-}
-
-.clean-profile-select {
-  width: 100%;
-  min-height: 3.25rem;
-  padding: 0.75rem 3rem 0.75rem 0.75rem;
-
-  color: var(--text);
-  background-color: var(--bg);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  box-shadow: var(--shadow-s);
-
-  font-family: var(--ff-primary);
-  font-size: 1rem;
-  font-weight: var(--fw-bold);
-
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-
-  transition: var(--transition);
-}
-
-.clean-profile-select:hover {
-  background-color: var(--bg-light);
-  border-color: var(--border);
-  box-shadow: var(--shadow-m);
-}
-
-.clean-profile-select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow:
-    var(--shadow-m),
-    0 0 0 3px color-mix(in oklch, var(--primary) 20%, transparent);
-}
-
-.clean-profile-select option {
-  color: var(--text);
-  background-color: var(--bg);
-  font-weight: var(--fw-regular);
-}
-
-@media (max-width: 600px) {
-  .clean-profile-select {
-    min-height: 3rem;
-    font-size: 0.95rem;
-  }
-}
 //----------------------------------------------------------------
 
 @media (max-width: 746px) {

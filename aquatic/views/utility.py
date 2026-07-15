@@ -13,7 +13,14 @@ from aquatic.constants import (
     REVERSE_AQUATIC_CATEGORIES,
     TAIWAN_REGIONS,
 )
-from aquatic.models import AquaticImage, AquaticLife, Post, ShopNotice, SpecTemplate
+from aquatic.models import (
+    AquaticImage,
+    AquaticLife,
+    Post,
+    Profile,
+    ShopNotice,
+    SpecTemplate,
+)
 from aquatic.utils import compress_image
 
 
@@ -73,6 +80,20 @@ def get_active_product():
     return {
         "items": products,
     }
+
+
+def get_followed_user_ids(request):
+    """取得目前登入者已追蹤的所有商家 User ID。"""
+
+    if not request.user.is_authenticated:
+        return set()
+
+    return set(
+        Profile.objects.filter(followers=request.user).values_list(
+            "user_id",
+            flat=True,
+        )
+    )
 
 
 # 抓單一小魚的各種詳細資料

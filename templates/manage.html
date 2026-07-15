@@ -25,15 +25,15 @@
         {% include 'header.html' %}
         <div class="in-manage-temp">
             <nav class="profile-tabs">
-                <button class="tab-item active" onclick="switchTab(this, 'notices')">提醒範本</button>
-                <button class="tab-item" onclick="switchTab(this, 'specs')">規格範本</button>
+                <button class="tab-item active" onclick="switchTab(this, 'notices')">常用備註</button>
+                <button class="tab-item" onclick="switchTab(this, 'specs')">常用規格</button>
                 <button class="tab-item" onclick="switchTab(this, 'products')">新增生物</button>
             </nav>
             <div id="manage-content" class="manage-content">
                 <div id="tab-notices" class="tab-section">
                     <div class="split-tool">
                         <div class="split-left">
-                            <h2 class="tab-title">購物須知管理</h2>
+                            <h2 class="tab-title">商品備註管理</h2>
                         </div>
                         <div class="split-right">
                             <button class="add-template" onclick="toggleForm('add-notice-form')">{% include 'icons/add.html' %}</button>
@@ -44,7 +44,7 @@
                 <div id="tab-specs" class="tab-section" style="display: none;">
                     <div class="split-tool">
                         <div class="split-left">
-                            <h2 class="tab-title">你的規格範本</h2>
+                            <h2 class="tab-title">生物規格管理</h2>
                         </div>
                         <div class="split-right">
                             <button class="add-template" onclick="toggleForm('add-spec-form')">{% include 'icons/add.html' %}</button>

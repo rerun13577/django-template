@@ -28,7 +28,6 @@ from aquatic.constants import (
 from aquatic.models import (  # 🚀 核心修正：手動補上副圖模型  # 記得引入模型
     AquaticLife,
     Post,
-    Profile,
     SpecTemplate,
 )
 from aquatic.models.shop_notice import ShopNotice
@@ -40,6 +39,7 @@ from .utility import (
     FisshPageBase,
     get_active_product,
     get_bothtype_product,
+    get_followed_user_ids,
     get_product_detail,
     main_process_fish_data,
 )
@@ -55,19 +55,13 @@ class ShopView(View):
     def get(self, request):
         context = get_active_product()
 
-        followed_user_ids = set()
+        context["followed_user_ids"] = get_followed_user_ids(request)
 
-        if request.user.is_authenticated:
-            followed_user_ids = set(
-                Profile.objects.filter(followers=request.user).values_list(
-                    "user_id",
-                    flat=True,
-                )
-            )
-
-        context["followed_user_ids"] = followed_user_ids
-
-        return render(request, "shop.html", context)
+        return render(
+            request,
+            "shop.html",
+            context,
+        )
 
 
 # 因為我需要文章跟小魚
@@ -75,19 +69,23 @@ class IndexView(View):
     """首頁展示小魚與熱門文章"""
 
     def get(self, request):
-        # 1. 先接住工具打包好的小魚包裹
+        # 取得上架商品
         context = get_active_product()
 
-        # 2. 把裡面的 "items" 拿出來切片 (LIMIT 10)
+        # 首頁只顯示最新 10 隻
         context["items"] = context["items"][:10]
 
-        # 🚀 3. 新增：抓取前 10 篇文章塞進 context
-        # 因：這是 "熱門文章" (hot-article)
-        # 果：所以我用 order_by('-like_count') 按點讚數由高到低排，再切片 [:10] 拿前十名
-        # (如果你想拿最新文章，可以改成 order_by('-id') 或 '-created_at')
+        # 取得目前使用者追蹤的商家 ID
+        context["followed_user_ids"] = get_followed_user_ids(request)
+
+        # 取得熱門文章
         context["hot_posts"] = Post.objects.order_by("-like_count")[:10]
 
-        return render(request, "index.html", context)
+        return render(
+            request,
+            "index.html",
+            context,
+        )
 
 
 # 後面兩個變數是接受來自網址的多餘變數

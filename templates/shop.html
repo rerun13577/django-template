@@ -1,23 +1,22 @@
 {% load static %}
 {% load socialaccount %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FisshShop | 賣場</title>
-        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}" />
+        <link rel="stylesheet" href="{% static 'aquatic/main.css' %}">
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-03DPL1EXYM"></script>
         <script src="{% static 'aquatic/js/clarity.js' %}"></script>
     </head>
     <body>
-        {% include 'header.html' %}
+        {% include "header.html" %}
         <div class="grid">
             {% for item in items %}
                 <a class="product-creature" href="{% url 'product_detail' item.id %}">
                     <div class="fissh-card-menu-wrap">
-                        {# ⚡ 物理轉換：把 target_user 從觀眾(user) 換成這隻魚的主人(item.author) #}
-                        {% include 'component/user-photo-outclass.html' with custom_class="fissh-card-avatar" target_user=item.owner %}
+                        {% include "component/user-photo-outclass.html" with custom_class="fissh-card-avatar" target_user=item.owner %}
                     </div>
                     {% if item.image %}
                         <img src="{{ item.image.url }}"
@@ -48,23 +47,30 @@
                                     color: var(--text-muted)">尚無影片</div>
                     {% endif %}
                     <h3 class="product-creature-title">{{ item.name }}</h3>
-                    {% if item.price_status == "NOT_FOR_SALE" %}
-                        <p class="product-creature-subtitle non-sale">非賣品</p>
+                    {# 公開顯示價格 #}
+                    {# 商家本人永遠可以看到自己的商品價格 #}
+                    {% if request.user.is_authenticated and request.user == item.owner %}
+                        <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                        {# 公開顯示價格 #}
                     {% elif item.owner.profile.price_visibility == "PUBLIC" %}
                         <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-                    {% elif request.user.is_authenticated and request.user == item.owner %}
-                        {# 商家本人查看自己的商品 #}
-                        <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-                    {% elif request.user.is_authenticated and item.owner_id in followed_user_ids %}
-                        {# 已經追蹤商家 #}
-                        <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                        {# 只有追蹤者可以看到價格 #}
+                    {% elif item.owner.profile.price_visibility == "FOLLOWERS" %}
+                        {% if request.user.is_authenticated and item.owner_id in followed_user_ids %}
+                            <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
+                        {% else %}
+                            <p class="product-creature-subtitle non-sale">追蹤解鎖價格</p>
+                        {% endif %}
+                        {# 完全隱藏價格 #}
+                    {% elif item.owner.profile.price_visibility == "HIDDEN" %}
+                        <p class="product-creature-subtitle non-sale">價格詢問官方</p>
+                        {# 異常資料時保守處理 #}
                     {% else %}
-                        {# 未登入，或尚未追蹤 #}
-                        <p class="product-creature-subtitle non-sale">追蹤解鎖價格</p>
+                        <p class="product-creature-subtitle non-sale">價格詢問官方</p>
                     {% endif %}
                 </a>
             {% empty %}
-                <p class="empty-hint">可能出錯了！</p>
+                <p class="empty-hint">目前沒有上架中的商品。</p>
             {% endfor %}
         </div>
     </body>

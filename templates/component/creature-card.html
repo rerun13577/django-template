@@ -29,23 +29,12 @@
                     color: var(--text-muted)">尚無影片</div>
     {% endif %}
     <h3 class="product-creature-title">{{ item.name }}</h3>
-    {# 商家選擇公開價格 #}
-    {% if item.owner.profile.price_visibility == "PUBLIC" %}
+    {# ProfileView 已經根據本人、追蹤狀態與商家設定算好結果 #}
+    {% if not should_hide_price %}
         <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-        {# 商家選擇追蹤後顯示價格 #}
-    {% elif item.owner.profile.price_visibility == "FOLLOWERS" %}
-        {# 商家本人永遠可以查看自己的價格 #}
-        {% if request.user.is_authenticated and request.user == item.owner %}
-            <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-            {# 已登入且有追蹤商家 #}
-        {% elif request.user.is_authenticated and item.owner_id in followed_user_ids %}
-            <p class="product-creature-subtitle">NT$ {{ item.price }}</p>
-            {# 未登入或尚未追蹤 #}
-        {% else %}
-            <p class="product-creature-subtitle price-locked">追蹤解鎖價格</p>
-        {% endif %}
-        {# 異常資料時採取保守做法，不洩露價格 #}
+    {% elif price_visibility == "HIDDEN" %}
+        <p class="product-creature-subtitle non-sale">價格詢問官方</p>
     {% else %}
-        <p class="product-creature-subtitle price-locked">追蹤解鎖價格</p>
+        <p class="product-creature-subtitle non-sale">追蹤解鎖價格</p>
     {% endif %}
 </a>
