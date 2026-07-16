@@ -8,6 +8,7 @@
 # constants.py
 
 AQUATIC_CATEGORIES = {
+    "Guppies": "孔雀魚",
     "DOUYU": "鬥魚",
     "GOLDFISH": "金魚",
     "RATFISH": "鼠魚",
