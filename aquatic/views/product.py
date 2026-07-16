@@ -225,36 +225,100 @@ class AddProductView(FisshPageBase, View):
 
             card_html = render_to_string(
                 "component/new-creature-card.html",
-                {"item": new_fish},
+                {
+                    "item": new_fish,
+                    "is_inactive": False,
+                },
                 request=request,
             )
 
             success_html = f"""
-                <div class="alert alert-success">
+                <div class="alert">
                     商品上架成功
                 </div>
 
                 <script>
-                    (() => {{
-                        const activeGrid =
-                            document.getElementById("active-grid");
+                (() => {{
+                    const productContainer = document.querySelector(
+                        "#active-grid"
+                    );
 
-                        if (activeGrid) {{
-                            const emptyHint =
-                                activeGrid.querySelector(".empty-hint");
+                    if (productContainer) {{
+                        productContainer.insertAdjacentHTML(
+                            "afterbegin",
+                            `{card_html}`
+                        );
+                    }}
 
-                            if (emptyHint) {{
-                                emptyHint.remove();
+                    // 取得剛剛插入的新卡片
+                    const newCard = document.getElementById(
+                        "product-card-{new_fish.id}"
+                    );
+
+                    // 告訴 HTMX 掃描這張新卡片裡的 hx-get、hx-post 等屬性
+                    if (newCard && window.htmx) {{
+                        htmx.process(newCard);
+                    }}
+
+                    // 新增成功後清空整張表單
+                    const form = document.getElementById(
+                        "singleUploadForm"
+                    );
+
+                    if (form) {{
+                        form.reset();
+
+                        // 清除影片預覽
+                        const video = form.querySelector(
+                            ".preview-video"
+                        );
+
+                        if (video) {{
+                            video.pause();
+
+                            if (
+                                video.src &&
+                                video.src.startsWith("blob:")
+                            ) {{
+                                URL.revokeObjectURL(video.src);
                             }}
 
-                            activeGrid.insertAdjacentHTML(
-                                "afterbegin",
-                                `{card_html}`
-                            );
+                            video.removeAttribute("src");
+                            video.load();
+                            video.style.display = "none";
                         }}
-                    }})();
+
+                        // 顯示影片上傳提示
+                        const placeholder = form.querySelector(
+                            ".viewport-placeholder"
+                        );
+
+                        if (placeholder) {{
+                            placeholder.style.display = "flex";
+                        }}
+
+                        // 隱藏影片刪除按鈕
+                        const deleteButton = form.querySelector(
+                            ".delete-prod-pic-btn"
+                        );
+
+                        if (deleteButton) {{
+                            deleteButton.style.display = "none";
+                        }}
+
+                        // 重設封面檔名文字
+                        const coverFilename = form.querySelector(
+                            ".cover-filename"
+                        );
+
+                        if (coverFilename) {{
+                            coverFilename.textContent =
+                                "尚未選擇封面檔案";
+                        }}
+                    }}
+                }})();
                 </script>
-            """
+                """
 
             return HttpResponse(success_html)
 

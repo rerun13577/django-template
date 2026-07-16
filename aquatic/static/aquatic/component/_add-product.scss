@@ -366,8 +366,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   border: 1px solid var(--border-muted);
   background-color: var(--bg-light);
@@ -502,6 +502,7 @@
   /* 因果：初始狀態稍微下沉 20px，準備觸發進場動畫 */
   transform: translateY(20px);
   transition: transform 0.2s ease-in-out;
+  z-index: 999999999999999999999999999999999999999999999;
 }
 
 .fissh-modal-inbox {
