@@ -3579,19 +3579,13 @@ a {
     overflow: hidden;
     transition: var(--transition);
   }
-  .grid .product-creature video,
-  .grid .product-creature img {
+  .grid .product-creature .prod-source {
     width: 100%;
-    /* 🚀 1. 把高度交給比例計算，不要鎖死在 200px */
-    height: auto !important;
-    /* 🚀 2. 橫向比例建議：
-    - 1.618 / 1 (黃金比例，會非常扁)
-    - 3 / 2     (經典相機比例，很平衡)
-    - 4 / 3     (傳統螢幕比例，最推薦) */
-    aspect-ratio: 4/3;
+    height: 200px;
     -o-object-fit: cover;
        object-fit: cover;
     display: block;
+    margin-bottom: 0.5rem;
   }
 }
 @media screen and (max-width: 768px) and (hover: hover) {
