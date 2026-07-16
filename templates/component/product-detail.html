@@ -52,10 +52,12 @@
             <div class="product-title-price-box">
                 <h1 class="product-main-name">{{ product.name|default:"未命名水生物種" }}</h1>
                 <div class="price-row-wrap">
-                    {% if product.price_status == 'NOT_FOR_SALE' %}
-                        <span class="price-not-for-sale">非賣品</span>
+                    {% if not should_hide_price %}
+                        <span class="price-node">NT$ {{ product.price }}</span>
+                    {% elif price_visibility == "HIDDEN" %}
+                        <span class="price-node">價格詢問官方</span>
                     {% else %}
-                        <span class="price-node">NT${{ product.price }}</span>
+                        <span class="price-node">追蹤解鎖價格</span>
                     {% endif %}
                 </div>
             </div>

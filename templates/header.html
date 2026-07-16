@@ -125,85 +125,356 @@
     </ul>
   </nav>
   <script>
-  document.body.addEventListener("click", (event) => {
-    const hamburgerBtn = event.target.closest("#hamburger-btn");
-    const mobileMenu = document.getElementById("mobile-menu");
+(() => {
+  "use strict";
 
-    if (!mobileMenu) return;
+  // 防止 Header 被重複初始化
+  if (window.__fisshMobileHeaderReady) {
+    return;
+  }
 
-    // 點漢堡按鈕
-    if (hamburgerBtn) {
-      hamburgerBtn.classList.toggle("is-open");
-      mobileMenu.classList.toggle("is-open");
-      return;
-    }
-
-    // 點選單內部不關閉
-    if (event.target.closest("#mobile-menu")) {
-      return;
-    }
-
-    // 點外面關閉
-    if (mobileMenu.classList.contains("is-open")) {
-      const btn = document.getElementById("hamburger-btn");
-
-      mobileMenu.classList.remove("is-open");
-      btn?.classList.remove("is-open");
-    }
-  });
-
+  window.__fisshMobileHeaderReady = true;
 
   const smartHeader = document.querySelector(".mobile-header");
-  let lastScrollY = window.scrollY;
 
+  if (!smartHeader) {
+    return;
+  }
+
+  /*
+   * 頁面可捲動距離小於這個數字時，
+   * Header 固定顯示，避免短頁面卡在臨界狀態。
+   */
+  const MIN_SCROLLABLE_DISTANCE = 24;
+
+  /*
+   * 向下累積滑動多少 px 後隱藏 Header。
+   */
+  const HIDE_DISTANCE = 8;
+
+  /*
+   * 向上累積滑動多少 px 後顯示 Header。
+   */
+  const SHOW_DISTANCE = 6;
+
+  let lastScrollY = Math.max(0, window.scrollY);
+  let accumulatedDistance = 0;
+  let previousDirection = null;
+  let scrollFrameRequested = false;
+  let modalWasOpen = false;
+
+  /**
+   * 判斷編輯彈窗是否開啟。
+   */
+  function isEditModalOpen() {
+    const editModal = document.getElementById(
+      "edit-modal-container"
+    );
+
+    return Boolean(
+      editModal?.classList.contains("show") ||
+      document.body.classList.contains("modal-open")
+    );
+  }
+
+  /**
+   * 關閉手機漢堡選單。
+   */
+  function closeMobileMenu() {
+    const mobileMenu = document.getElementById(
+      "mobile-menu"
+    );
+
+    const hamburgerButton = document.getElementById(
+      "hamburger-btn"
+    );
+
+    mobileMenu?.classList.remove("is-open");
+    hamburgerButton?.classList.remove("is-open");
+  }
+
+  /**
+   * 重設 Header 的捲動判斷基準。
+   */
+  function resetHeaderScrollState(
+    scrollY = Math.max(0, window.scrollY)
+  ) {
+    lastScrollY = scrollY;
+    accumulatedDistance = 0;
+    previousDirection = null;
+  }
+
+  /**
+   * 取得目前頁面真正可捲動的距離。
+   */
+  function getMaximumScrollY() {
+    const documentHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight
+    );
+
+    return Math.max(
+      0,
+      documentHeight - window.innerHeight
+    );
+  }
+
+  /**
+   * 根據捲動方向控制 Header。
+   */
+  function updateMobileHeader() {
+    scrollFrameRequested = false;
+
+    const currentScrollY = Math.max(
+      0,
+      window.scrollY
+    );
+
+    const modalIsOpen = isEditModalOpen();
+
+    /*
+     * Modal 開啟時不處理 Header。
+     */
+    if (modalIsOpen) {
+      modalWasOpen = true;
+      resetHeaderScrollState(currentScrollY);
+      return;
+    }
+
+    /*
+     * Modal 剛關閉時，只同步目前位置，
+     * 避免回復捲動位置時被誤判成使用者向下滑。
+     */
+    if (modalWasOpen) {
+      modalWasOpen = false;
+      resetHeaderScrollState(currentScrollY);
+      return;
+    }
+
+    const maximumScrollY = getMaximumScrollY();
+
+    /*
+     * 頁面太短時固定顯示 Header。
+     */
+    if (maximumScrollY <= MIN_SCROLLABLE_DISTANCE) {
+      smartHeader.classList.remove("is-hidden");
+      resetHeaderScrollState(currentScrollY);
+      return;
+    }
+
+    /*
+     * 回到最上方時固定顯示 Header。
+     * 也處理 iPhone 橡皮筋回彈。
+     */
+    if (currentScrollY <= 2) {
+      smartHeader.classList.remove("is-hidden");
+      resetHeaderScrollState(currentScrollY);
+      return;
+    }
+
+    const scrollDelta =
+      currentScrollY - lastScrollY;
+
+    /*
+     * 過濾瀏覽器產生的極小位移。
+     */
+    if (Math.abs(scrollDelta) < 1) {
+      lastScrollY = currentScrollY;
+      return;
+    }
+
+    const currentDirection =
+      scrollDelta > 0 ? "down" : "up";
+
+    /*
+     * 捲動方向改變時，重新計算累積距離。
+     */
+    if (currentDirection !== previousDirection) {
+      previousDirection = currentDirection;
+      accumulatedDistance = 0;
+    }
+
+    accumulatedDistance += Math.abs(scrollDelta);
+
+    /*
+     * 向下滑：隱藏 Header。
+     */
+    if (
+      currentDirection === "down" &&
+      accumulatedDistance >= HIDE_DISTANCE
+    ) {
+      smartHeader.classList.add("is-hidden");
+      closeMobileMenu();
+
+      accumulatedDistance = 0;
+    }
+
+    /*
+     * 向上滑：顯示 Header。
+     */
+    if (
+      currentDirection === "up" &&
+      accumulatedDistance >= SHOW_DISTANCE
+    ) {
+      smartHeader.classList.remove("is-hidden");
+
+      accumulatedDistance = 0;
+    }
+
+    lastScrollY = currentScrollY;
+  }
+
+  /**
+   * 漢堡選單點擊事件。
+   */
+  document.body.addEventListener(
+    "click",
+    (event) => {
+      const clickedElement = event.target;
+
+      if (!(clickedElement instanceof Element)) {
+        return;
+      }
+
+      const hamburgerButton =
+        clickedElement.closest("#hamburger-btn");
+
+      const mobileMenu = document.getElementById(
+        "mobile-menu"
+      );
+
+      if (!mobileMenu) {
+        return;
+      }
+
+      /*
+       * 點擊漢堡按鈕：切換選單。
+       */
+      if (hamburgerButton) {
+        hamburgerButton.classList.toggle(
+          "is-open"
+        );
+
+        mobileMenu.classList.toggle("is-open");
+        return;
+      }
+
+      /*
+       * 點擊選單內部時不處理。
+       */
+      if (clickedElement.closest("#mobile-menu")) {
+        return;
+      }
+
+      /*
+       * 點擊選單外部時關閉。
+       */
+      closeMobileMenu();
+    }
+  );
+
+  /**
+   * 使用 requestAnimationFrame 處理捲動，
+   * 避免 scroll 事件過於密集。
+   */
   window.addEventListener(
     "scroll",
     () => {
-      if (!smartHeader) return;
+      if (scrollFrameRequested) {
+        return;
+      }
 
-      const editModal = document.getElementById(
-        "edit-modal-container"
+      scrollFrameRequested = true;
+
+      window.requestAnimationFrame(
+        updateMobileHeader
       );
-
-      // modal 開啟時不處理頁首滾動
-      if (editModal?.classList.contains("show")) {
-        return;
-      }
-
-      // 只能宣告一次
-      const currentScrollY = window.scrollY;
-
-      // 回到最頂部時強制顯示
-      if (currentScrollY <= 0) {
-        smartHeader.classList.remove("is-hidden");
-        lastScrollY = currentScrollY;
-        return;
-      }
-
-      if (currentScrollY > lastScrollY) {
-        // 往下滑
-        smartHeader.classList.add("is-hidden");
-
-        const mobileMenu =
-          document.getElementById("mobile-menu");
-
-        const hamburgerBtn =
-          document.getElementById("hamburger-btn");
-
-        if (mobileMenu?.classList.contains("is-open")) {
-          mobileMenu.classList.remove("is-open");
-          hamburgerBtn?.classList.remove("is-open");
-        }
-      } else if (currentScrollY < lastScrollY) {
-        // 往上滑
-        smartHeader.classList.remove("is-hidden");
-      }
-
-      lastScrollY = currentScrollY;
     },
     {
       passive: true,
     }
   );
+
+  /**
+   * Modal 關閉、body class 改變時，
+   * 重新同步目前捲動位置。
+   */
+  const bodyClassObserver = new MutationObserver(
+    () => {
+      const modalIsOpen = isEditModalOpen();
+
+      if (modalIsOpen) {
+        modalWasOpen = true;
+        resetHeaderScrollState();
+        return;
+      }
+
+      if (modalWasOpen) {
+        modalWasOpen = false;
+
+        window.requestAnimationFrame(() => {
+          resetHeaderScrollState();
+        });
+      }
+    }
+  );
+
+  bodyClassObserver.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+
+  /**
+   * manage.js 恢復原本頁面位置時使用。
+   * manage.js 沒有觸發此事件也不會影響運作。
+   */
+  window.addEventListener(
+    "fissh:scroll-restored",
+    (event) => {
+      const restoredScrollY =
+        event.detail?.scrollY ??
+        Math.max(0, window.scrollY);
+
+      resetHeaderScrollState(restoredScrollY);
+    }
+  );
+
+  /**
+   * 視窗尺寸改變時重新判斷頁面長度。
+   */
+  window.addEventListener("resize", () => {
+    resetHeaderScrollState();
+
+    if (
+      getMaximumScrollY() <=
+      MIN_SCROLLABLE_DISTANCE
+    ) {
+      smartHeader.classList.remove("is-hidden");
+    }
+  });
+
+  /**
+   * 使用瀏覽器上一頁返回時重設狀態。
+   */
+  window.addEventListener("pageshow", () => {
+    resetHeaderScrollState();
+
+    if (window.scrollY <= 2) {
+      smartHeader.classList.remove("is-hidden");
+    }
+  });
+
+  /*
+   * 頁面首次載入時初始化。
+   */
+  resetHeaderScrollState();
+
+  if (
+    getMaximumScrollY() <=
+    MIN_SCROLLABLE_DISTANCE
+  ) {
+    smartHeader.classList.remove("is-hidden");
+  }
+})();
   </script>
 </header>

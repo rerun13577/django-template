@@ -102,19 +102,45 @@ class DashboardView(FisshPageBase):
 
 
 # 小魚的細節頁面 大家都可以看
+# 小魚的細節頁面，大家都可以進入
 class ProductDetailView(View):
     def get(self, request, product_id, *args, **kwargs):
         product = get_product_detail(product_id)
 
-        # 加個防呆：如果魚不見了，直接回傳 404
         if not product:
-            # 這裡特別用raise是因為要跳出頁面
             raise Http404("找不到這條魚")
+
+        # 目前使用者追蹤的商家 ID
+        followed_user_ids = get_followed_user_ids(request)
+
+        # 價格顯示設定放在商品主人的 Profile
+        price_visibility = product.owner.profile.price_visibility
+
+        # 老闆本人永遠可以看到自己的價格
+        is_owner = request.user.is_authenticated and request.user == product.owner
+
+        should_hide_price = False
+
+        if not is_owner:
+            # 完全隱藏：其他人只能看到「價格詢問官方」
+            if price_visibility == "HIDDEN":
+                should_hide_price = True
+
+            # 不是公開狀態，就視為「追蹤者可見」
+            elif price_visibility != "PUBLIC":
+                should_hide_price = product.owner_id not in followed_user_ids
 
         context = {
             "product": product,
+            "price_visibility": price_visibility,
+            "should_hide_price": should_hide_price,
         }
-        return render(request, "component/product-detail.html", context)
+
+        return render(
+            request,
+            "component/product-detail.html",
+            context,
+        )
 
 
 # 繼承的底層邏就是如果我不會就找我老爸 fisshpagebase

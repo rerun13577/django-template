@@ -13,6 +13,7 @@
 
   let modalPageScrollY = 0;
   let isPageScrollLocked = false;
+  let wasMobileHeaderHiddenBeforeModal = false;
 
   /**
    * 取得指定 Cookie。
@@ -156,7 +157,6 @@
     const restoreScrollY = modalPageScrollY;
 
     document.documentElement.classList.remove("modal-open");
-
     document.body.classList.remove("modal-open");
 
     document.body.style.removeProperty("position");
@@ -168,15 +168,26 @@
 
     isPageScrollLocked = false;
 
-    if (restorePosition) {
-      window.requestAnimationFrame(() => {
-        window.scrollTo({
-          top: restoreScrollY,
-          left: 0,
-          behavior: "auto",
-        });
-      });
+    if (!restorePosition) {
+      return;
     }
+
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: restoreScrollY,
+        left: 0,
+        behavior: "auto",
+      });
+
+      // 通知 Header：目前捲動位置已經被程式恢復
+      window.dispatchEvent(
+        new CustomEvent("fissh:scroll-restored", {
+          detail: {
+            scrollY: restoreScrollY,
+          },
+        }),
+      );
+    });
   }
 
   /**
@@ -191,19 +202,19 @@
       return;
     }
 
-    // 防止同一個 Modal 重複鎖定頁面
     if (modal.classList.contains("show")) {
       return;
     }
 
+    // 記住 Modal 開啟前頁首的狀態
+    wasMobileHeaderHiddenBeforeModal = Boolean(mobileHeader?.classList.contains("is-hidden"));
+
     lockPageScroll();
 
-    mobileHeader?.classList.remove("is-hidden");
-
+    // 只隱藏頁首，不改變原本的 is-hidden 狀態
     mobileHeader?.classList.add("modal-is-open");
 
     modal.setAttribute("aria-hidden", "false");
-
     modal.classList.add("show");
 
     const video = modal.querySelector(".preview-video");
@@ -229,7 +240,6 @@
 
     const mobileHeader = document.querySelector(".mobile-header");
 
-    // 即使找不到 Modal，也必須解除頁面鎖定
     if (!modal) {
       unlockPageScroll(false);
       return;
@@ -244,12 +254,14 @@
     });
 
     modal.classList.remove("show");
-
     modal.setAttribute("aria-hidden", "true");
 
-    mobileHeader?.classList.remove("modal-is-open");
+    if (mobileHeader) {
+      mobileHeader.classList.remove("modal-is-open");
 
-    mobileHeader?.classList.remove("is-hidden");
+      // 恢復開啟 Modal 前的頁首狀態
+      mobileHeader.classList.toggle("is-hidden", wasMobileHeaderHiddenBeforeModal);
+    }
 
     unlockPageScroll(true);
 
