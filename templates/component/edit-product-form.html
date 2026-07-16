@@ -5,7 +5,7 @@
                 align-items: center;
                 padding: 1rem;
                 border-bottom: 1px solid var(--border-muted)">
-        <h3 style="margin: 0; font-size: 1.1rem;">編輯小魚資料</h3>
+        <h3 style="margin: 0; font-size: 1.1rem;">編輯商品</h3>
         <button type="button"
                 onclick="closeEditModal()"
                 style="background: transparent;
@@ -13,7 +13,7 @@
                        cursor: pointer;
                        color: var(--text-muted)">{% include "icons/cross.html" %}</button>
     </div>
-    <div class="fissh-modal-inbox">
+    <div class="fissh-modal-inbox custom-scrollbar">
         <form hx-post="{% url 'edit-product' item.pk %}"
               hx-target="#product-card-{{ item.pk }}"
               hx-swap="outerHTML"
@@ -22,61 +22,51 @@
               style="display: block">
             {% csrf_token %}
             <div class="single-card-sizing">
+                <!-- 影片 -->
                 <div class="slot-field1 photo-upload-container">
                     <div class="main-cover-box single-photo-ratio"
                          data-active-slot="1"
-                         onclick="triggerActiveInput(event)">
+                         onclick=" if (!event.target.closest('.delete-prod-pic-btn')) { this.querySelector('input[name=video]').click(); } ">
                         <div class="custom-upload-box"
                              style="position: relative;
                                     width: 100%;
                                     height: 100%">
                             <div class="upload-placeholder viewport-placeholder"
-                                 {% if item.video %}style="display: none;"{% endif %}>
-                                {% include 'icons/upload.html' %}
+                                 {% if item.video %}style="display: none"{% endif %}>
+                                {% include "icons/upload.html" %}
                                 <span style="font-size: 0.85rem;
                                              color: var(--text-muted);
                                              margin-top: 0.5rem;
                                              display: block">點擊更換影片</span>
                             </div>
                             <input type="file"
-                                   id="fish-video-input"
                                    name="video"
-                                   accept="video/mp4,video/webm"
+                                   accept="video/mp4,video/webm,video/quicktime"
                                    onchange="handleVideoUpload(this)"
                                    style="display: none">
                             <video class="preview-video viewport-video"
                                    {% if item.video %} src="{{ item.video.url }}" style="display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2" {% else %} style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2" {% endif %}
+                                   preload="auto"
+                                   autoplay
                                    loop
+                                   muted
                                    playsinline
-                                   autoplay>
+                                   onloadedmetadata=" this.muted = true; this.play().catch(() => {}); ">
                             </video>
                             <button class="delete-prod-pic-btn"
                                     type="button"
                                     onclick="removeActivePhoto(event)"
-                                    {% if item.video %}style="display: block; z-index: 10;"{% else %}style="display: none; z-index: 10;"{% endif %}>
+                                    {% if item.video %} style="display: flex; z-index: 10" {% else %} style="display: none; z-index: 10" {% endif %}>
                                 {% include "icons/cross.html" %}
                             </button>
                         </div>
                     </div>
                 </div>
+                <!-- 封面圖 -->
                 <div class="slot-field1">
-                    <label class="cover-upload-box"
-                           style="display: flex;
-                                  align-items: center;
-                                  justify-content: space-between;
-                                  padding: 0.6rem;
-                                  border: 1px solid var(--border-muted);
-                                  border-radius: var(--radius-s);
-                                  cursor: pointer;
-                                  background-color: var(--bg-dark)">
-                        <span style="color: var(--text-muted); font-size:0.9rem">更換封面圖</span>
-                        <span id="cover-filename-display"
-                              style="font-size: 0.85rem;
-                                     color: var(--secondary);
-                                     max-width: 60%;
-                                     overflow: hidden;
-                                     text-overflow: ellipsis;
-                                     white-space: nowrap">
+                    <label class="cover-upload-box">
+                        <span class="cover-upload-label">更換封面圖</span>
+                        <span class="cover-filename">
                             {% if item.image %}
                                 已有封面，點擊可替換
                             {% else %}
@@ -86,47 +76,72 @@
                         <input type="file"
                                name="fish-cover"
                                accept="image/*"
-                               style="display: none"
-                               onchange="updateCoverFilename(this)">
+                               onchange="updateCoverFilename(this)"
+                               hidden>
                     </label>
                 </div>
+                <!-- 品種名稱 -->
                 <div class="slot-field1">
                     <input type="text"
                            name="fish_name"
+                           value="{{ item.name }}"
                            placeholder="品種名稱 (如：極火蝦)"
                            data-label="品種名稱"
-                           value="{{ item.name }}"
                            required>
                 </div>
-                <div class="slot-field1">
-                    <input type="number"
-                           name="fish_price"
-                           placeholder="單價"
-                           data-label="單價"
-                           value="{{ item.price }}"
-                           required>
-                </div>
+                <!-- 價格與種類 -->
                 <div class="expand-grid-layout">
-                    <div class="slot-field1 template-group">
-                        <select name="fish_spec" data-label="規格範本">
-                            <option value="">選擇規格範本...</option>
-                            {% for s in spec_templates %}
-                                <option value="{{ s.id }}" {% if item.spec.id == s.id %}selected{% endif %}>{{ s.name }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="slot-field1">
+                        <input type="number"
+                               name="fish_price"
+                               value="{{ item.price }}"
+                               min="0"
+                               placeholder="單價"
+                               data-label="單價"
+                               required>
                     </div>
-                    <div class="slot-field1 template-group">
-                        <select name="fish_notice" data-label="提醒範本">
-                            <option value="">選擇提醒範本...</option>
-                            {% for n in notices %}
-                                <option value="{{ n.id }}"
-                                        {% if item.notice_template_id == n.id %}selected{% endif %}>
-                                    {{ n.title }}
-                                </option>
+                    <div class="slot-field1">
+                        <select name="fish_category" data-label="產品種類" required>
+                            <option value="" disabled>選擇產品種類</option>
+                            {% for value, label in aquatic_categories.items %}
+                                <option value="{{ value }}"
+                                        {% if item.category == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
+                <!-- 溫度與體長 -->
+                <div class="expand-grid-layout">
+                    <div class="slot-field1 input-with-unit">
+                        <input type="text"
+                               name="fish_temp"
+                               value="{{ item.temp|default_if_none:'' }}"
+                               maxlength="50"
+                               placeholder="適合溫度，例如：24～28"
+                               data-label="適合溫度">
+                        <span class="input-unit">°C</span>
+                    </div>
+                    <div class="slot-field1 input-with-unit">
+                        <input type="text"
+                               name="fish_body_length"
+                               value="{{ item.body_length|default_if_none:'' }}"
+                               maxlength="50"
+                               placeholder="參考體長，例如：3～5"
+                               data-label="參考體長">
+                        <span class="input-unit">cm</span>
+                    </div>
+                </div>
+                <!-- 商品備註 -->
+                <div class="slot-field1 product-note-field">
+                    <label for="edit-fish-description-{{ item.pk }}">商品備註</label>
+                    <textarea id="edit-fish-description-{{ item.pk }}"
+                              class="input-content-area"
+                              name="fish_description"
+                              rows="5"
+                              maxlength="2000"
+                              placeholder="可填寫飼養資訊、交易方式、出貨提醒等">{{ item.description|default_if_none:"" }}</textarea>
+                </div>
+                <!-- 儲存按鈕 -->
                 <div class="batch-actions">
                     <div class="split-tool">
                         <div class="split-left"></div>
@@ -139,3 +154,57 @@
         </form>
     </div>
 </div>
+<script>
+    requestAnimationFrame(() => {
+        const modal = document.getElementById("edit-modal-container");
+
+        if (modal) {
+            modal.classList.add("show");
+        }
+
+        const video = modal?.querySelector(".preview-video");
+
+        if (video && video.src) {
+            video.muted = true;
+            video.play().catch(() => {});
+        }
+    });
+    function closeEditModal() {
+  const modal = document.getElementById("edit-modal-container");
+
+  if (!modal) {
+    return;
+  }
+
+  // 停止 modal 裡正在播放的影片
+  modal.querySelectorAll("video").forEach((video) => {
+    video.pause();
+
+    // 只有前端預覽產生的 blob 網址需要釋放
+    if (video.src.startsWith("blob:")) {
+      URL.revokeObjectURL(video.src);
+    }
+  });
+
+  // 播放淡出動畫
+  modal.classList.remove("show");
+
+  // 恢復背景頁面捲動
+  document.body.style.overflow = "";
+
+  // 等 transition 結束後清除舊表單
+  window.setTimeout(() => {
+    if (!modal.classList.contains("show")) {
+      modal.innerHTML = "";
+    }
+  }, 200);
+}
+
+// 讓 HTML onclick="closeEditModal()" 可以找到
+window.closeEditModal = closeEditModal;
+
+// 對應後端 response["HX-Trigger"] = "closeEditModal"
+document.body.addEventListener("closeEditModal", () => {
+  closeEditModal();
+});
+</script>

@@ -278,38 +278,6 @@ class AquaticLife(models.Model):
         return f"[{self.get_city_display()}] {self.name}"
 
 
-class AquaticImage(models.Model):
-    """
-    這就是副圖模型。老闆在手機上選多張照片時，
-    每一張都會變成這裡的一筆資料。
-    """
-
-    product = models.ForeignKey(
-        AquaticLife,
-        on_delete=models.CASCADE,
-        related_name="images",  # 之後可以用 product.images.all() 抓全部
-    )
-    image = models.ImageField(upload_to=get_aquatic_upload_path)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    # 🚀 技能要包在這裡面！
-    @property
-    def show_gallery_image(self):
-        if self.image:
-            return mark_safe(
-                f'<img src="{self.image.url}" width="100" style="border-radius: 5px;" />'
-            )
-        return "無圖片"
-
-    def save(self, *args, **kwargs):
-        # 附圖也要壓縮，省 R2 空間
-        handle_model_image_upload(self, "image")
-        super().save(*args, **kwargs)
-
-    # 🚀 補上這段，後台查修才不會崩潰
-    def __str__(self):
-        return f"📷 {self.product.name} 的副圖 ({self.id})"
-
 
 # JSONField 就是json 格式
 # ForeignKey (外鍵：文章作者) author = models.ForeignKey(User, on_delete=models.CASCADE)

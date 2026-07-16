@@ -1,126 +1,271 @@
 // ────────────────────────────────────────────────────────
 // 🚀 模組 A：分頁滑動動畫與地點初始化
 // ────────────────────────────────────────────────────────
-function syncTab(modal, index) {
-  if (!modal) return;
-  const slider = modal.querySelector("#tabs-slider");
-  const tabsWindow = modal.querySelector(".tabs-window");
-  const contents = modal.querySelectorAll(".tab-content");
+// ────────────────────────────────────────────────────────
+// 模組 A：動態分頁滑動動畫與地點初始化
+// ────────────────────────────────────────────────────────
 
-  const tabIndex = parseInt(index, 10) || 0;
-  const movePercentage = tabIndex * (100 / 3);
-  if (slider) slider.style.transform = `translateX(-${movePercentage}%)`;
+function initTabs(container) {
+  const elements = getTabElements(container);
 
-  const targetContent = contents[tabIndex];
-  if (targetContent && tabsWindow) {
-    tabsWindow.style.height = targetContent.offsetHeight + "px";
-  }
-}
-
-// 🎯 監聽 HTMX 載入事件：當 Modal 被動態塞入網頁時，立刻初始化功能
-document.addEventListener("htmx:afterSwap", (e) => {
-  const modal = document.getElementById("profile-edit-modal");
-  if (!modal) return;
-
-  // 1. 初始化分頁標籤
-  const tabs = modal.querySelectorAll(".tab-item");
-  tabs.forEach((tab, index) => tab.setAttribute("data-index", index));
-  setTimeout(() => syncTab(modal, 0), 60);
-
-  // 2. 🗺️ 接管全台面交地點連動電路
-  initLocationCircuit(modal);
-});
-
-// 🗺️ 地點連動核心電路（從 HTML 探針動態撈資料）
-function initLocationCircuit(modal) {
-  const citySelect = modal.querySelector("#city-select");
-  const zoneSelect = modal.querySelector("#zone-select");
-  const hiddenInput = modal.querySelector("#hidden-city-region");
-  const dataProbe = modal.querySelector("#js-taiwan-regions-data");
-
-  // 防禦中斷線路：少一個組件直接收工，確保不噴錯誤卡死
-  if (!citySelect || !zoneSelect || !hiddenInput || !dataProbe) return;
-
-  // 📥 核心：解碼 HTML 探針吐出來的 Django JSON 變數
-  let taiwanRegions = {};
-  try {
-    taiwanRegions = JSON.parse(dataProbe.dataset.json);
-  } catch (err) {
+  if (!elements) {
     return;
   }
 
-  // 解析目前資料庫儲存的「新北市中和區」
-  const savedCityRegion = hiddenInput.value || "";
-  let savedCity = "";
-  let savedZone = "";
+  const { tabsWindow, tabs, contents } = elements;
 
-  if (savedCityRegion) {
-    for (const city in taiwanRegions) {
-      if (savedCityRegion.startsWith(city)) {
-        savedCity = city;
-        savedZone = savedCityRegion.replace(city, "");
-        break;
-      }
-    }
-  }
+  // 自動建立索引，不用手動寫 data-index
+  tabs.forEach((tab, index) => {
+    tab.dataset.index = String(index);
+  });
 
-  // 更新行政區域選項
-  function updateZoneOptions(skipCombine = false) {
-    const selectedCity = citySelect.value;
-    zoneSelect.innerHTML = '<option value="">-- 區域 --</option>';
+  // 防止 HTMX 重複初始化監聽器
+  if (tabsWindow.dataset.tabsInitialized !== "true") {
+    tabsWindow.dataset.tabsInitialized = "true";
 
-    if (selectedCity && taiwanRegions[selectedCity]) {
-      taiwanRegions[selectedCity].forEach((zone) => {
-        const option = document.createElement("option");
-        option.value = zone;
-        option.textContent = zone;
-        if (zone === savedZone && selectedCity === savedCity) {
-          option.selected = true;
+    let scrollFrame = null;
+    let heightTimer = null;
+
+    tabsWindow.addEventListener(
+      "scroll",
+      () => {
+        // 更新上方 active
+        if (scrollFrame) {
+          cancelAnimationFrame(scrollFrame);
         }
-        zoneSelect.appendChild(option);
-      });
-    }
-    if (!skipCombine) combineFullAddress();
+
+        scrollFrame = requestAnimationFrame(() => {
+          const currentElements = getTabElements(container);
+
+          if (!currentElements) {
+            return;
+          }
+
+          const currentContents = currentElements.contents;
+
+          let nearestIndex = 0;
+          let nearestDistance = Infinity;
+
+          currentContents.forEach((content, index) => {
+            const distance = Math.abs(content.offsetLeft - tabsWindow.scrollLeft);
+
+            if (distance < nearestDistance) {
+              nearestDistance = distance;
+              nearestIndex = index;
+            }
+          });
+
+          currentElements.tabs.forEach((tab, index) => {
+            tab.classList.toggle("active", index === nearestIndex);
+          });
+
+          // 等滑動暫停後再更新高度
+          window.clearTimeout(heightTimer);
+
+          heightTimer = window.setTimeout(() => {
+            updateActiveTab(container, nearestIndex);
+          }, 80);
+        });
+      },
+      {
+        passive: true,
+      },
+    );
   }
 
-  function combineFullAddress() {
-    hiddenInput.value = citySelect.value + zoneSelect.value;
+  let activeIndex = tabs.findIndex((tab) => tab.classList.contains("active"));
+
+  if (activeIndex < 0) {
+    activeIndex = 0;
   }
 
-  // 物理綁定下拉選單事件
-  citySelect.addEventListener("change", () => updateZoneOptions(false));
-  zoneSelect.addEventListener("change", combineFullAddress);
+  // 初始位置不要播放動畫
+  syncTab(container, activeIndex, false);
 
-  // 導通電路：如果原本就有選過縣市，開彈窗自動點亮對應區域
-  if (savedCity) {
-    citySelect.value = savedCity;
-    updateZoneOptions(true);
+  // 內容因 HTMX 或圖片載入而改變時更新高度
+  if (container._profileTabsObserver) {
+    container._profileTabsObserver.disconnect();
+  }
+
+  if ("ResizeObserver" in window) {
+    const observer = new ResizeObserver(() => {
+      const currentTab = container.querySelector(".profile-tabs .tab-item.active");
+
+      const currentIndex = Number.parseInt(currentTab?.dataset.index ?? "0", 10) || 0;
+
+      updateActiveTab(container, currentIndex);
+    });
+
+    contents.forEach((content) => {
+      observer.observe(content);
+    });
+
+    container._profileTabsObserver = observer;
   }
 }
 
-// 全域監聽分頁標籤點擊
-document.addEventListener("click", (e) => {
-  const tab = e.target.closest(".profile-tabs .tab-item");
-  if (!tab) return;
+function getTabElements(container) {
+  if (!container) {
+    return null;
+  }
 
-  const container = tab.closest("#profile-info-section") || tab.closest("#profile-edit-modal");
-  if (!container) return;
+  const tabsWindow = container.querySelector(".tabs-window");
 
-  const tabs = container.querySelectorAll(".tab-item");
-  const index = tab.getAttribute("data-index");
+  const tabs = Array.from(container.querySelectorAll(".profile-tabs .tab-item"));
 
-  tabs.forEach((t) => t.classList.remove("active"));
-  tab.classList.add("active");
-  syncTab(container, index);
+  const contents = Array.from(container.querySelectorAll(".tabs-slider > .tab-content"));
+
+  if (!tabsWindow || tabs.length === 0 || contents.length === 0) {
+    return null;
+  }
+
+  return {
+    tabsWindow,
+    tabs,
+    contents,
+  };
+}
+
+function updateActiveTab(container, index) {
+  const elements = getTabElements(container);
+
+  if (!elements) {
+    return;
+  }
+
+  const { tabs, contents, tabsWindow } = elements;
+
+  const safeIndex = Math.max(0, Math.min(Number(index) || 0, contents.length - 1));
+
+  tabs.forEach((tab, tabIndex) => {
+    tab.classList.toggle("active", tabIndex === safeIndex);
+  });
+
+  const targetContent = contents[safeIndex];
+
+  if (!targetContent) {
+    return;
+  }
+
+  // 讓外框高度跟著目前頁面內容變動
+  requestAnimationFrame(() => {
+    tabsWindow.style.height = `${targetContent.scrollHeight}px`;
+  });
+}
+
+function syncTab(container, index, animate = true) {
+  const elements = getTabElements(container);
+
+  if (!elements) {
+    return;
+  }
+
+  const { tabsWindow, contents } = elements;
+
+  const safeIndex = Math.max(0, Math.min(Number.parseInt(index, 10) || 0, contents.length - 1));
+
+  const targetContent = contents[safeIndex];
+
+  if (!targetContent) {
+    return;
+  }
+
+  updateActiveTab(container, safeIndex);
+
+  // 點擊和手指滑動統一控制 scrollLeft
+  tabsWindow.scrollTo({
+    left: targetContent.offsetLeft,
+    behavior: animate ? "smooth" : "auto",
+  });
+}
+function updateTabsWindowHeight(container, index) {
+  const tabsWindow = container.querySelector(".tabs-window");
+  const contents = container.querySelectorAll(".tabs-slider > .tab-content");
+
+  const targetContent = contents[index];
+
+  if (!tabsWindow || !targetContent) return;
+
+  requestAnimationFrame(() => {
+    tabsWindow.style.height = `${targetContent.scrollHeight}px`;
+  });
+}
+
+// ────────────────────────────────────────────────────────
+// 初始化主頁分頁
+// ────────────────────────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+  const profileContainer = document.getElementById("profile-info-section");
+
+  initTabs(profileContainer);
 });
 
-// 視窗縮放防線
+// ────────────────────────────────────────────────────────
+// HTMX 動態更新後重新初始化
+// ────────────────────────────────────────────────────────
+
+document.addEventListener("htmx:afterSwap", () => {
+  const profileContainer = document.getElementById("profile-info-section");
+
+  initTabs(profileContainer);
+
+  const modal = document.getElementById("profile-edit-modal");
+
+  if (modal) {
+    initTabs(modal);
+    initLocationCircuit(modal);
+  }
+});
+
+// ────────────────────────────────────────────────────────
+// 分頁按鈕事件代理
+// ────────────────────────────────────────────────────────
+
+document.addEventListener("click", (event) => {
+  const tab = event.target.closest(".profile-tabs .tab-item");
+
+  if (!tab) {
+    return;
+  }
+
+  const container = tab.closest("#profile-info-section") || tab.closest("#profile-edit-modal");
+
+  if (!container) {
+    return;
+  }
+
+  const tabs = Array.from(container.querySelectorAll(".profile-tabs .tab-item"));
+
+  const index = tabs.indexOf(tab);
+
+  if (index === -1) {
+    return;
+  }
+
+  syncTab(container, index, true);
+});
+
+// ────────────────────────────────────────────────────────
+// 視窗縮放時重新對齊
+// ────────────────────────────────────────────────────────
+
+let profileTabResizeTimer = null;
+
 window.addEventListener("resize", () => {
-  const modal = document.getElementById("profile-edit-modal") || document.getElementById("profile-info-section");
-  if (!modal) return;
-  const activeTab = modal.querySelector(".tab-item.active");
-  const activeIndex = activeTab ? activeTab.getAttribute("data-index") : 0;
-  syncTab(modal, activeIndex);
+  window.clearTimeout(profileTabResizeTimer);
+
+  profileTabResizeTimer = window.setTimeout(() => {
+    const containers = document.querySelectorAll("#profile-info-section, #profile-edit-modal");
+
+    containers.forEach((container) => {
+      const activeTab = container.querySelector(".profile-tabs .tab-item.active");
+
+      const index = Number.parseInt(activeTab?.dataset.index ?? "0", 10) || 0;
+
+      syncTab(container, index, false);
+    });
+  }, 100);
 });
 
 // ────────────────────────────────────────────────────────

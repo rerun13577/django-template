@@ -1,40 +1,41 @@
 from django.contrib import admin
 
 from .models import (
-    AquaticImage,
     AquaticLife,
     Comment,
-    PetFish,
     Post,
     Profile,
     ShopNotice,
-    SpecTemplate,
 )
 
-# 🚀 1. 簡單登記 (留言)
+# 留言管理
 admin.site.register(Comment)
 
 
-# 🚀 2. 個人檔案 (加上搜尋與列表優化)
+# 個人檔案管理
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "nickname", "folder_uuid", "created_at"]
-    search_fields = ["user__username", "nickname", "folder_uuid"]
-    readonly_fields = ["folder_uuid"]  # UUID 通常不給手改
+    list_display = [
+        "user",
+        "nickname",
+        "folder_uuid",
+        "created_at",
+    ]
+
+    search_fields = [
+        "user__username",
+        "nickname",
+        "folder_uuid",
+    ]
+
+    readonly_fields = ["folder_uuid"]
 
 
-# 🚀 3. 「副圖」零件：內嵌在商品頁面上傳
-class AquaticImageInline(admin.TabularInline):
-    model = AquaticImage
-    extra = 1
-    readonly_fields = ["show_gallery_image"]
-    fields = ["image", "show_gallery_image"]
-
-
-# 🚀 4. 水族商品管理 (你原本的專業寫法)
+# 水族商品管理
 @admin.register(AquaticLife)
 class AquaticLifeAdmin(admin.ModelAdmin):
     show_full_result_count = False
+
     list_display = [
         "show_cover",
         "name",
@@ -42,43 +43,63 @@ class AquaticLifeAdmin(admin.ModelAdmin):
         "city",
         "price",
         "stock",
+        "is_active",
         "created_at",
     ]
-    list_display_links = ["show_cover", "name"]
-    list_filter = ["category", "city", "created_at"]
-    search_fields = ["name", "folder_uuid"]
-    inlines = [AquaticImageInline]
+
+    list_display_links = [
+        "show_cover",
+        "name",
+    ]
+
+    list_filter = [
+        "category",
+        "city",
+        "is_active",
+        "created_at",
+    ]
+
+    search_fields = [
+        "name",
+        "owner__username",
+        "folder_uuid",
+    ]
+
+    raw_id_fields = ["owner"]
 
 
-# 🚀 5. 「電子雞」寵物魚管理
-@admin.register(PetFish)
-class PetFishAdmin(admin.ModelAdmin):
-    list_display = ["name", "owner", "feeding_count", "is_hungry", "created_at"]
-    list_filter = ["created_at"]
-    search_fields = ["name", "owner__username"]
-    raw_id_fields = ["owner"]  # 避免使用者太多時下拉選單跑不動
-    # 🚀 在編輯頁面（你截圖這頁）顯示唯讀欄位
-    readonly_fields = ["is_hungry"]
-
-
-# 🚀 6. 「店長碎碎念」模板
+# 常用備註庫
 @admin.register(ShopNotice)
 class ShopNoticeAdmin(admin.ModelAdmin):
-    list_display = ["title", "user", "created_at"]
-    search_fields = ["title", "content"]
+    list_display = [
+        "title",
+        "user",
+        "created_at",
+    ]
+
+    search_fields = [
+        "title",
+        "content",
+        "user__username",
+    ]
+
     raw_id_fields = ["user"]
 
 
-# 🚀 7. 文章管理 (保留你的 select_related 優化)
+# 文章管理
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_select_related = ("author",)
-    raw_id_fields = ("likes", "author")
-    list_display = ("title", "author", "comment_count", "like_count", "created_at")
 
+    raw_id_fields = (
+        "likes",
+        "author",
+    )
 
-# --- 或者你想讓後台看起來更專業 (推薦) ---
-@admin.register(SpecTemplate)
-class SpecTemplateAdmin(admin.ModelAdmin):
-    list_display = ("name", "user")  # 在清單頁面顯示範本名稱與所屬老闆
-    search_fields = ("name",)  # 讓你可以搜尋範本名稱
+    list_display = (
+        "title",
+        "author",
+        "comment_count",
+        "like_count",
+        "created_at",
+    )

@@ -17,7 +17,15 @@ if os.getenv("ZEABUR") is None:
 # --- 1. 基礎與數據庫修正 ---
 pymysql.install_as_MySQLdb()
 pymysql.version_info = (2, 2, 8, "final", 0)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+if os.getenv("ZEABUR") is None:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(BASE_DIR / ".env", override=True)
+    except ImportError:
+        pass
 
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",

@@ -9,7 +9,6 @@
 
 AQUATIC_CATEGORIES = {
     "DOUYU": "鬥魚",
-    "FISH": "觀賞魚",
     "GOLDFISH": "金魚",
     "RATFISH": "鼠魚",
     "SHRIMP": "蝦類",
@@ -24,34 +23,6 @@ AQUATIC_CATEGORIES = {
 REVERSE_AQUATIC_CATEGORIES = {v: k for k, v in AQUATIC_CATEGORIES.items()}
 
 DEFAULT_CATEGORY = "SHRIMP"
-
-CORE_SPECS_CONFIG = [
-    {
-        "label": "生物種類",
-        "key": "category",
-        "type": "select",
-        # 物理魔法：利用 .values() 動態取出 ["魚類", "蝦類", "水草類", "螺蚌類", "其他"]
-        "options": list(AQUATIC_CATEGORIES.values()),
-    },
-    {"label": "適宜溫度", "key": "temp", "type": "range"},
-    {"label": "pH值", "key": "ph", "type": "range"},
-    {"label": "體長(cm)", "key": "adult_length", "type": "single"},
-    {"label": "建議水量(L)", "key": "min_tank_size", "type": "single"},
-]
-
-# ⚙️ 動態標籤翻譯機：把 key 變成 label
-# 程式通電瞬間自動產出：{'temp': '適宜溫度', 'ph': 'pH值', 'adult_length': '體長(cm)'...}
-CORE_SPECS_LABEL = {item["key"]: item["label"] for item in CORE_SPECS_CONFIG}
-
-
-# 重新挑選後的次要規格
-# 移除了「活動水層」
-# 保留「水流強度」（因為對蝦缸溶氧很重要）
-# 增加「光照需求」（因為你有在做造景）
-EXTRA_SPECS = ["GH硬度", "KH硬度", "性情", "食性", "比重", "水流強度", "光照需求"]
-
-
-FISH_SPECS_LABELS = [item["label"] for item in CORE_SPECS_CONFIG] + EXTRA_SPECS
 
 
 # coding: utf-8

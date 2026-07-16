@@ -2939,22 +2939,6 @@ a {
   overflow: hidden; /* 🚀 因：隱藏超出部分。果：當內容切換時，只有當前內容會顯示，其他內容被「藏」起來。 */
 }
 
-.tabs-slider {
-  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
-  flex-direction: row;
-  /* 🚀 關鍵：防止所有車廂被最長的那節撐開，讓它們保持原始高度 */
-  align-items: flex-start;
-  width: 300%; /* 🚀 因：有三個內容。果：每個內容的寬度是視窗的 100%，總寬度是 300%。 */
-  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
-}
-
-.tab-content {
-  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
-  flex-direction: row;
-  flex: 1;
-  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
-}
-
 .post-grid {
   width: 100%; /* 🚀 強制撐滿 41.5rem */
   display: flex;
@@ -3080,8 +3064,33 @@ a {
   transition: height 0.4s cubic-bezier(0.3, 0.8, 0.2, 1);
 }
 
+.tabs-window {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  transition: height 0.25s ease;
+}
+.tabs-window::-webkit-scrollbar {
+  display: none;
+}
+
 .tabs-slider {
-  transition: transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.1);
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  transform: none !important;
+  transition: none !important;
+}
+
+.tab-content {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .empty-hint {
@@ -3635,161 +3644,6 @@ a {
   margin: 0px;
 }
 
-.pet-creature {
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  border: 1px solid; /* 關鍵設定：最小高度 */
-  max-width: 272px; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
-  min-height: 325px;
-  scroll-snap-align: center;
-}
-.pet-creature img {
-  width: 100%;
-  height: 200px;
-  -o-object-fit: cover;
-     object-fit: cover;
-  margin-bottom: 0.5rem;
-}
-
-.pet-creature-title {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0rem 1rem 0.25rem 1rem; /* 上右下的間距，左邊沒有，讓它貼齊卡片邊緣 */
-  width: 100%;
-  font-size: 1.5rem;
-}
-
-.pet-creature-subtitle {
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: 1rem;
-  width: 100%;
-  font-size: 1.25rem;
-}
-
-.pet-creature {
-  background-color: var(--bg-dark);
-  border-radius: var(--radius-l);
-  box-shadow: var(--shadow-l);
-  border-color: var(--border-muted);
-  overflow: hidden;
-  transition: var(--transition);
-}
-.pet-creature:hover {
-  background-color: var(--bg-light);
-  border-color: var(--border);
-  transition: var(--transition);
-  box-shadow: var(--shadow-l);
-}
-.pet-creature:hover .pet-creature-subtitle {
-  color: var(--secondary);
-  transition: var(--transition);
-}
-.pet-creature:hover .pet-creature-city {
-  transition: var(--transition);
-  box-shadow: var(--shadow-l);
-  border-top: white;
-}
-
-.pet-creature-city {
-  /* 原本的 display: flex 保留，這樣你可以控制裡面的對齊 */
-  display: flex;
-  /* ★ 關鍵：加上這行！ */
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  width: -moz-fit-content;
-  width: fit-content;
-  align-items: center;
-  background-color: var(--info);
-  border-radius: 1rem;
-  padding: 0.25rem 0.85rem;
-  color: var(--text);
-  /* 確保文字垂直置中 (因為你有用 flex) */
-  align-items: center;
-}
-
-.hungry-pet {
-  color: var(--danger);
-}
-
-.pet-creature-subtitle {
-  font-weight: var(--fw-bold);
-  color: var(--primary);
-  transition: var(--transition);
-}
-
-@media screen and (max-width: 768px) {
-  .pet-creature {
-    width: 49%; /* 🚀 保險：設定最小寬度，防止手機版縮太小 */
-    min-height: 12.625rem;
-    background-color: var(--bg-dark);
-    border-radius: var(--radius-l);
-    box-shadow: var(--shadow-l);
-    border-color: var(--border-muted);
-    overflow: hidden;
-    transition: var(--transition);
-  }
-  .pet-creature img {
-    width: 100%;
-    height: 120px;
-    -o-object-fit: cover;
-       object-fit: cover;
-    margin-bottom: 0.5rem;
-  }
-}
-@media screen and (max-width: 768px) and (hover: hover) {
-  .pet-creature:hover {
-    background-color: var(--bg-light);
-    border-color: var(--border);
-    transition: var(--transition);
-    box-shadow: var(--shadow-l);
-  }
-  .pet-creature:hover .pet-creature-subtitle {
-    color: var(--secondary);
-    transition: var(--transition);
-  }
-  .pet-creature:hover .pet-creature-city {
-    transition: var(--transition);
-    box-shadow: var(--shadow-l);
-    border-top: white;
-  }
-}
-@media screen and (max-width: 768px) {
-  .pet-creature .pet-creature-title {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0rem 0rem 0rem 0.5rem;
-    width: 100%;
-    font-size: 1rem;
-  }
-  .pet-creature .pet-creature-subtitle {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 0 0 0.5rem;
-    width: 100%;
-    font-size: 1rem;
-  }
-  .pet-creature-city {
-    /* 原本的 display: flex 保留，這樣你可以控制裡面的對齊 */
-    display: flex;
-    /* ★ 關鍵：加上這行！ */
-    position: absolute;
-    right: 0.625rem;
-    bottom: 0.5rem;
-    width: -moz-fit-content;
-    width: fit-content;
-    font-size: 0.625rem;
-    align-items: center;
-    background-color: var(--info);
-    border-radius: 1rem;
-    padding: 0.125rem 0.375rem;
-    color: var(--text);
-    /* 確保文字垂直置中 (因為你有用 flex) */
-    align-items: center;
-  }
-}
 /* 外框：定義整行的對齊邏輯 */
 .split-tool {
   display: flex;
@@ -3832,222 +3686,13 @@ a {
   justify-content: center; /* 讓按鈕在各自的半區置中 */
 }
 
-.accordion-item {
-  width: 92.5%;
-  margin: 1rem auto 0.25rem auto;
-  display: block;
-  background: var(--bg-light);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-m);
-}
-
-.accordion-header {
-  padding: 1rem;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.temp-title {
-  font-size: 1.25rem; /* 稍微縮小一點點，手機版比較好看 */
-  font-weight: var(--fw-bold);
-  margin: 0; /* 🚀 關鍵：消除 h3 預設的邊距，避免歪掉 */
-}
-
-.temp-arrow {
-  display: flex;
-  align-items: center;
-  font-size: 1.25rem; /* 稍微縮小一點點，手機版比較好看 */
-  transition: var(--transition); /* 🚀 方便之後做箭頭旋轉動畫 */
-}
-
-/* 把 padding 從 body 拿掉，改到 inner 裡 */
-.accordion-body {
-  background-color: var(--bg-big-light);
-  border-radius: 0 0 var(--radius-m) var(--radius-m); /* 只有下方有圓角，這樣展開起來才好看 */
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
-  opacity: 0;
-}
-
-.accordion-inner {
-  width: 100%;
-  height: auto;
-  padding: 1rem 1.5rem 1.2rem 1.5rem; /* 🚀 在這裡定義展開後的內部間距 */
-}
-
-/* 啟動狀態：當父層有 .is-open 時 */
-.accordion-item.is-open .accordion-body {
-  display: block;
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 🚀 額外加成：箭頭轉向也要改名字 */
-.accordion-item.is-open .temp-arrow {
-  transform: rotate(90deg); /* 箭頭轉向 */
-}
-
-.temp-actions {
-  margin: 2rem 0.5rem 0rem 0.5rem;
-}
-
-.template-btn {
-  font-size: 1rem;
-  padding: 0.3rem 1rem;
-  border: var(--border-muted);
-  border-radius: 0.5rem;
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .template-btn:hover {
-    border: var(--border);
-  }
-}
-
-.batch-actions .template-btn {
-  margin: 0.5rem 1.25rem 1.25rem 0rem;
-  font-size: 1rem;
-  padding: 0.3rem 1rem;
-  border: var(--border-muted);
-  border-radius: 0.5rem;
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .batch-actions .template-btn:hover {
-    border: var(--border);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .batch-actions .template-btn {
-    margin: 0.5rem 0rem 0.75rem 0rem;
-    font-size: 1rem;
-    padding: 0.3rem 1rem;
-    border: var(--border-muted);
-    border-radius: 0.5rem;
-    transition: var(--transition);
-  }
-}
-@media screen and (max-width: 768px) and (hover: hover) {
-  .batch-actions .template-btn:hover {
-    border: var(--border);
-  }
-}
-.edit-template {
-  color: var(--text);
-  background-color: var(--info);
-}
-
-.delete-template {
-  color: var(--text);
-  background-color: var(--danger);
-}
-
-/* 標題輸入框：拿掉所有邊框，只留底線或全透明 */
-.input-title-field {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-muted);
-  color: var(--text);
-  font-size: 1.2rem;
-  padding: 0.5rem 0;
-  outline: none;
-  transition: var(--transition);
-}
-
-.input-title-field:focus {
-  border-bottom-color: var(--text);
-}
-
-/* 鎖定狀態 */
-.no-cursor {
-  cursor: default !important;
-}
-
-.is-visible {
-  max-height: none !important;
-  opacity: 1 !important;
-}
-
-.temp-content-text {
-  color: var(--text-muted);
-  display: block;
-  /* 🚀 關鍵 A：pre-line 會保留換行(Enter)，但會把多餘的空格縮成一個。 */
-  /* 這樣老闆用空格對齊的壞習慣就不會毀掉版面。 */
-  white-space: pre-line;
-  /* 🚀 關鍵 B：只在單字太長塞不下時才斷行，且盡量不拆散網址。 */
-  overflow-wrap: break-word;
-  /* 🚀 關鍵 C：嘉義老闆字太多，一定要給行高，不然會看到眼睛脫窗。 */
-  line-height: 1.6;
-}
-
-.input-content-area {
-  background: transparent; /* 既然在卡片裡，背景就全透明 */
-  border: none; /* 🚀 拿掉預設醜邊框，精品感來源 */
-  outline: none; /* 點擊時不要出現藍色外框 */
-  resize: none; /* 🚫 禁用右下角手動調整大小，避免破壞排版 */
-  transition: var(--transition);
-  color: var(--text); /* 使用你主色調的變數 */
-}
-.input-content-area::-moz-placeholder {
-  color: var(--text-muted);
-}
-.input-content-area::placeholder {
-  color: var(--text-muted);
-}
-
-.input-content-area {
-  width: 100%;
-  min-height: 120px;
-  padding: 0rem 0rem 1rem 0rem; /* 內距讓文字不會貼邊，增加可讀性 */
-  display: block; /* 確保它獨佔一行 */
-  font-size: 1.1rem; /* 內文稍微大一點才好讀 */
-  line-height: 1.6; /* 🚀 設定行高，讓文字不再擠在一起 */
-  font-family: inherit; /* 跟隨全站字體 */
-  field-sizing: content; /* 🚀 自動長高功能：文字打到哪，框框就長到哪 */
-  /* 🚀 2. 關鍵：禁止內部捲動（這是解決文字跑上去的唯一招） */
-  overflow: hidden !important; /* 🚀 最關鍵：禁止內部捲動。沒了捲軸，它為了顯示文字就必須變長 */
-  height: auto !important; /* 確保沒有任何東西鎖死它的高度 */
-}
-
-@media screen and (max-width: 768px) {
-  .temp-title {
-    font-size: 1.1rem; /* 手機版標題稍微縮小 */
-  }
-  .temp-content-text {
-    display: block; /* 手機版內文改成獨占一行，避免太擠 */
-    font-size: 0.875rem; /* 手機版內文稍微縮小 */
-    /* 🚀 方案 B：比較現代的寫法，優先在空格換行，真的沒空格才切斷單字 */
-    overflow-wrap: anywhere;
-  }
-  .template-btn {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.625rem;
-  }
-  .accordion-item.is-open .accordion-body {
-    opacity: 1;
-    padding-bottom: 0.25rem;
-  }
-  .temp-actions {
-    margin: 2rem 0.5rem 0rem 0.5rem;
-  }
-  .accordion-item {
-    width: 92%;
-    margin: 1rem 0 0.25rem 0;
-    display: block;
-    background: var(--bg-light);
-    border-radius: var(--radius-m);
-    box-shadow: var(--shadow-m);
-  }
-}
 /* 1. 外層容器：限制最大寬度，手機版留邊距 */
 .in-manage-temp {
   /* 🚀 核心修改：小螢幕、手機時，兩邊自動留空隙，主體佔滿螢幕寬度的 92% */
   width: 92%;
   /* 🚀 防爆邊界：在大螢幕上，寬度到 1000px 就鎖死，不會無限制變寬，版面最舒適 */
   max-width: 75rem;
+  padding: 1rem 5rem;
   margin: 0 auto; /* 依然保持水平置中 */
   font-family: sans-serif;
 }
@@ -4249,7 +3894,7 @@ a {
   transition: all 0.25s ease-out;
 }
 .mode-tab.active {
-  color: var(--primary); /* 選中後的字色 */
+  color: var(--secondary); /* 選中後的字色 */
 }
 
 @media (max-width: 768px) {
@@ -4264,6 +3909,7 @@ a {
     width: 98%;
     /* 🚀 防爆邊界：在大螢幕上，寬度到 1000px 就鎖死，不會無限制變寬，版面最舒適 */
     max-width: 75rem;
+    padding: 0.5rem 1rem;
     margin: 0 auto; /* 依然保持水平置中 */
     font-family: sans-serif;
   }
@@ -4274,259 +3920,12 @@ a {
     margin-right: 0rem;
   }
 }
-/* 規格內部的 Grid 佈局 */
-.spec-grid-container {
-  padding: 0rem 0rem 0rem 0rem; /* 上右下左 */
-}
-
-.spec-group {
-  margin-bottom: 20px;
-}
-
-.group-header {
-  font-size: 1rem;
-  color: var(--text); /* 建議用你的主色調 */
-  border-left: 3px solid var(--primary-color);
-  padding-left: 0px;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.spec-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 🚀 雙排佈局 */
-  gap: 12px 20px;
-  color: var(--text-muted); /* 建議用你的主色調 */
-}
-
-.spec-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  color: var(--text-muted); /* 建議用你的主色調 */
-}
-
-.spec-item label {
-  font-size: 1rem;
-  color: var(--text-muted);
-}
-
-.spec-input-field {
-  width: 100%;
-  background: var(--bg-dark);
-  color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  outline: none;
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .spec-input-field:hover {
-    background-color: var(--bg-light);
-    border-color: var(--border-muted);
-    cursor: pointer;
-  }
-}
-.spec-input-field:focus {
-  /* 🚀 關鍵修正：只動顏色，不要動到 background 的其他屬性 */
-  background-color: var(--bg-light);
-  border-color: var(--border);
-}
-.spec-input-field::-moz-placeholder {
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-.spec-input-field::placeholder {
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-
-.select-field {
-  /* 🚀 1. 殺掉原生箭頭 */
-  -moz-appearance: none;
-       appearance: none;
-  -webkit-appearance: none;
-  /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
-  /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
-  background-position: right 0.5rem center;
-  background-size: 1.1rem;
-  /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
-  padding-right: 0.875rem !important;
-}
-
-.range-inputs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.range-inputs span {
-  color: var(--text-muted);
-  font-weight: bold;
-  font-family: var(--ff-primary);
-}
-.range-inputs .spec-input-field {
-  flex: 1; /* 🚀 讓兩個框框平分寬度 */
-  text-align: center;
-  min-width: 0;
-}
-
-.spec-item.range-group {
-  grid-column: span 1;
-}
-
-/* 1. 刪除動畫：當 HTMX 正在移除元素時 */
-.accordion-item.htmx-swapping {
-  opacity: 0;
-  transform: translateX(30px) scale(0.95);
-  max-height: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  transition: all 0.4s var(--transition); /* 套用你的貝茲曲線 */
-  overflow: hidden;
-}
-
-/* 2. 新增動畫：當 HTMX 剛把新元素塞進去時 */
-.accordion-item.htmx-added {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.accordion-item {
-  /* 確保所有變動都有過度 */
-  transition: all 0.4s var(--transition), opacity 0.3s ease;
-}
-
-/* 專屬於預覽模式的網格樣式 */
-.spec-grid.preview-mode {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  padding: 1rem 0;
-}
-.spec-grid.preview-mode .spec-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  /* 移除原本 input 的外框，改用純文字排版 */
-}
-.spec-grid.preview-mode .spec-item .preview-label {
-  font-size: 1rem;
-  color: var(--text-muted); /* 讓標籤稍微淡一點 */
-}
-.spec-grid.preview-mode .spec-item .preview-value {
-  font-size: 1rem;
-  color: var(--text);
-  font-weight: 500;
-}
-.spec-grid.preview-mode .spec-item {
-  /* 針對「無」這個字的特殊樣式，讓它不那麼刺眼 */
-}
-.spec-grid.preview-mode .spec-item .empty-value {
-  color: var(--text-muted);
-  opacity: 0.5;
-  font-style: italic;
-}
-
-.spec-input-field:invalid {
-  color: var(--danger); /* 數值不合理時變紅色 */
-}
-
-/* 📱 手機版自動變單排 */
-@media (max-width: 600px) {
-  .spec-grid {
-    grid-template-columns: 1fr;
-  }
-}
 /* 批量新增容器 */
 /* 單個生物格子卡片 */
-.slot-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.2rem;
-  background: var(--bg);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-s);
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .slot-item:hover {
-    border-color: var(--border);
-    box-shadow: var(--shadow-m);
-  }
-}
-
 /* 標題樣式 */
-.slot-header {
-  margin: 0rem 0 0.5rem 0;
-  color: var(--text-muted);
-  font-weight: var(--fw-bold);
-  font-size: 1.1rem;
-}
-
-.slot-field input {
-  width: 100%;
-  padding: 0.6rem;
-  background: var(--bg-dark);
-  color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  font-family: var(--ff-primary);
-  transition: var(--transition);
-}
-.slot-field input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px oklch(from var(--primary) l c h/0.2);
-}
-.slot-field select {
-  width: 100%;
-  padding: 0.6rem;
-  background: var(--bg-dark);
-  color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  font-family: var(--ff-primary);
-  transition: var(--transition);
-  /* 🚀 1. 殺掉原生箭頭 */
-  -moz-appearance: none;
-       appearance: none;
-  -webkit-appearance: none;
-  /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
-  /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
-  background-position: right 0.5rem center;
-  background-size: 1.1rem;
-  /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
-  padding-right: 1rem !important;
-}
-.slot-field select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px oklch(from var(--primary) l c h/0.2);
-}
-.slot-field input[type=number] {
-  /* Chrome, Safari, Edge, Opera */
-}
-.slot-field input[type=number]::-webkit-outer-spin-button, .slot-field input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.slot-field input[type=number] {
-  /* Firefox */
-  -webkit-appearance: textfield;
-     -moz-appearance: textfield;
-          appearance: textfield;
+:root {
+  --product-control-height: 2.9rem;
+  --product-control-font-size: 0.9rem;
 }
 
 /* 照片上傳方框 */
@@ -4546,7 +3945,7 @@ a {
 }
 @media (hover: hover) {
   .custom-upload-box:hover {
-    border-color: var(--primary);
+    border: 2px dashed var(--secondary);
     background: var(--bg-light);
   }
 }
@@ -4575,185 +3974,6 @@ a {
   z-index: 5;
 }
 
-/* 帶有按鈕的欄位組合 (價格、範本) */
-.field-with-btn {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.field-with-btn input,
-.field-with-btn select {
-  flex: 1;
-}
-
-/* 同步/套用按鈕 */
-.apply-all-btn {
-  display: inline-flex; /* 🚀 因：建立彈性盒子。果：內部物件可自由對齊。 */
-  align-items: center; /* 🚀 因：垂直置中。果：解決 SVG 偏上的問題。 */
-  justify-content: center; /* 🚀 因：水平置中。 */
-  /* 🚀 關鍵：鎖定寬度 */
-  min-width: 4.5rem; /* 🚀 因：給按鈕一個保底寬度。果：內容變少時按鈕不會縮水。 */
-  height: 2.2rem; /* 🚀 同時建議鎖定高度，避免抖動 */
-  padding: 0.5rem 0.8rem;
-  background: var(--bg-light);
-  color: var(--primary);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  font-size: 0.8rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .apply-all-btn:hover {
-    color: var(--secondary);
-    background: var(--bg-big-light);
-  }
-}
-.apply-all-btn {
-  /* 確保按鈕內的 SVG 也要歸位 */
-}
-.apply-all-btn svg {
-  display: block; /* 消除 inline 元素的底部間隙 */
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-/* 移除按鈕 (叉叉) */
-.remove-slot-btn {
-  background: transparent;
-  color: var(--danger);
-  border-radius: var(--radius-s);
-  padding: 0.4rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-  /* 🚀 1. 把 border 拔掉，就不會有框了 */
-  border: none;
-  /* 🚀 2. 避免點擊時出現瀏覽器預設的藍色或白色外框 */
-  outline: none;
-}
-.remove-slot-btn svg {
-  width: 1.2rem;
-  height: 1.2rem;
-  stroke-width: 2.5px;
-}
-@media (hover: hover) {
-  .remove-slot-btn:hover {
-    border-color: var(--danger);
-  }
-}
-
-.add-slot-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  /* 🚀 關鍵：設定最小高度。這個數值要跟你的生物卡片差不多高。 */
-  /* 從你的截圖看，大約在 450px ~ 500px 左右 */
-  min-height: 480px;
-  background: transparent !important;
-  border: 2px dashed var(--border-muted) !important;
-  border-radius: var(--radius-m);
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: var(--transition);
-}
-.add-slot-card .plus-icon svg {
-  width: 3.5rem;
-  height: 3.5rem;
-  color: var(--border);
-}
-@media (hover: hover) {
-  .add-slot-card:hover {
-    border-color: var(--primary) !important;
-    background: oklch(from var(--primary) l c h/0.05) !important;
-  }
-  .add-slot-card:hover .plus-icon svg {
-    color: var(--primary);
-  }
-  .add-slot-card:hover span {
-    color: var(--primary);
-  }
-}
-
-.setup-banner {
-  gap: 1.2rem; /* 🚀 設定兩行之間的垂直間距 */
-  margin: 0.5rem auto 1.5rem auto;
-  padding: 1rem;
-  background: var(--bg);
-  border-radius: var(--radius-m);
-  border: 1px solid var(--border-muted);
-  box-sizing: border-box; /* 🚀 必加，防止 padding 撐破容器 */
-}
-
-.add-title {
-  color: var(--text-muted);
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-.setup-controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* 數字輸入框 */
-.batch-num-input {
-  width: 80px;
-  padding: 0.6rem;
-  background: var(--bg-dark);
-  color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  text-align: center;
-  font-family: var(--ff-primary);
-  /* 隱藏上下箭頭 */
-}
-.batch-num-input::-webkit-outer-spin-button, .batch-num-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.batch-num-input {
-  -webkit-appearance: textfield;
-     -moz-appearance: textfield;
-          appearance: textfield;
-}
-.batch-num-input:focus {
-  outline: none;
-  border-color: var(--secondary);
-}
-
-/* 確定生成按鈕 */
-.confirm-batch-btn {
-  padding: 0.4rem 1rem;
-  background: var(--primary); /* 主色調 */
-  color: var(--text); /* 深色背景上的亮色字 */
-  border: none;
-  border-radius: var(--radius-s);
-  font-weight: var(--fw-bold);
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-m);
-}
-@media (hover: hover) {
-  .confirm-batch-btn:hover {
-    background: var(--secondary);
-    box-shadow: var(--shadow-l);
-  }
-}
-.confirm-batch-btn:active {
-  box-shadow: var(--shadow-s);
-}
-
-#setupSection {
-  display: none; /* 🚀 預設不顯示，等點擊「批量」後再由 JS 改為 flex */
-}
-
 /* 🚀 單獨上架容器 (大球球卡片) */
 /* 🚀 讓單獨卡片大一點，但樣式跟批量一致 */
 .single-card-sizing {
@@ -4780,7 +4000,6 @@ a {
 /* 🚀 鎖定 272:325 比例，寬度對齊外框 */
 .single-photo-ratio {
   width: 100% !important;
-  aspect-ratio: 272/200;
   background: var(--bg-dark) !important;
 }
 .single-photo-ratio img.preview-img {
@@ -4791,151 +4010,151 @@ a {
 }
 
 /* 🚀 迷你開關 (你的藥丸原型) */
-.mini-toggle-wrapper {
-  margin: 0rem 0 0.5rem 0; /* 與標題之間的距離 */
+.slot-field1 {
   position: relative;
-  display: inline-flex;
-  background: var(--bg-dark);
-  padding: 2px;
-  border-radius: var(--radius-s); /* 統一用原本的圓角 */
-  border: 1px solid var(--border-muted);
-}
-
-.mini-tab-active {
-  position: absolute;
-  background: var(--bg-light);
-  border-radius: var(--radius-s);
-  transition: var(--transition);
-  z-index: 0;
-}
-
-.mini-tab {
-  position: relative;
-  z-index: 1;
-  padding: 4px 10px;
-  font-size: 0.75rem;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-.mini-tab.active {
-  color: var(--primary);
-}
-
-.slot-field1 input {
   width: 100%;
-  padding: 0.6rem;
-  background: var(--bg-dark);
+}
+.slot-field1 input,
+.slot-field1 select,
+.slot-field1 textarea {
   color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
   font-family: var(--ff-primary);
-  transition: var(--transition);
+  font-size: var(--product-control-font-size);
+  font-weight: var(--fw-regular);
+  box-sizing: border-box;
 }
-.slot-field1 input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px oklch(from var(--primary) l c h/0.2);
-}
+.slot-field1 input,
 .slot-field1 select {
   width: 100%;
-  padding: 0.6rem;
+  min-height: var(--product-control-height);
+  padding: 0.6rem 0.75rem;
   background: var(--bg-dark);
-  color: var(--text);
   border: 1px solid var(--border-muted);
   border-radius: var(--radius-s);
-  font-family: var(--ff-primary);
+  line-height: 1.2;
   transition: var(--transition);
-  /* 🚀 1. 殺掉原生箭頭 */
+}
+.slot-field1 input::-moz-placeholder, .slot-field1 select::-moz-placeholder {
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  font-weight: var(--fw-regular);
+  opacity: 1;
+}
+.slot-field1 input::placeholder,
+.slot-field1 select::placeholder {
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  font-weight: var(--fw-regular);
+  opacity: 1;
+}
+@media (hover: hover) {
+  .slot-field1 input:hover,
+  .slot-field1 select:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px oklch(from var(--secondary) l c h/0.12);
+  }
+}
+.slot-field1 input:focus,
+.slot-field1 select:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px oklch(from var(--secondary) l c h/0.12);
+}
+.slot-field1 select {
+  padding-right: 2.5rem;
   -moz-appearance: none;
        appearance: none;
   -webkit-appearance: none;
-  /* 🚀 2. 導入你的 SVG (已轉為 Data URI) */
-  /* 注意：我把 stroke 改成了 %23ffffff (白色)，並旋轉 90 度讓它朝下 */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  /* 🚀 3. 控制位置：距離右邊 1rem，垂直置中 */
-  background-position: right 0.5rem center;
+  background-position: right 0.75rem center;
   background-size: 1.1rem;
-  /* 🚀 4. 增加右邊 padding，防止文字蓋到箭頭 */
-  padding-right: 1rem !important;
-}
-.slot-field1 select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px oklch(from var(--primary) l c h/0.2);
 }
 .slot-field1 input[type=number] {
-  /* Chrome, Safari, Edge, Opera */
+  -webkit-appearance: textfield;
+          appearance: textfield;
+  -moz-appearance: textfield;
 }
 .slot-field1 input[type=number]::-webkit-outer-spin-button, .slot-field1 input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
   margin: 0;
+  -webkit-appearance: none;
 }
-.slot-field1 input[type=number] {
-  /* Firefox */
-  -webkit-appearance: textfield;
-     -moz-appearance: textfield;
-          appearance: textfield;
+.slot-field1.input-with-unit input {
+  padding-right: 3.5rem;
+}
+.slot-field1.input-with-unit .input-unit {
+  position: absolute;
+  top: 50%;
+  right: 0.9rem;
+  transform: translateY(-50%);
+  color: var(--text);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cover-upload-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: var(--product-control-height);
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-dark);
+  color: var(--text);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  line-height: 1.2;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.cover-upload-box input[type=file] {
+  display: none;
+}
+.cover-upload-box:focus-within {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px oklch(from var(--secondary) l c h/0.12);
+}
+@media (hover: hover) {
+  .cover-upload-box:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px oklch(from var(--secondary) l c h/0.12);
+  }
+}
+
+.cover-upload-label {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+}
+
+.cover-filename {
+  flex: 1;
+  min-width: 0;
+  color: var(--secondary);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .expand-grid-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
 }
 @media (max-width: 650px) {
   .expand-grid-layout {
     grid-template-columns: 1fr;
   }
-}
-
-.spec-grid1 {
-  display: grid;
-  grid-template-columns: 1fr; /* 🚀 核心：強行定義為一欄 */
-  gap: 1rem; /* 上下輸入框的間距 */
-  width: 100%;
-  color: var(--text-muted);
-}
-
-.spec-inner {
-  width: 100%;
-  height: auto;
-  padding: 1rem 0.75rem 0rem 0.75rem; /* 🚀 在這裡定義展開後的內部間距 */
-}
-
-.e-spec-input-field {
-  width: 100%;
-  background: var(--bg-dark);
-  color: var(--text);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--radius-s);
-  padding: 0.2rem 0.5rem;
-  font-size: 1rem;
-  outline: none;
-  transition: var(--transition);
-}
-@media (hover: hover) {
-  .e-spec-input-field:hover {
-    background-color: var(--bg-light);
-    border-color: var(--border-muted);
-    cursor: pointer;
-  }
-}
-.e-spec-input-field:focus {
-  /* 🚀 關鍵修正：只動顏色，不要動到 background 的其他屬性 */
-  background-color: var(--bg-light);
-  border-color: var(--border);
-}
-.e-spec-input-field::-moz-placeholder {
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-.e-spec-input-field::placeholder {
-  color: var(--text-muted);
-  opacity: 0.5;
 }
 
 .accordion-list {
@@ -4973,63 +4192,14 @@ a {
 
 @media (max-width: 667px) {
   .delete-prod-pic-btn {
-    /* ────────────────────────────────────────────────────────
-     🚀 核心因果修正：絕對定位鎖死在左上角
-     ──────────────────────────────────────────────────────── */
-    position: absolute; /* 啟動絕對定位（父層 .custom-upload-box 記得要有 position: relative） */
     top: 10px;
     left: 10px;
-    /* 拔掉沒用的 margin-left: auto */
-    cursor: pointer;
-    display: flex; /* 讓按鈕內部的 SVG 置中 */
-    align-items: center;
-    justify-content: center; /* 確保 SVG 水平也精準置中 */
-    background: transparent;
-    border: none;
-    z-index: 23; /* 物理防線：層級一定要高，才不會被上傳的圖片蓋過去 */
-    padding: 4px; /* 偷偷擴大一點點點擊範圍，比較好按 */
   }
   .delete-prod-pic-btn svg {
     width: 1.5rem;
     height: 1.5rem;
-    background: transparent;
-    color: var(--text-muted);
-    transition: var(--transition);
-  }
-  .delete-prod-pic-btn svg:hover {
-    color: var(--text); /* 滑鼠嚕過去時變亮，提示使用者這顆可以按 */
-    transform: scale(1.1); /* 微動效，增加精品感 */
   }
 }
-.b-delete-prod-pic-btn {
-  /* ────────────────────────────────────────────────────────
-     🚀 核心因果修正：絕對定位鎖死在左上角
-     ──────────────────────────────────────────────────────── */
-  position: absolute; /* 啟動絕對定位（父層 .custom-upload-box 記得要有 position: relative） */
-  top: 16px;
-  left: 16px;
-  /* 拔掉沒用的 margin-left: auto */
-  cursor: pointer;
-  display: flex; /* 讓按鈕內部的 SVG 置中 */
-  align-items: center;
-  justify-content: center; /* 確保 SVG 水平也精準置中 */
-  background: transparent;
-  border: none;
-  z-index: 4545; /* 物理防線：層級一定要高，才不會被上傳的圖片蓋過去 */
-  padding: 4px; /* 偷偷擴大一點點點擊範圍，比較好按 */
-}
-.b-delete-prod-pic-btn svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  background: transparent;
-  color: var(--text-muted);
-  transition: var(--transition);
-}
-.b-delete-prod-pic-btn svg:hover {
-  color: var(--text); /* 滑鼠嚕過去時變亮，提示使用者這顆可以按 */
-  transform: scale(1.1); /* 微動效，增加精品感 */
-}
-
 .photo-upload-container {
   display: flex;
   flex-direction: column;
@@ -5216,21 +4386,76 @@ a {
   overflow-y: auto;
 }
 
+.slot-field1.product-note-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.slot-field1.product-note-field label {
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+}
+.slot-field1.product-note-field textarea.input-content-area {
+  display: block;
+  width: 100%;
+  min-height: 7.5rem;
+  height: auto;
+  padding: 0.75rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-s);
+  outline: none;
+  line-height: 1.6;
+  resize: none;
+  overflow-y: hidden;
+  transition: var(--transition);
+  field-sizing: content;
+}
+.slot-field1.product-note-field textarea.input-content-area::-moz-placeholder {
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  font-weight: var(--fw-regular);
+  opacity: 1;
+}
+.slot-field1.product-note-field textarea.input-content-area::placeholder {
+  color: var(--text-muted);
+  font-family: var(--ff-primary);
+  font-size: var(--product-control-font-size);
+  font-weight: var(--fw-regular);
+  opacity: 1;
+}
+.slot-field1.product-note-field textarea.input-content-area:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px oklch(from var(--secondary) l c h/0.2);
+}
+
+.template-btn {
+  font-size: var(product-control-font-size);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0.5rem 0.5rem 0;
+  border: var(--shadow-s);
+  border-radius: var(--radius-s);
+  background-color: var(--secondary);
+  color: var(--text);
+  transition: var(--transition);
+}
+.template-btn:active {
+  background-color: var(--primary);
+}
+
 @media (max-width: 667px) {
+  :root {
+    --product-control-height: 2.5rem;
+    --product-control-font-size: 0.82rem;
+  }
   .fissh-modal-box {
-    background-color: var(--bg-dark);
     width: 95%;
-    max-width: 1000px;
-    border-radius: var(--radius-m);
-    border: 1px solid var(--border-muted);
-    box-shadow: var(--shadow-l);
-    transform: translateY(20px);
-    transition: transform 0.2s ease-in-out;
   }
   .fissh-modal-inbox {
     padding: 0.5rem;
     max-height: 90vh;
-    overflow-y: auto;
   }
   .fissh-card-menu-wrap {
     position: absolute;
@@ -5257,29 +4482,10 @@ a {
     height: 1.4rem;
   }
   .fissh-card-menu-pane {
-    position: absolute;
-    top: 0%;
-    right: 0;
     width: 400%;
-    background: var(--bg-light);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-muted);
-    border-radius: var(--radius-m);
-    box-shadow: var(--shadow-m);
-    /* 🔗 動態因果：預設隱形、往上偏移 10px、關閉點擊偵測 */
-    opacity: 0;
-    transform: translateY(-10px);
-    pointer-events: none;
-    transition: var(--transition);
   }
   .fissh-card-menu-row {
-    padding: 0.75rem 1rem;
-    color: var(--text-muted);
     font-size: 0.75rem;
-    font-family: var(--ff-primary);
-    font-weight: var(--fw-regular);
-    cursor: pointer;
-    transition: background 0.2s ease;
   }
 }
 /* 🔌 通電狀態：當外層開啟時，白盒同時往上彈回原位 */
@@ -6364,4 +5570,26 @@ a {
   100% {
     transform: rotate(360deg);
   }
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg-dark);
+  scrollbar-gutter: stable;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0.5rem;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+  border-radius: var(--radius-s);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border: 2px solid var(--bg-dark);
+  border-radius: var(--radius-s);
+  -webkit-transition: var(--transition);
+  transition: var(--transition);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }/*# sourceMappingURL=main.css.map */

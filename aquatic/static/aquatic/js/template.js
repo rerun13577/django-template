@@ -1,65 +1,187 @@
-// 加上 window. 強制掛在全域，並加上 log 測電
-window.openEditModal = function () {
-  console.log("⚡ 開窗電路接通！準備呼叫 CSS 顯示...");
-  const modal = document.getElementById("edit-modal-container");
-  if (modal) {
-    modal.classList.add("show");
-    document.body.style.overflow = "hidden"; // 鎖住背景滾動
-    console.log("✅ 成功加上 .show class！");
-  } else {
-    console.error("❌ 慘了，畫面上找不到 #edit-modal-container 空殼！");
-  }
-};
+const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
 
-// 負責接收 HTML 按鈕傳來的 4 個包裹
-window.openEditForm = function (id, title, content, btnElement) {
-  console.log(`⚡ 準備編輯卡片 ID: ${id}`);
+/**
+ * 取得影片上傳區內的元素。
+ */
+function getVideoElements(root) {
+  return {
+    input: root.querySelector("#fish-video-input"),
+    video: root.querySelector(".viewport-video"),
+    placeholder: root.querySelector(".viewport-placeholder"),
+    deleteButton: root.querySelector(".delete-prod-pic-btn"),
+  };
+}
 
-  // 1. 抓出這張卡片的最外層容器 (用來告訴 uiShowForm 要取代誰)
-  const itemCard = btnElement.closest(".accordion-item");
+/**
+ * 釋放瀏覽器為影片預覽建立的暫存 URL。
+ */
+function releaseVideoObjectUrl(video) {
+  const objectUrl = video?.dataset.objectUrl;
 
-  // 2. 抓出你準備好的編輯表單實體 (請確認你的表單 ID 叫什麼，這裡假設是 add-notice-form)
-  const formContainer = document.getElementById("add-notice-form");
-
-  if (!formContainer) {
-    console.error("❌ 找不到表單 #add-notice-form！");
-    return;
-  }
-
-  // 3. 物理填入舊資料
-  const idInput = formContainer.querySelector("#editTempId");
-  const titleInput = formContainer.querySelector("#newNoticeTitle");
-  const contentInput = formContainer.querySelector("#newNoticeContent");
-
-  if (idInput) idInput.value = id;
-  if (titleInput) titleInput.value = title;
-  if (contentInput) contentInput.value = content;
-
-  // 4. 呼叫你之前寫好的「表單替換與動畫」引擎
-  if (typeof window.uiShowForm === "function") {
-    window.uiShowForm(itemCard, formContainer);
-  } else {
-    console.error("❌ 找不到 uiShowForm 引擎！");
-  }
-};
-
-function closeEditModal() {
-  const modal = document.getElementById("edit-modal-container");
-  if (modal) {
-    modal.classList.remove("show");
-    document.body.style.overflow = ""; // 解除背景鎖定
-
-    // 物理超渡：等關窗動畫播完後，燒毀 HTML 渣滓
-    setTimeout(() => {
-      modal.innerHTML = "";
-    }, 200);
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl);
+    delete video.dataset.objectUrl;
   }
 }
 
-// 監聽後端傳來的 HX-Trigger 訊號
-document.body.addEventListener("closeEditModal", function () {
-  console.log("⚡ 接收到後端成功訊號，自動關閉彈窗！");
-  if (typeof closeEditModal === "function") {
-    closeEditModal();
+/**
+ * 點擊影片區時，觸發隱藏的 file input。
+ */
+function triggerActiveInput(event) {
+  if (event.target.closest(".delete-prod-pic-btn")) {
+    return;
   }
+
+  const input = event.currentTarget.querySelector("#fish-video-input");
+  input?.click();
+}
+
+/**
+ * 選擇影片後顯示預覽。
+ */
+function handleVideoUpload(input) {
+  const file = input.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (file.size > MAX_VIDEO_SIZE) {
+    alert("影片請限制在 20MB 以內。");
+    input.value = "";
+    return;
+  }
+
+  const uploadBox = input.closest(".custom-upload-box");
+
+  if (!uploadBox) {
+    return;
+  }
+
+  const { video, placeholder, deleteButton } = getVideoElements(uploadBox);
+
+  if (!video) {
+    return;
+  }
+
+  // 避免重複選擇影片時，舊的 Object URL 留在記憶體。
+  releaseVideoObjectUrl(video);
+
+  const objectUrl = URL.createObjectURL(file);
+
+  video.dataset.objectUrl = objectUrl;
+  video.src = objectUrl;
+  video.style.display = "block";
+
+  placeholder?.style.setProperty("display", "none", "important");
+  deleteButton?.style.setProperty("display", "flex", "important");
+
+  video.play().catch(() => {
+    // 瀏覽器禁止自動播放時不影響上傳。
+  });
+}
+
+/**
+ * 清除影片 input 與預覽。
+ */
+function resetVideoUpload(root) {
+  const { input, video, placeholder, deleteButton } = getVideoElements(root);
+
+  if (input) {
+    input.value = "";
+  }
+
+  if (video) {
+    video.pause();
+    releaseVideoObjectUrl(video);
+    video.removeAttribute("src");
+    video.load();
+    video.style.display = "none";
+  }
+
+  placeholder?.style.setProperty("display", "flex", "important");
+  deleteButton?.style.setProperty("display", "none", "important");
+}
+
+/**
+ * 點擊叉叉移除已選影片。
+ *
+ * 函數名稱暫時保留 removeActivePhoto，
+ * 避免你還要同步修改現有 HTML onclick。
+ */
+function removeActivePhoto(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const uploadBox = event.currentTarget.closest(".custom-upload-box");
+
+  if (uploadBox) {
+    resetVideoUpload(uploadBox);
+  }
+}
+
+/**
+ * 顯示目前選擇的封面檔名。
+ */
+function updateCoverFilename(input) {
+  const form = input.closest("form");
+  const display = form?.querySelector("#cover-filename-display");
+
+  if (!display) {
+    return;
+  }
+
+  const file = input.files?.[0];
+
+  if (file) {
+    display.textContent = file.name;
+    display.style.color = "var(--primary)";
+  } else {
+    display.textContent = "尚未選擇封面檔案";
+    display.style.color = "var(--secondary)";
+  }
+}
+
+/**
+ * 成功上架後，清空整個新增商品表單及媒體預覽。
+ */
+function resetSingleUploadForm(form) {
+  form.reset();
+
+  form.querySelectorAll("textarea.input-content-area").forEach((textarea) => {
+    textarea.style.height = "auto";
+  });
+
+  const coverDisplay = form.querySelector("#cover-filename-display");
+
+  if (coverDisplay) {
+    coverDisplay.textContent = "尚未選擇封面檔案";
+    coverDisplay.style.color = "var(--secondary)";
+  }
+
+  const uploadBox = form.querySelector(".custom-upload-box");
+
+  if (uploadBox) {
+    resetVideoUpload(uploadBox);
+  }
+}
+
+/**
+ * 只在 singleUploadForm 成功送出後重置。
+ * 不再影響其他 HTMX 請求。
+ */
+document.body.addEventListener("htmx:afterRequest", (event) => {
+  if (!event.detail.successful) {
+    return;
+  }
+
+  const requestElement = event.detail.elt;
+
+  const form = requestElement?.id === "singleUploadForm" ? requestElement : requestElement?.closest?.("#singleUploadForm");
+
+  if (!form) {
+    return;
+  }
+
+  resetSingleUploadForm(form);
 });

@@ -138,22 +138,6 @@
   overflow: hidden; /* 🚀 因：隱藏超出部分。果：當內容切換時，只有當前內容會顯示，其他內容被「藏」起來。 */
 }
 
-.tabs-slider {
-  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
-  flex-direction: row;
-  /* 🚀 關鍵：防止所有車廂被最長的那節撐開，讓它們保持原始高度 */
-  align-items: flex-start;
-  width: 300%; /* 🚀 因：有三個內容。果：每個內容的寬度是視窗的 100%，總寬度是 300%。 */
-  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
-}
-
-.tab-content {
-  display: flex; /* 🚀 因：橫向排列內容。果：三個內容會排成一行，寬度是三倍的視窗寬。 */
-  flex-direction: row;
-  flex: 1;
-  transition: var(--transition); /* 🚀 因：轉場效果。果：切換內容時會有平滑的動畫。 */
-}
-
 .post-grid {
   width: 100%; /* 🚀 強制撐滿 41.5rem */
   display: flex;
@@ -353,11 +337,40 @@
   transition: height 0.4s cubic-bezier(0.3, 0.8, 0.2, 1);
 }
 
+.tabs-window {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  transition: height 0.25s ease;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .tabs-slider {
-  transition: transform 0.5s cubic-bezier(0.3, 0.8, 0.2, 1.1);
+  display: flex;
+  align-items: flex-start;
+
+  width: 100%;
+
+  // 不再使用 transform 切換
+  transform: none !important;
+  transition: none !important;
 }
 
 .tab-content {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .empty-hint {

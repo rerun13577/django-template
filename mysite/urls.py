@@ -16,10 +16,6 @@ from aquatic.views.profile import (
     ToggleFollowView,
     UpdateProfileView,
 )
-from aquatic.views.template import (
-    NoticeAPIView,
-    SpecAPIView,
-)
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path  # 🚀 多引入 re_path
@@ -45,11 +41,6 @@ urlpatterns = [
         ToggleProductActiveView.as_view(),
         name="toggle_product",
     ),
-    path(
-        "api/manage-template/",
-        NoticeAPIView.as_view(),
-        name="api-notice",
-    ),
     # 上架小魚
     path("api/add-product/", AddProductView.as_view(), name="add-product"),
     path(
@@ -58,7 +49,6 @@ urlpatterns = [
         name="toggle_follow",
     ),
     # ---------------------------------------------
-    path("api/manage-spec/", SpecAPIView.as_view(), name="api-spec"),
     path(
         "product/<int:product_id>/",
         ProductDetailView.as_view(),
@@ -102,42 +92,6 @@ urlpatterns = [
     ),
     # 🧪 實驗室
     path("lab/", TemplateView.as_view(template_name="index.html")),
-    # 下面這些還沒重構完成--------------------------------------------------------------------------------
-    # 🎯 2. 變數路徑放下面：如果不是 edit (例如 delist, delete)，才會掉下來給這個類別處理
-    # path(
-    #     "product/<int:pk>/edit/",
-    #     views_old.edit_product_view,
-    #     name="edit-product",
-    # ),
-    # path(
-    #     "profile/<str:username>/edit-form/",
-    #     views_old.EditProfileFormView.as_view(),
-    #     name="edit_profile_form",
-    # ),
-    # path(
-    #     "profile/<str:username>/update/",
-    #     views_old.UpdateProfileView.as_view(),
-    #     name="update_profile",
-    # ),
-    # path(
-    #     "api/manage-template/<int:pk>/",
-    #     views_old.ManageTemplateView.as_view(),
-    #     name="manage-template-detail",
-    # ),
-    # path(
-    #     "api/manage-spec/",
-    #     views_old.ManageSpecAPIView.as_view(),
-    #     name="api_manage_spec",
-    # ),
-    # path(
-    #     "product/<int:product_id>/",
-    #     views_old.ProductDetailView.as_view(),
-    #     name="product_detail",
-    # ),
-    # path(
-    #     "profile/<str:username>/", views_old.ProfileView.as_view(), name="user_profile"
-    # ),
-    # path("profile/", views_old.ProfileView.as_view(), name="profile"),
 ]
 
 # 🚀 只有在 DEBUG 模式下才啟用 Toolbar

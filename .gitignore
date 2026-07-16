@@ -1,3 +1,14 @@
 .idea
 __pycache__
 .env
+
+.idea/
+__pycache__/
+*.py[cod]
+
+.env
+.env.*
+!.env.example
+
+*.sql
+backup/

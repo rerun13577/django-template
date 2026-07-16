@@ -75,21 +75,4 @@ document.addEventListener("focusout", function (e) {
   }
 });
 
-// 4. 編輯開窗邏輯
-window.openEditSpec = function (id, name, data, btn) {
-  const item = btn.closest(".accordion-item");
-  const form = document.getElementById("add-spec-form");
-  if (!form) return;
-
-  document.getElementById("edit-spec-id").value = id;
-  document.getElementById("new-spec-name").value = name;
-
-  form.querySelectorAll(".spec-input-field").forEach((el) => (el.value = ""));
-  for (const [key, value] of Object.entries(data)) {
-    const input = form.querySelector(`[name="${key}"]`);
-    if (input) input.value = value;
-  }
-  uiShowForm(item, form);
-};
-
 htmx.logAll();

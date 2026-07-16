@@ -115,8 +115,10 @@
                 </div>
             </section>
             <nav class="profile-tabs">
-                <button class="tab-item active" data-index="0">商品</button>
-                <button class="tab-item" data-index="1">貼文</button>
+                <button type="button"
+                        class="tab-item active"
+                        data-tab-target="content-products">商品</button>
+                <button type="button" class="tab-item" data-tab-target="content-posts">貼文</button>
             </nav>
             <div class="tabs-window">
                 <div class="tabs-slider" id="tabs-slider">
@@ -141,15 +143,6 @@
                                 {% include "component/article-display.html" with post=post is_liked=post.is_liked_by_viewer %}
                             {% empty %}
                                 <p class="empty-hint">目前還沒有發布貼文喔！</p>
-                            {% endfor %}
-                        </div>
-                    </section>
-                    <section class="tab-content" id="content-pets">
-                        <div class="grid">
-                            {% for pet in pets %}
-                                {% include "component/pet-card.html" with item=pet %}
-                            {% empty %}
-                                <p class="empty-hint">他/她可能只是喜歡看看小魚！</p>
                             {% endfor %}
                         </div>
                     </section>

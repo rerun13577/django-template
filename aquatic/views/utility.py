@@ -7,19 +7,14 @@ from django.http import (
 from django.views import View
 
 from aquatic.constants import (
-    CORE_SPECS_CONFIG,
-    EXTRA_SPECS,
-    FISH_SPECS_LABELS,
-    REVERSE_AQUATIC_CATEGORIES,
+    AQUATIC_CATEGORIES,
     TAIWAN_REGIONS,
 )
 from aquatic.models import (
-    AquaticImage,
     AquaticLife,
     Post,
     Profile,
     ShopNotice,
-    SpecTemplate,
 )
 from aquatic.utils import compress_image
 
@@ -122,10 +117,6 @@ def get_bothtype_product(user):
         "active_items": active_products,
         "inactive_items": inactive_products,
         "notices": ShopNotice.objects.filter(user=user).order_by("-created_at"),
-        "spec_templates": SpecTemplate.objects.filter(user=user).order_by("-id"),
-        "core_config": CORE_SPECS_CONFIG,
-        "extra_labels": EXTRA_SPECS,
-        "master_labels": FISH_SPECS_LABELS,
         "target_user": user,
     }
 
@@ -283,114 +274,31 @@ def split_taiwan_city_zone(city_region_str):
 
 
 # post_data是資料庫回傳的response
-def update_fish_product_data(fish, post_data, files_data):
-    """
-    物理因果：接收櫃台傳來的原始包裹，進行清洗、防呆、去重，最後鎖死進資料庫。
-    """
-    """1. 名子"""
-    fish.name = post_data.get("fish_name[]")
-
-    """2. 價格"""
-    try:
-        fish.price = int(post_data.get("fish_price[]", 0))
-    except (ValueError, TypeError):
-        # 這裡用 raise 觸發警報，讓外面的 View 去接住
-        raise ValueError("價格必須填寫整數純數字")
-
-    # 字典是單項的
-    # 因為我可能核心的資料庫會變所以我不可以寫死
-    # 但是因為我不可以用類似FOR I 然後裡面塞FISH.I
-    # 所以我要透過setattr 全名就是 Set Attribute 去尋找標籤 且輸入數值
-    # setattr(物件名稱,屬性名稱,要輸入屬性名稱的數值)
-
-    """3. 規格"""
-    # 🔄 啟動全自動對接迴圈：完全看著 CONFIG 陣列辦事！
-    for config in CORE_SPECS_CONFIG:
-        field_key = config["key"]  # 資料庫的欄位名 (例：'ph', 'temp', 'adult_length')
-        field_label = config[
-            "label"
-        ]  # 前端的表單中文 (例：'pH值', '適宜溫度', '體長(cm)')
-        field_type = config.get("type")
-
-        # 1. 生物種類（特例處理）：因為它需要過「中翻英」翻譯機
-        if field_key == "category":
-            raw_cat = post_data.get(field_label, "其他")
-            fish.category = REVERSE_AQUATIC_CATEGORIES.get(raw_cat, "OTHER")
-
-        # 2. 雙通道範圍型 (range)：自動掛載 _min 與 _max
-        elif field_type == "range":
-            # 去 POST 裡面抓 "pH值_min"
-            val_min = post_data.get(f"{field_label}_min")
-            val_max = post_data.get(f"{field_label}_max")
-
-            # 等同於 fish.ph_min = val_min
-            setattr(fish, f"{field_key}_min", val_min)
-            setattr(fish, f"{field_key}_max", val_max)
-
-        # 3. 單一數值型 (single)：直線對接
-        elif field_type == "single":
-            val = post_data.get(field_label)
-
-            # 物理通電：等同於 fish.adult_length = val
-            setattr(fish, field_key, val)
-
-    new_specs = {}
-    for label in EXTRA_SPECS:
-        val = post_data.get(label)
-        if val:
-            new_specs[label] = val
-    fish.specs_json = new_specs
-
-    """4. 提醒"""
-    template_notice_id = post_data.get("global_notice")
-    if template_notice_id:
-        fish.notice_template_id = template_notice_id
-        fish.description = ""
-    else:
-        fish.notice_template = None
-        fish.description = post_data.get("content", "")
-
-    """5. 圖片處理"""
-    if "fish_image[]" in files_data:
-        current_fish_images = files_data.getlist("fish_image[]")
-        seen_files = set()
-        unique_fish_images = []
-
-        for f in current_fish_images:
-            file_key = (f.name, f.size)
-            if file_key not in seen_files:
-                seen_files.add(file_key)
-                unique_fish_images.append(f)
-
-        if unique_fish_images:
-            fish.image = unique_fish_images[0]
-            AquaticImage.objects.filter(product=fish).delete()
-
-            if len(unique_fish_images) > 1:
-                for extra_img in unique_fish_images[1:]:
-                    AquaticImage.objects.create(product=fish, image=extra_img)
-
-    # 6. 敲下存檔大鐵鎚！
-    fish.save()
 
 
 # 處理名子 價格
 def extract_fish_name_price(post_data):
     """
-    物理因果：全面回歸單筆上傳，直接抓取唯一值。
-    徹底捨棄 [] 與陣列的複雜迴圈判斷。
+    從單筆商品表單取得名稱與價格。
     """
-    # 1. 直接抓唯一的名字 (加上 .strip() 順手物理消滅前後的空白符號)
+
     name = post_data.get("fish_name", "").strip()
 
-    # 2. 抓價格並執行防呆
+    if not name:
+        raise ValueError("商品名稱不可為空")
+
     price_str = post_data.get("fish_price", "").strip()
+
+    if not price_str:
+        raise ValueError("商品價格不可為空")
+
     try:
-        # 如果有填就轉整數，沒填就預設 0
-        price = int(price_str) if price_str else 0
+        price = int(price_str)
     except (ValueError, TypeError):
-        # 保持你原本的警報線路：如果填了 "三十" 或 "abc"，立刻中斷並拋給外層 View 接住
         raise ValueError("價格必須填寫整數純數字")
+
+    if price < 0:
+        raise ValueError("商品價格不可小於 0")
 
     return {
         "name": name,
@@ -398,93 +306,9 @@ def extract_fish_name_price(post_data):
     }
 
 
-# 處理圖片
-# fish_instance這隻小魚在哪裡
-# unique_images這檔案傳進來的
-def process_fish_video(the_fish, video_file):
-    """
-    物理因果：處理單一影片上傳，並架設後端絕對防線。
-    只要格式不對、太大，直接拋出 ValueError 讓外面的 View 攔截報錯。
-    """
-    if not video_file:
-        return
+# --------------------------------------------------------------
 
-    # 🛡️ 防線 1：檢查檔案大小 (物理極限：20MB)
-    MAX_SIZE = 20 * 1024 * 1024  # 20MB 轉 Bytes
-    if video_file.size > MAX_SIZE:
-        raise ValueError("影片大小超過 20MB 限制，請重新壓縮後上傳！")
-
-    # 🛡️ 防線 2：檢查檔案 MimeType 類型 (防止惡意偽裝檔案)
-    # 這裡加入 video/quicktime 是為了相容 iPhone 拍出來的 .mov 檔案
-    allowed_types = ["video/mp4", "video/webm", "video/quicktime"]
-    if video_file.content_type not in allowed_types:
-        raise ValueError("只支援 MP4、WebM 或 MOV 格式的影片喔！")
-
-    # ⚡ 驗證通過，放行寫入
-    the_fish.video = video_file
-    the_fish.save()
-
-
-def apply_fish_notice(the_fish, notice_template_id):
-    """
-    物理因果：純 ID 綁定模式。
-    前端已經把自定義閹割，這裡只負責把選單的 ID 寫入魚隻。
-    """
-    notice_template_id = str(notice_template_id).strip() if notice_template_id else None
-
-    # 大閘門：沒選範本直接報錯擋下
-    if not notice_template_id:
-        raise ValueError("必須選擇一個提醒範本！")
-
-    # 綁定 ID，並保險清空舊版的自定義欄位
-    the_fish.notice_template_id = notice_template_id
-    the_fish.description = ""
-
-
-def apply_fish_specs(the_fish, spec_template_id):
-    """
-    物理因果：利用範本 ID，把資料庫裡的規格解壓縮，
-    精準填入魚隻的實體欄位，以利後續的資料庫標籤搜尋。
-    """
-    if not spec_template_id:
-        raise ValueError("必須選擇一個規格範本！")
-
-    # 1. 直接去資料庫提領這包範本
-    spec_template = SpecTemplate.objects.filter(id=spec_template_id).first()
-    if not spec_template:
-        raise ValueError("找不到指定的規格範本，可能已被刪除！")
-
-    # 2. 唯一的資料源：範本內的乾淨 JSON 字典
-    source_data = spec_template.data
-
-    # 3. 🔄 啟動全自動對接迴圈 (因為資料絕對乾淨，直線賦值即可)
-    for config in CORE_SPECS_CONFIG:
-        field_key = config["key"]  # 例：'ph'
-        field_label = config["label"]  # 例：'pH值'
-        field_type = config.get("type")
-
-        # 種類轉換
-        if field_key == "category":
-            raw_cat = source_data.get(field_label, "其他")
-            the_fish.category = REVERSE_AQUATIC_CATEGORIES.get(raw_cat, "OTHER")
-
-        # 雙通道範圍型：直接抓 _min 跟 _max (範本裡早存好了)
-        elif field_type == "range":
-            setattr(the_fish, f"{field_key}_min", source_data.get(f"{field_label}_min"))
-            setattr(the_fish, f"{field_key}_max", source_data.get(f"{field_label}_max"))
-
-        # 單一數值型
-        elif field_type == "single":
-            setattr(the_fish, field_key, source_data.get(field_label))
-
-    # 4. EXTRA_SPECS 額外自定義標籤
-    new_specs = {}
-    for label in EXTRA_SPECS:
-        val = source_data.get(label)
-        if val and str(val).strip():
-            new_specs[label] = str(val).strip()
-
-    the_fish.specs_json = new_specs
+# --------------------------------------------------------------
 
 
 def process_fish_cover(the_fish, cover_file):
@@ -510,37 +334,160 @@ def process_fish_cover(the_fish, cover_file):
     the_fish.image = compressed_file
 
 
+# 處理圖片
+# fish_instance這隻小魚在哪裡
+# unique_images這檔案傳進來的
+def process_fish_video(the_fish, video_file):
+    """
+    驗證影片後綁定至商品。
+    實際存檔統一交給 main_process_fish_data。
+    """
+    if not video_file:
+        return
+
+    max_size = 20 * 1024 * 1024
+
+    if video_file.size > max_size:
+        raise ValueError("影片大小超過 20MB 限制，請重新壓縮後上傳")
+
+    allowed_types = {
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
+    }
+
+    if video_file.content_type not in allowed_types:
+        raise ValueError("只支援 MP4、WebM 或 MOV 格式的影片")
+
+    the_fish.video = video_file
+
+
+# 下面是新的
+def clean_spec_text(value):
+    """
+    清除前後空白，並把連續空白整理成單一空白。
+    """
+    if value is None:
+        return ""
+
+    return " ".join(str(value).strip().split())
+
+
+def clean_temperature(value):
+    """
+    資料庫不儲存溫度單位。
+
+    例如：
+    24～28°C → 24～28
+    24℃ → 24
+    24 ～ 28 °C → 24 ～ 28
+    """
+    value = clean_spec_text(value)
+
+    return value.replace("°C", "").replace("°c", "").replace("℃", "").strip()
+
+
+def clean_body_length(value):
+    """
+    資料庫不儲存長度單位。
+
+    例如：
+    3～5 cm → 3～5
+    5CM → 5
+    約 5 公分 → 約 5
+    """
+    value = clean_spec_text(value)
+
+    return (
+        value.replace("cm", "")
+        .replace("CM", "")
+        .replace("Cm", "")
+        .replace("cM", "")
+        .replace("公分", "")
+        .replace("厘米", "")
+        .strip()
+    )
+
+
+def apply_fish_basic_specs(the_fish, post_data):
+    """
+    不再使用規格範本。
+
+    前端直接傳入：
+    fish_category
+    fish_temp
+    fish_body_length
+    """
+
+    category = post_data.get("fish_category", "").strip()
+
+    # category 是必要欄位，並且只能是定義過的英文代碼
+    if not category:
+        raise ValueError("必須選擇產品種類")
+
+    if category not in AQUATIC_CATEGORIES:
+        raise ValueError("產品種類無效")
+
+    the_fish.category = category
+
+    # 溫度與體長均為選填，資料庫不存單位
+    the_fish.temp = clean_temperature(post_data.get("fish_temp", ""))
+
+    the_fish.body_length = clean_body_length(post_data.get("fish_body_length", ""))
+
+
 # 組裝上面是個副函式
 def main_process_fish_data(the_fish, post_data, files_data):
     """
-    物理因果：一條龍大總管函數。
-    完全捨棄批量陣列邏輯，直線處理單筆生物的 名稱/價格/提醒/規格/影片/封面圖。
+    新增與編輯商品共用的資料處理函式。
+
+    流程：
+    1. 名稱與價格
+    2. 種類、溫度、體長
+    3. 商品備註
+    4. 影片
+    5. 封面圖
+    6. 統一存檔
     """
-    # 1. 名字與價格 (呼叫剛改好的單筆提取函數)
+
+    # 1. 名稱與價格
     basic_info = extract_fish_name_price(post_data)
+
     the_fish.name = basic_info["name"]
     the_fish.price = basic_info["price"]
 
-    # 2. 提醒範本 (直接抓單一 ID，呼叫純 ID 綁定函數)
-    notice_id = post_data.get("fish_notice")
-    apply_fish_notice(the_fish, notice_id)
+    # 2. 種類、溫度、體長
+    apply_fish_basic_specs(
+        the_fish=the_fish,
+        post_data=post_data,
+    )
 
-    # 3. 規格自動對接 (直接抓單一 ID，呼叫純 ID 解壓縮函數)
-    spec_id = post_data.get("fish_spec")
-    apply_fish_specs(the_fish, spec_id)
+    # 3. 商品備註直接存入 description
+    # 只清除前後空白，不可使用 clean_spec_text，
+    # 否則備註裡的換行會被消除。
+    the_fish.description = post_data.get(
+        "fish_description",
+        "",
+    ).strip()
 
-    # 4. 影片防線處理
-    # (如果檔案太大或格式錯誤，這裡會直接砸出 ValueError，中斷外層的 save 交易)
+    # 新流程不再使用備註範本。
+    # 編輯舊商品時，同時解除原本的範本關聯，
+    # 避免詳細頁仍優先顯示舊範本內容。
+    the_fish.notice_template = None
+
+    # 不要主動清除舊的 specs_json。
+    # 它目前不再顯示，但保留舊資料方便回退。
+    # 新商品本來就會依 Model default 得到 {}。
+
+    # 4. 影片
     video_file = files_data.get("video")
     process_fish_video(the_fish, video_file)
 
-    # 🚀 5. 封面圖防線處理 (新增這兩行，物理對接前端傳來的圖片)
+    # 5. 封面圖
     cover_file = files_data.get("fish-cover")
     process_fish_cover(the_fish, cover_file)
 
-    # 6. 終極存檔
-    # 因果防線：就算 process_fish_video 或 process_fish_cover 遇到「編輯模式沒換新檔案」
-    # 而直接 return，這裡的 save() 依然能確保名字、價格和範本的修改被確實寫入資料庫。
+    # 6. 統一存檔
     the_fish.save()
 
     return the_fish

@@ -1,0 +1,25 @@
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg-dark);
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+    border-radius: var(--radius-s);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border: 2px solid var(--bg-dark);
+    border-radius: var(--radius-s);
+    transition: var(--transition);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+  }
+}
