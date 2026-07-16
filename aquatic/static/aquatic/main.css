@@ -202,6 +202,26 @@ body {
      object-fit: cover; /* 🚀 物理防變形：讓圖片等比例填滿，多餘的邊角會被外框的 overflow: hidden 切掉，臉絕對不會被拉長或壓扁 */
 }
 
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.mobile-header.modal-is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobile-header {
+  visibility: visible;
+}
+
+.mobile-header.modal-is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* =========================================
    2. 電腦版側邊欄 (Desktop Override)
    ========================================= */
@@ -223,7 +243,7 @@ body {
     z-index: 500000;
   }
   .header:hover {
-    z-index: 1000000000000000000000000000000000000000;
+    z-index: 1000000000000000000;
     width: 200px;
   }
   /* 終極物理鎖定：絕對定位釘死 */
@@ -324,7 +344,7 @@ body {
     transition: transform 0.3s ease-in-out;
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
-    z-index: 500001;
+    z-index: 500;
     margin-bottom: 0.5rem;
   }
   .mobile-header.is-hidden {
@@ -4342,51 +4362,137 @@ a {
   z-index: -1 !important; /* 物理退到最底層，絕對不准擋住 z-index: 2 的影片 */
 }
 
+/* =========================================================
+   編輯商品 Modal
+   ========================================================= */
+/* 彈窗開啟時，鎖住整個背景頁面 */
+/* 外層黑色遮罩 */
 #edit-modal-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* 調整背景黑度 */
-  backdrop-filter: blur(10px); /* 調整背景模糊度 */
-  z-index: 9999; /* 確保絕對置頂 */
-  /* 核心因果：利用 Flexbox 讓內層的白盒表單在螢幕正中央置中 */
+  inset: 0;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 初始狀態：完全隱形且斷電（滑鼠穿透） */
+  width: 100%;
+  height: 100dvh;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  /* 預設一定要隱藏 */
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-/* 🔌 通電狀態：當 JS 加上 .show 時，彈窗顯現並攔截點擊 */
+/* JS 加入 show 後才顯示 */
 #edit-modal-container.show {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
+  transition: opacity 0.2s ease, visibility 0s linear 0s;
 }
 
-/* 2. 內層實體白盒：控制表單卡片的寬度、背景與邊框 */
+/* 彈窗實體外框 */
 .fissh-modal-box {
-  background-color: var(--bg-dark); /* 這裡控制彈窗本體的底色 */
-  width: 90%;
-  max-width: 1000px;
-  border-radius: var(--radius-m);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(90%, 1000px);
+  height: min(95dvh, 1000px);
+  max-height: calc(100dvh - 2rem);
+  background-color: var(--bg-dark);
   border: 1px solid var(--border-muted);
+  border-radius: var(--radius-m);
   box-shadow: var(--shadow-l);
-  /* 因果：初始狀態稍微下沉 20px，準備觸發進場動畫 */
-  transform: translateY(20px);
-  transition: transform 0.2s ease-in-out;
-  z-index: 1000000000000000000000000000000000000000000000;
+  /* 任何內容都不能跑出圓角外框 */
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px) scale(0.99);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.fissh-modal-inbox {
+/* 彈窗出場動畫 */
+#edit-modal-container.show .fissh-modal-box {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 確保彈窗內所有元素計算寬度時不超出去 */
+.fissh-modal-box,
+.fissh-modal-box * {
+  box-sizing: border-box;
+}
+
+/* 圖片、影片不准超過外框 */
+.fissh-modal-box img,
+.fissh-modal-box video {
+  max-width: 100%;
+}
+
+/* 上方標題與關閉按鈕 */
+.modal-header {
+  position: relative;
+  z-index: 20;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   padding: 1rem;
-  max-height: 75vh;
-  overflow-y: auto;
+  background-color: var(--bg-dark);
+  border-bottom: 1px solid var(--border-muted);
 }
 
+/* 關閉按鈕永遠可以點 */
+.modal-header button,
+.modal-header .modal-close-btn {
+  position: relative;
+  z-index: 21;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+/* 真正負責捲動的內容區 */
+.fissh-modal-inbox {
+  flex: 1 1 auto;
+  /*
+    Flex 子元素要能夠縮小，
+    否則內容會把整個彈窗撐破。
+  */
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  padding: 1rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 表單卡片不能比 Modal 寬 */
+.fissh-modal-inbox .single-card-sizing {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 手機頁首在 Modal 開啟時隱藏 */
+.mobile-header.modal-is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* =========================================================
+   手機尺寸
+   ========================================================= */
 .slot-field1.product-note-field {
   display: flex;
   flex-direction: column;
@@ -4433,7 +4539,7 @@ a {
 }
 
 .template-btn {
-  font-size: var(product-control-font-size);
+  font-size: var(--product-control-font-size);
   padding: 0.5rem 1rem;
   margin: 1rem 0.5rem 0.5rem 0;
   border: var(--shadow-s);
@@ -4447,16 +4553,30 @@ a {
 }
 
 @media (max-width: 667px) {
-  :root {
-    --product-control-height: 2.5rem;
-    --product-control-font-size: 0.82rem;
+  #edit-modal-container {
+    padding: 0.5rem;
   }
   .fissh-modal-box {
-    width: 95%;
+    width: 100%;
+    height: calc(100dvh - 1rem);
+    max-height: calc(100dvh - 1rem);
+    border-radius: var(--radius-s);
+  }
+  .modal-header {
+    padding: 0.75rem;
   }
   .fissh-modal-inbox {
     padding: 0.5rem;
-    max-height: 90vh;
+  }
+  .fissh-modal-inbox .single-card-sizing {
+    width: 100%;
+    margin: 0;
+  }
+}
+@media (max-width: 667px) {
+  :root {
+    --product-control-height: 2.5rem;
+    --product-control-font-size: 0.82rem;
   }
   .fissh-card-menu-wrap {
     position: absolute;
@@ -4489,11 +4609,6 @@ a {
     font-size: 0.75rem;
   }
 }
-/* 🔌 通電狀態：當外層開啟時，白盒同時往上彈回原位 */
-#edit-modal-container.show .fissh-modal-box {
-  transform: translateY(0);
-}
-
 /* 🚀 全域 HTMX 轉場動畫：讓刪除或新增不再「閃現」 */
 .htmx-swapping {
   opacity: 0;

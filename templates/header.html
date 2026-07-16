@@ -125,71 +125,85 @@
     </ul>
   </nav>
   <script>
-    document.body.addEventListener("click", (event) => {
-  const hamburgerBtn = event.target.closest("#hamburger-btn");
-  const mobileMenu = document.getElementById("mobile-menu");
+  document.body.addEventListener("click", (event) => {
+    const hamburgerBtn = event.target.closest("#hamburger-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
 
-  if (!mobileMenu) return;
+    if (!mobileMenu) return;
 
-  // 點 hamburger → toggle
-  if (hamburgerBtn) {
-    hamburgerBtn.classList.toggle("is-open");
-    mobileMenu.classList.toggle("is-open");
-    return;
-  }
-
-  // 🚀 關鍵：點在 menu 裡面 → 不做事
-  if (event.target.closest("#mobile-menu")) {
-    return;
-  }
-
-  // 點外面 → 關閉
-  if (mobileMenu.classList.contains("is-open")) {
-    const btn = document.getElementById("hamburger-btn");
-    if (btn) btn.classList.remove("is-open");
-    mobileMenu.classList.remove("is-open");
-  }
-});
-
-// 1. 抓取 Header 實體
-  const smartHeader = document.querySelector('.mobile-header');
-  // 2. 記錄網頁載入時的初始 Y 座標
-  let lastScrollY = window.scrollY;
-
-  // 3. 啟動滾動監聽雷達
-  window.addEventListener('scroll', () => {
-    let currentScrollY = window.scrollY;
-
-    // 🚀 防呆機制：如果滑到網頁最頂部 (或蘋果手機的橡皮筋回彈)，強制顯示 Header
-    if (currentScrollY <= 0) {
-      smartHeader.classList.remove('is-hidden');
-      lastScrollY = currentScrollY; // 座標同步
+    // 點漢堡按鈕
+    if (hamburgerBtn) {
+      hamburgerBtn.classList.toggle("is-open");
+      mobileMenu.classList.toggle("is-open");
       return;
     }
 
-    // 🚀 核心因果判斷：
-    if (currentScrollY > lastScrollY) {
-      // 因：現在座標 > 上次座標 (往下滑)
-      // 果：啟動隱形斗篷，物理推離螢幕
-      smartHeader.classList.add('is-hidden');
-      
-      // 💡 體驗優化：如果往下滾動時，漢堡選單還開著，順便把它強制關掉
-      const mobileMenu = document.getElementById("mobile-menu");
-      const hamburgerBtn = document.getElementById("hamburger-btn");
-      if (mobileMenu && mobileMenu.classList.contains("is-open")) {
-        mobileMenu.classList.remove("is-open");
-        hamburgerBtn.classList.remove("is-open");
-      }
-
-    } else {
-      // 因：現在座標 < 上次座標 (往上滑)
-      // 果：解除隱形斗篷，降落回原位
-      smartHeader.classList.remove('is-hidden');
+    // 點選單內部不關閉
+    if (event.target.closest("#mobile-menu")) {
+      return;
     }
 
-    // 將這次的座標存起來，留給下一次滾動做比較
-    lastScrollY = currentScrollY;
+    // 點外面關閉
+    if (mobileMenu.classList.contains("is-open")) {
+      const btn = document.getElementById("hamburger-btn");
+
+      mobileMenu.classList.remove("is-open");
+      btn?.classList.remove("is-open");
+    }
   });
 
+
+  const smartHeader = document.querySelector(".mobile-header");
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!smartHeader) return;
+
+      const editModal = document.getElementById(
+        "edit-modal-container"
+      );
+
+      // modal 開啟時不處理頁首滾動
+      if (editModal?.classList.contains("show")) {
+        return;
+      }
+
+      // 只能宣告一次
+      const currentScrollY = window.scrollY;
+
+      // 回到最頂部時強制顯示
+      if (currentScrollY <= 0) {
+        smartHeader.classList.remove("is-hidden");
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      if (currentScrollY > lastScrollY) {
+        // 往下滑
+        smartHeader.classList.add("is-hidden");
+
+        const mobileMenu =
+          document.getElementById("mobile-menu");
+
+        const hamburgerBtn =
+          document.getElementById("hamburger-btn");
+
+        if (mobileMenu?.classList.contains("is-open")) {
+          mobileMenu.classList.remove("is-open");
+          hamburgerBtn?.classList.remove("is-open");
+        }
+      } else if (currentScrollY < lastScrollY) {
+        // 往上滑
+        smartHeader.classList.remove("is-hidden");
+      }
+
+      lastScrollY = currentScrollY;
+    },
+    {
+      passive: true,
+    }
+  );
   </script>
 </header>

@@ -7,7 +7,9 @@
                 border-bottom: 1px solid var(--border-muted)">
         <h3 style="margin: 0; font-size: 1.1rem;">編輯商品</h3>
         <button type="button"
+                class="modal-close-btn"
                 onclick="closeEditModal()"
+                aria-label="關閉編輯視窗"
                 style="background: transparent;
                        border: none;
                        cursor: pointer;
@@ -170,35 +172,36 @@
         }
     });
     function closeEditModal() {
-  const modal = document.getElementById("edit-modal-container");
+    const modal = document.getElementById("edit-modal-container");
+    const header = document.querySelector(".mobile-header");
 
-  if (!modal) {
-    return;
-  }
+    if (!modal) return;
 
-  // 停止 modal 裡正在播放的影片
-  modal.querySelectorAll("video").forEach((video) => {
-    video.pause();
+    modal.querySelectorAll("video").forEach((video) => {
+        video.pause();
 
-    // 只有前端預覽產生的 blob 網址需要釋放
-    if (video.src.startsWith("blob:")) {
-      URL.revokeObjectURL(video.src);
+        if (video.src.startsWith("blob:")) {
+        URL.revokeObjectURL(video.src);
+        }
+    });
+
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+
+    if (header) {
+        header.classList.remove("modal-is-open");
+        header.classList.remove("is-hidden");
     }
-  });
 
-  // 播放淡出動畫
-  modal.classList.remove("show");
+    // 同步目前位置，避免下一次 scroll 判斷錯誤
+    lastScrollY = window.scrollY;
 
-  // 恢復背景頁面捲動
-  document.body.style.overflow = "";
-
-  // 等 transition 結束後清除舊表單
-  window.setTimeout(() => {
-    if (!modal.classList.contains("show")) {
-      modal.innerHTML = "";
+    setTimeout(() => {
+        if (!modal.classList.contains("show")) {
+        modal.innerHTML = "";
+        }
+    }, 200);
     }
-  }, 200);
-}
 
 // 讓 HTML onclick="closeEditModal()" 可以找到
 window.closeEditModal = closeEditModal;

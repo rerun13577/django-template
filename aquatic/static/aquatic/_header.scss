@@ -110,6 +110,26 @@
   }
 }
 
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.mobile-header.modal-is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobile-header {
+  visibility: visible;
+}
+
+.mobile-header.modal-is-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* =========================================
    2. 電腦版側邊欄 (Desktop Override)
    ========================================= */
@@ -132,7 +152,7 @@
     z-index: 500000;
 
     &:hover {
-      z-index: 999999999999999999999999999999999999999;
+      z-index: 999999999999999999;
       width: 200px;
     }
   }
@@ -251,7 +271,7 @@
 
     position: sticky; /* 往下滾動時吸頂 */
     top: 0;
-    z-index: 500001;
+    z-index: 500;
     margin-bottom: 0.5rem;
   }
 
