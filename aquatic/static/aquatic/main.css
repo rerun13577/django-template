@@ -3530,8 +3530,9 @@ a {
   transition: var(--transition);
 }
 .grid .product-creature .product-source {
+  display: block;
   width: 100%;
-  height: 200px;
+  aspect-ratio: 4/3; /* 強制保持 4:3 比例 */
   -o-object-fit: cover;
      object-fit: cover;
   margin-bottom: 0.5rem;

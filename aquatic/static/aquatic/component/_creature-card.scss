@@ -61,8 +61,9 @@
     }
 
     .product-source {
+      display: block;
       width: 100%; // 寬度跟隨卡片
-      height: 200px; // 固定一個高度
+      aspect-ratio: 4 / 3; /* 強制保持 4:3 比例 */
       object-fit: cover; // 關鍵：裁切圖片而不變形，像手機相簿那樣
       margin-bottom: 0.5rem;
     }

@@ -20,22 +20,14 @@
                     </div>
                     {% if item.image %}
                         <img src="{{ item.image.url }}"
-                             style="width: 100%;
-                                    height: 200px;
-                                    object-fit: cover;
-                                    display: block;
-                                    margin-bottom: 0.5rem"
+                             class="product-source"
                              alt="{{ item.name }}">
                     {% elif item.video %}
                         <video src="{{ item.video.url }}#t=0.001"
                                preload="metadata"
+                               class="product-source"
                                muted
-                               playsinline
-                               style="width: 100%;
-                                      height: 200px;
-                                      object-fit: cover;
-                                      display: block;
-                                      margin-bottom: 0.5rem">
+                               playsinline>
                         </video>
                     {% else %}
                         <div style="width: 100%;
